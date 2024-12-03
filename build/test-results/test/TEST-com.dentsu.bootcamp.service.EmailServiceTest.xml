@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.dentsu.bootcamp.service.EmailServiceTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-12-02T14:30:35" hostname="BR-FVFFH46JQ6LT" time="1.296">
+  <properties/>
+  <testcase name="givenCreateReservation_whenNewReservationCreated_thenSendEmail()" classname="com.dentsu.bootcamp.service.EmailServiceTest" time="1.296"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

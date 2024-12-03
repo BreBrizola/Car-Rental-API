@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    username: root
+    url: jdbc:mysql://localhost:3306/car-rental-api
+    password: Brenda1996
+  application:
+    name: car-rental
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+server:
+  port: '8090'

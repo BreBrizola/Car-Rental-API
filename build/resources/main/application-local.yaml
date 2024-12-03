@@ -1,0 +1,7 @@
+apiKeys:
+  weatherApiKey: accb42b433fc4d23898223148242011
+
+spring:
+    mail:
+      username: 3e58c3c7252e52
+      password: eea311eeab652c

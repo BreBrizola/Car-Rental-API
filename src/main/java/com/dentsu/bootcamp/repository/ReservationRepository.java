@@ -1,0 +1,10 @@
+package com.dentsu.bootcamp.repository;
+
+import com.dentsu.bootcamp.model.ReservationEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface ReservationRepository extends JpaRepository<ReservationEntity, Long> {
+    ReservationEntity findByConfirmationNumberAndFirstNameAndLastName(String confirmationNumber, String firstName, String lastName);
+}
