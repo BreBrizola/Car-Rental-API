@@ -45,9 +45,6 @@ public class ReservationService {
     private VehicleService vehicleService;
 
     @Autowired
-    private LocationService locationService;
-
-    @Autowired
     private AdditionalProductService additionalProductService;
 
     @Autowired
