@@ -3,6 +3,7 @@ package com.dentsu.bootcamp.service;
 import com.dentsu.bootcamp.client.WeatherClient;
 import com.dentsu.bootcamp.dto.LocationDTO;
 import com.dentsu.bootcamp.dto.WeatherResponse;
+import com.dentsu.bootcamp.exception.LocationNotFoundException;
 import com.dentsu.bootcamp.exception.ReservationNotFoundException;
 import com.dentsu.bootcamp.mapping.LocationMapper;
 import com.dentsu.bootcamp.model.LocationEntity;
@@ -11,6 +12,8 @@ import com.dentsu.bootcamp.repository.LocationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,16 +43,18 @@ public class LocationService {
     }
 
     public LocationDTO getLocationById(Long id) {
-        Optional<LocationEntity> locationOptional = locationRepository.findById(id);
-        LocationEntity locationEntity = new LocationEntity();
+        LocationEntity locationEntity = locationRepository.findById(id)
+                .orElseThrow(() -> new LocationNotFoundException("Location not found"));
 
-        if(locationOptional.isPresent()){
-            locationEntity = locationOptional.get();
-        } else {throw new ReservationNotFoundException("Reservation not found");}
+        return locationMapper.apply(locationEntity, getLocationWeather(locationEntity));
+    }
 
-        LocationDTO locationDTO = locationMapper.apply(locationEntity, getLocationWeather(locationEntity));
+    @Cacheable("locationsByName")
+    public LocationDTO getLocationByName(String name){
+        LocationEntity locationEntity = locationRepository.findByName(name)
+                .orElseThrow(() -> new LocationNotFoundException("Location not found"));
 
-        return locationDTO;
+        return locationMapper.apply(locationEntity, getLocationWeather(locationEntity));
     }
 
     public WeatherResponse getLocationWeather(LocationEntity locationEntity){

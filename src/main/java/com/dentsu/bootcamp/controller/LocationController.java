@@ -33,7 +33,7 @@ public class LocationController {
     }
 
     @Operation(summary = "Retrieve a specific location, searched by Id", description = "Pass the location id (number).")
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public LocationDTO getLocationById(@Parameter(description = "The unique identifier of the location") @PathVariable(value = "id")Long id){
         return locationService.getLocationById(id);
     }
@@ -49,4 +49,11 @@ public class LocationController {
     public WeatherResponse getWeather(@Parameter(description = "US Zipcode, UK Postcode, Canada Postalcode, IP address, Latitude/Longitude (decimal degree) or city name.")@PathVariable String location) {
         return weatherClient.getCurrentWeather(ApiKey, location, "no");
     }
+
+    @Operation(summary = "Retrieve a specific location, searched by name", description = "Pass the location name(String).")
+    @GetMapping("/name/{name}")
+    public LocationDTO getLocationByName(@Parameter(description = "The name of the location") @PathVariable(value = "name")String name){
+        return locationService.getLocationByName(name);
+    }
+
 }
