@@ -12,6 +12,8 @@ import com.dentsu.bootcamp.repository.LocationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,6 +49,7 @@ public class LocationService {
         return locationMapper.apply(locationEntity, getLocationWeather(locationEntity));
     }
 
+    @Cacheable("locationsByName")
     public LocationDTO getLocationByName(String name){
         LocationEntity locationEntity = locationRepository.findByName(name)
                 .orElseThrow(() -> new LocationNotFoundException("Location not found"));
