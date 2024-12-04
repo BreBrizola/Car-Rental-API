@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.dentsu.bootcamp.service.LocationServiceTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2024-12-04T12:00:36" hostname="BR-FVFFH46JQ6LT" time="0.944">
+  <properties/>
+  <testcase name="givenLocationName_whenGetLocationByName_thenReturnCachedLocation()" classname="com.dentsu.bootcamp.service.LocationServiceTest" time="0.944">
+    <failure message="org.mockito.exceptions.misusing.PotentialStubbingProblem: &#10;Strict stubbing argument mismatch. Please check:&#10; - this invocation of 'apply' method:&#10;    locationMapper.apply(&#10;    LocationEntity(id=1, name=Google Rentals, address=1600 Amphitheatre Parkway, Mountain View, CA, USA, openingHours=08:00 - 18:00, afterHoursFeed=15, vehicleList=null),&#10;    null&#10;);&#10;    -&gt; at com.dentsu.bootcamp.service.LocationService.getLocationByName(LocationService.java:57)&#10; - has following stubbing(s) with different arguments:&#10;    1. locationMapper.apply(&#10;    LocationEntity(id=1, name=Google Rentals, address=1600 Amphitheatre Parkway, Mountain View, CA, USA, openingHours=08:00 - 18:00, afterHoursFeed=15, vehicleList=null),&#10;    WeatherResponse(location=WeatherLocation(name=null, region=null, country=null, tzId=null), current=WeatherCurrent(condition=null, tempC=null))&#10;);&#10;      -&gt; at com.dentsu.bootcamp.service.LocationServiceTest.givenLocationName_whenGetLocationByName_thenReturnCachedLocation(LocationServiceTest.java:84)&#10;Typically, stubbing argument mismatch indicates user mistake when writing tests.&#10;Mockito fails early so that you can debug potential problem easily.&#10;However, there are legit scenarios when this exception generates false negative signal:&#10;  - stubbing the same method multiple times using 'given().will()' or 'when().then()' API&#10;    Please use 'will().given()' or 'doReturn().when()' API for stubbing.&#10;  - stubbed method is intentionally invoked with different arguments by code under test&#10;    Please use default or 'silent' JUnit Rule (equivalent of Strictness.LENIENT).&#10;For more information see javadoc for PotentialStubbingProblem class." type="org.mockito.exceptions.misusing.PotentialStubbingProblem">org.mockito.exceptions.misusing.PotentialStubbingProblem: 
+Strict stubbing argument mismatch. Please check:
+ - this invocation of 'apply' method:
+    locationMapper.apply(
+    LocationEntity(id=1, name=Google Rentals, address=1600 Amphitheatre Parkway, Mountain View, CA, USA, openingHours=08:00 - 18:00, afterHoursFeed=15, vehicleList=null),
+    null
+);
+    -&gt; at com.dentsu.bootcamp.service.LocationService.getLocationByName(LocationService.java:57)
+ - has following stubbing(s) with different arguments:
+    1. locationMapper.apply(
+    LocationEntity(id=1, name=Google Rentals, address=1600 Amphitheatre Parkway, Mountain View, CA, USA, openingHours=08:00 - 18:00, afterHoursFeed=15, vehicleList=null),
+    WeatherResponse(location=WeatherLocation(name=null, region=null, country=null, tzId=null), current=WeatherCurrent(condition=null, tempC=null))
+);
+      -&gt; at com.dentsu.bootcamp.service.LocationServiceTest.givenLocationName_whenGetLocationByName_thenReturnCachedLocation(LocationServiceTest.java:84)
+Typically, stubbing argument mismatch indicates user mistake when writing tests.
+Mockito fails early so that you can debug potential problem easily.
+However, there are legit scenarios when this exception generates false negative signal:
+  - stubbing the same method multiple times using 'given().will()' or 'when().then()' API
+    Please use 'will().given()' or 'doReturn().when()' API for stubbing.
+  - stubbed method is intentionally invoked with different arguments by code under test
+    Please use default or 'silent' JUnit Rule (equivalent of Strictness.LENIENT).
+For more information see javadoc for PotentialStubbingProblem class.
+	at app//com.dentsu.bootcamp.mapping.LocationMapper.apply(LocationMapper.java:12)
+	at app//com.dentsu.bootcamp.service.LocationService.getLocationByName(LocationService.java:57)
+	at app//com.dentsu.bootcamp.service.LocationServiceTest.givenLocationName_whenGetLocationByName_thenReturnCachedLocation(LocationServiceTest.java:86)
+	at java.base@17.0.13/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base@17.0.13/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base@17.0.13/java.util.ArrayList.forEach(ArrayList.java:1511)
+</failure>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
