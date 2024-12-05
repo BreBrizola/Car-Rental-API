@@ -224,7 +224,7 @@ public class ReservationService {
         return localTime.isBefore(openingTime) || localTime.isAfter(closingTime);
     }
 
-    private void validateReservationCreation(ReservationEntity reservation) {
+    public void validateReservationCreation(ReservationEntity reservation) {
         if (Objects.isNull(reservation.getFirstName()) || Objects.isNull(reservation.getLastName())) {
             throw new MissingNameException("First and last name are required");
         } else if (Objects.isNull(reservation.getEmail())) {

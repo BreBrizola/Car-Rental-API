@@ -1,5 +1,6 @@
 package com.dentsu.bootcamp.service;
 
+import com.dentsu.bootcamp.exception.LocationNotFoundException;
 import com.dentsu.bootcamp.model.LocationEntity;
 import com.dentsu.bootcamp.model.VehicleEntity;
 import com.dentsu.bootcamp.repository.LocationRepository;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,5 +52,25 @@ class LocationServiceTest {
 
         assertNotNull(vehicleList);
         verify(locationRepository, times(1)).findById(locationTest.getId());
+    }
+
+    @Test
+    public void givenGetLocationByName_whenLocationDontExist_thenThrowException(){
+        String locationName = "non Existing";
+
+        when(locationRepository.findByName(locationName)).thenReturn(Optional.empty());
+
+        assertThrows(LocationNotFoundException.class,
+                () -> locationService.getLocationByName(locationName));
+    }
+
+    @Test
+    public void givenGetLocationById_whenLocationDontExist_thenThrowException(){
+        Long locationId = 1000L;
+
+        when(locationRepository.findById(locationId)).thenReturn(Optional.empty());
+
+        assertThrows(LocationNotFoundException.class,
+                () -> locationService.getLocationById(locationId));
     }
 }

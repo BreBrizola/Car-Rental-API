@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -309,5 +310,16 @@ class ReservationServiceTest {
 
         assertThrows(ReservationNotFoundException.class, () ->
                 reservationService.getReservation("000000", "Name", "Last Name"));
+    }
+
+    @Test
+    void givenValidReservation_whenValidateReservationCreation_thenNoException() {
+        ReservationEntity reservation = new ReservationEntity();
+        reservation.setFirstName("John");
+        reservation.setLastName("Doe");
+        reservation.setEmail("john.doe@example.com");
+        reservation.setPhone("123456789");
+
+        assertDoesNotThrow(() -> reservationService.validateReservationCreation(reservation));
     }
 }
