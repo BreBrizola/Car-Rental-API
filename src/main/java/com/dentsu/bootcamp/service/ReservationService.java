@@ -98,9 +98,9 @@ public class ReservationService {
     }
 
     public ReservationDTO getReservation(String confirmationNumber, String firstName, String lastName) {
-        ReservationDTO reservationDTO = reservationMapper
-                .apply(reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName));
-        return reservationDTO;
+        ReservationEntity reservation = reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName);
+        validateReservationExists(reservation);
+        return reservationMapper.apply(reservation);
     }
 
     public ReservationDTO updateReservation(String confirmationNumber, String firstName, String lastName, ReservationEntity updatedReservation) {

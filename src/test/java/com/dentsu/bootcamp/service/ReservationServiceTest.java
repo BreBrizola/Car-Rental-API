@@ -3,6 +3,7 @@ package com.dentsu.bootcamp.service;
 import com.dentsu.bootcamp.exception.MissingEmailException;
 import com.dentsu.bootcamp.exception.MissingNameException;
 import com.dentsu.bootcamp.exception.MissingPhoneException;
+import com.dentsu.bootcamp.exception.ReservationNotFoundException;
 import com.dentsu.bootcamp.model.AdditionalProductEntity;
 import com.dentsu.bootcamp.model.LocationEntity;
 import com.dentsu.bootcamp.model.ReservationEntity;
@@ -301,4 +302,12 @@ class ReservationServiceTest {
         assertFalse(result);
     }
 
+    @Test
+    public void givenInvalidDetails_whenGetReservation_thenThrowReservationNotFoundException() {
+        when(reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(
+                "000000", "Name", "Last Name")).thenReturn(null);
+
+        assertThrows(ReservationNotFoundException.class, () ->
+                reservationService.getReservation("000000", "Name", "Last Name"));
+    }
 }
