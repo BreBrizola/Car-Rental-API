@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.dentsu.bootcamp.service.VehicleServiceTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-12-05T16:37:31" hostname="BR-FVFFH46JQ6LT" time="0.826">
+  <properties/>
+  <testcase name="givenGetVehicleById_whenVehicleDontExist_thenThrowException()" classname="com.dentsu.bootcamp.service.VehicleServiceTest" time="0.826"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

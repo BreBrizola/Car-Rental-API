@@ -27,7 +27,7 @@ public class VehicleController {
 
     @Operation(summary = "Retrieve a specific vehicle, searched by Id", description = "Pass the vehicle id (number).")
     @GetMapping("/{id}")
-    public Optional<VehicleEntity> getVehicleById(@Parameter(description = "The unique identifier of the vehicle.")@PathVariable(value = "id") Long id) {
+    public VehicleEntity getVehicleById(@Parameter(description = "The unique identifier of the vehicle.")@PathVariable(value = "id") Long id) {
         return vehicleService.getVehicleById(id);
     }
 }

@@ -177,9 +177,11 @@ public class ReservationService {
     }
 
     public double calculateTotalPrice(ReservationEntity reservation) {
-        VehicleEntity vehicle = vehicleService.getVehicleById(reservation.getVehicle().getId()).get();
+        VehicleEntity vehicle = vehicleService.getVehicleById(reservation.getVehicle().getId());
+
         LocationEntity pickupLocation = locationRepository.findById(reservation.getPickupLocation().getId())
                 .orElseThrow(() -> new LocationNotFoundException("Pickup location not found"));
+
         LocationEntity returnLocation = locationRepository.findById(reservation.getReturnLocation().getId())
                 .orElseThrow(() -> new LocationNotFoundException("Return location not found"));
 

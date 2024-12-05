@@ -170,7 +170,7 @@ class ReservationServiceTest {
         reservation.setPickupLocation(pickupLocation);
         reservation.setReturnLocation(returnLocation);
 
-        when(vehicleService.getVehicleById(1L)).thenReturn(Optional.of(vehicle));
+        when(vehicleService.getVehicleById(1L)).thenReturn(vehicle);
         when(locationRepository.findById(1L)).thenReturn(Optional.of(pickupLocation));
         when(locationRepository.findById(2L)).thenReturn(Optional.of(returnLocation));
 
@@ -206,7 +206,7 @@ class ReservationServiceTest {
         reservation.setPickupLocation(pickupLocation);
         reservation.setReturnLocation(returnLocation);
 
-        when(vehicleService.getVehicleById(1L)).thenReturn(Optional.of(vehicle));
+        when(vehicleService.getVehicleById(1L)).thenReturn(vehicle);
         when(locationRepository.findById(1L)).thenReturn(Optional.of(pickupLocation));
         when(locationRepository.findById(2L)).thenReturn(Optional.of(returnLocation));
 
@@ -250,7 +250,7 @@ class ReservationServiceTest {
         reservation.setReturnLocation(returnLocation);
         reservation.setAdditionalProducts(List.of(product1,product2));
 
-        when(vehicleService.getVehicleById(1L)).thenReturn(Optional.of(vehicle));
+        when(vehicleService.getVehicleById(1L)).thenReturn(vehicle);
         when(locationRepository.findById(1L)).thenReturn(Optional.of(pickupLocation));
         when(locationRepository.findById(2L)).thenReturn(Optional.of(returnLocation));
         when(additionalProductService.getAdditionProducts(1L)).thenReturn(product1);
