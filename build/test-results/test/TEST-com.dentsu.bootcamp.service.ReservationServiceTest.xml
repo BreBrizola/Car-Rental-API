@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.dentsu.bootcamp.service.ReservationServiceTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2024-12-06T15:30:20" hostname="BR-FVFFH46JQ6LT" time="1.116">
+  <properties/>
+  <testcase name="givenReservationWithoutPhone_whenCreateReservation_thenThrowMissingPhoneException()" classname="com.dentsu.bootcamp.service.ReservationServiceTest" time="1.001"/>
+  <testcase name="givenReservationWithoutNames_whenCreateReservation_thenThrowMissingNameException()" classname="com.dentsu.bootcamp.service.ReservationServiceTest" time="0.004"/>
+  <testcase name="givenInvalidDetails_whenGetReservation_thenThrowReservationNotFoundException()" classname="com.dentsu.bootcamp.service.ReservationServiceTest" time="0.03"/>
+  <testcase name="givenTimeIsAfterOpeningHours_whenCheckIfAfterHours_thenReturnTrue()" classname="com.dentsu.bootcamp.service.ReservationServiceTest" time="0.005"/>
+  <testcase name="givenValidReservation_whenCancelReservation_thenReservationIsDeleted()" classname="com.dentsu.bootcamp.service.ReservationServiceTest" time="0.027"/>
+  <testcase name="givenInvalidOpeningHoursFormat_whenCheckIfAfterHours_thenThrowDateTimeParseException()" classname="com.dentsu.bootcamp.service.ReservationServiceTest" time="0.005"/>
+  <testcase name="givenCreateReservation_WhenCalculateTotalPrice_thenReturnCorrectPrice()" classname="com.dentsu.bootcamp.service.ReservationServiceTest" time="0.009"/>
+  <testcase name="givenTimeIsBeforeOpeningHours_whenCheckIfAfterHours_thenReturnTrue()" classname="com.dentsu.bootcamp.service.ReservationServiceTest" time="0.002"/>
+  <testcase name="givenValidReservation_whenValidateReservationCreation_thenNoException()" classname="com.dentsu.bootcamp.service.ReservationServiceTest" time="0.005"/>
+  <testcase name="givenCalculateTotalPrice_WhenTimeIsOffOpeningHours_thenReturnPriceWithFeed()" classname="com.dentsu.bootcamp.service.ReservationServiceTest" time="0.004"/>
+  <testcase name="givenTimeBetweenOpeningHours_whenCheckIfAfterHours_thenReturnFalse()" classname="com.dentsu.bootcamp.service.ReservationServiceTest" time="0.004"/>
+  <testcase name="givenCalculateTotalPrice_WhenHasAdditionalProducts_thenReturnCorrectPrice()" classname="com.dentsu.bootcamp.service.ReservationServiceTest" time="0.004"/>
+  <testcase name="givenReservationWithoutEmail_whenCreateReservation_thenThrowMissingEmailException()" classname="com.dentsu.bootcamp.service.ReservationServiceTest" time="0.002"/>
+  <testcase name="givenExistingReservation_whenGetReservation_thenReturnReservation()" classname="com.dentsu.bootcamp.service.ReservationServiceTest" time="0.005"/>
+  <system-out><![CDATA[12:30:21.099 [Test worker] ERROR com.dentsu.bootcamp.service.ReservationService -- email failed: null
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.dentsu.bootcamp.service.EmailServiceTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-12-06T14:47:08" hostname="BR-FVFFH46JQ6LT" time="0.645">
-  <properties/>
-  <testcase name="givenMailSendFails_whenSendMail_thenHandleException()" classname="com.dentsu.bootcamp.service.EmailServiceTest" time="0.645"/>
-  <system-out><![CDATA[Failed to send email
-]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

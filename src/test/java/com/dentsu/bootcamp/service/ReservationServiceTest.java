@@ -1,9 +1,11 @@
 package com.dentsu.bootcamp.service;
 
+import com.dentsu.bootcamp.dto.ReservationDTO;
 import com.dentsu.bootcamp.exception.MissingEmailException;
 import com.dentsu.bootcamp.exception.MissingNameException;
 import com.dentsu.bootcamp.exception.MissingPhoneException;
 import com.dentsu.bootcamp.exception.ReservationNotFoundException;
+import com.dentsu.bootcamp.mapping.ReservationMapper;
 import com.dentsu.bootcamp.model.AdditionalProductEntity;
 import com.dentsu.bootcamp.model.LocationEntity;
 import com.dentsu.bootcamp.model.ReservationEntity;
@@ -25,6 +27,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
@@ -50,6 +53,9 @@ class ReservationServiceTest {
 
     //@Mock
     //private LocationMapper locationMapper;
+
+    @Mock
+    private ReservationMapper reservationMapper;
 
     @InjectMocks
     private ReservationService reservationService;
@@ -321,5 +327,38 @@ class ReservationServiceTest {
         reservation.setPhone("123456789");
 
         assertDoesNotThrow(() -> reservationService.validateReservationCreation(reservation));
+    }
+
+    @Test
+    void givenExistingReservation_whenGetReservation_thenReturnReservation() {
+        String confirmationNumber = "1234567890";
+        String firstName = "Name";
+        String lastName = "Last Name";
+
+        ReservationEntity reservation = new ReservationEntity();
+        reservation.setConfirmationNumber(confirmationNumber);
+        reservation.setFirstName(firstName);
+        reservation.setLastName(lastName);
+
+        ReservationDTO reservationDTO = new ReservationDTO();
+        reservationDTO.setConfirmationNumber(confirmationNumber);
+        reservationDTO.setFirstName(firstName);
+        reservationDTO.setLastName(lastName);
+
+        when(reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName))
+                .thenReturn(reservation);
+
+        when(reservationMapper.apply(reservation)).thenReturn(reservationDTO);
+
+        ReservationDTO result = reservationService.getReservation(confirmationNumber, firstName, lastName);
+
+        assertNotNull(result);
+        assertEquals(confirmationNumber, result.getConfirmationNumber());
+        assertEquals(firstName, result.getFirstName());
+        assertEquals(lastName, result.getLastName());
+
+        verify(reservationRepository, times(1))
+                .findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName);
+        verify(reservationMapper, times(1)).apply(reservation);
     }
 }
