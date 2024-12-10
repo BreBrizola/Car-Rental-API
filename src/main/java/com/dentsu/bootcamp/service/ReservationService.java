@@ -1,6 +1,7 @@
 package com.dentsu.bootcamp.service;
 
 import com.dentsu.bootcamp.dto.ReservationDTO;
+import com.dentsu.bootcamp.dto.VehicleDTO;
 import com.dentsu.bootcamp.exception.LocationNotFoundException;
 import com.dentsu.bootcamp.exception.MissingEmailException;
 import com.dentsu.bootcamp.exception.MissingNameException;
@@ -177,7 +178,8 @@ public class ReservationService {
     }
 
     public double calculateTotalPrice(ReservationEntity reservation) {
-        VehicleEntity vehicle = vehicleService.getVehicleById(reservation.getVehicle().getId());
+        VehicleEntity vehicle = vehicleRepository.findById(reservation.getVehicle().getId())
+                .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"));
 
         LocationEntity pickupLocation = locationRepository.findById(reservation.getPickupLocation().getId())
                 .orElseThrow(() -> new LocationNotFoundException("Pickup location not found"));

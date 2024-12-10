@@ -1,13 +1,13 @@
 package com.dentsu.bootcamp.dto;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Data
-public class LocationDTO {
-    private Long id;
-    private String name;
-    private String address;
-    private String openingHours;
-    private Long afterHoursFee;
-    private WeatherResponse weather;
+public record LocationDTO (
+        @JsonProperty("id") Long id,
+        @JsonProperty("name") String name,
+        @JsonProperty("address") String address,
+        @JsonProperty("openingHours") String openingHours,
+        @JsonProperty("afterHoursFee") Long afterHoursFee,
+        @JsonProperty("weather") WeatherResponse weather
+) {
 }

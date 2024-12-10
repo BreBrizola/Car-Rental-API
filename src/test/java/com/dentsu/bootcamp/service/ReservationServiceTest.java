@@ -12,6 +12,7 @@ import com.dentsu.bootcamp.model.ReservationEntity;
 import com.dentsu.bootcamp.model.VehicleEntity;
 import com.dentsu.bootcamp.repository.LocationRepository;
 import com.dentsu.bootcamp.repository.ReservationRepository;
+import com.dentsu.bootcamp.repository.VehicleRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,7 +44,7 @@ class ReservationServiceTest {
     private LocationRepository locationRepository;
 
     @Mock
-    private VehicleService vehicleService;
+    private VehicleRepository vehicleRepository;
 
     @Mock
     private AdditionalProductService additionalProductService;
@@ -178,7 +179,7 @@ class ReservationServiceTest {
         reservation.setPickupLocation(pickupLocation);
         reservation.setReturnLocation(returnLocation);
 
-        when(vehicleService.getVehicleById(1L)).thenReturn(vehicle);
+        when(vehicleRepository.findById(1L)).thenReturn(Optional.of(vehicle));
         when(locationRepository.findById(1L)).thenReturn(Optional.of(pickupLocation));
         when(locationRepository.findById(2L)).thenReturn(Optional.of(returnLocation));
 
@@ -214,7 +215,7 @@ class ReservationServiceTest {
         reservation.setPickupLocation(pickupLocation);
         reservation.setReturnLocation(returnLocation);
 
-        when(vehicleService.getVehicleById(1L)).thenReturn(vehicle);
+        when(vehicleRepository.findById(1L)).thenReturn(Optional.of(vehicle));
         when(locationRepository.findById(1L)).thenReturn(Optional.of(pickupLocation));
         when(locationRepository.findById(2L)).thenReturn(Optional.of(returnLocation));
 
@@ -258,7 +259,7 @@ class ReservationServiceTest {
         reservation.setReturnLocation(returnLocation);
         reservation.setAdditionalProducts(List.of(product1,product2));
 
-        when(vehicleService.getVehicleById(1L)).thenReturn(vehicle);
+        when(vehicleRepository.findById(1L)).thenReturn(Optional.of(vehicle));
         when(locationRepository.findById(1L)).thenReturn(Optional.of(pickupLocation));
         when(locationRepository.findById(2L)).thenReturn(Optional.of(returnLocation));
         when(additionalProductService.getAdditionProducts(1L)).thenReturn(product1);

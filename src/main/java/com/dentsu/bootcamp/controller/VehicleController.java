@@ -1,5 +1,6 @@
 package com.dentsu.bootcamp.controller;
 
+import com.dentsu.bootcamp.dto.VehicleDTO;
 import com.dentsu.bootcamp.model.VehicleEntity;
 import com.dentsu.bootcamp.service.VehicleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,13 +22,13 @@ public class VehicleController {
 
     @Operation(summary = "Retrieve all the vehicles")
     @GetMapping("/ListAll")
-    public List<VehicleEntity> getAllVehicles() {
+    public List<VehicleDTO> getAllVehicles() {
         return vehicleService.getAllVehicles();
     }
 
     @Operation(summary = "Retrieve a specific vehicle, searched by Id", description = "Pass the vehicle id (number).")
     @GetMapping("/{id}")
-    public VehicleEntity getVehicleById(@Parameter(description = "The unique identifier of the vehicle.")@PathVariable(value = "id") Long id) {
+    public VehicleDTO getVehicleById(@Parameter(description = "The unique identifier of the vehicle.")@PathVariable(value = "id") Long id) {
         return vehicleService.getVehicleById(id);
     }
 }
