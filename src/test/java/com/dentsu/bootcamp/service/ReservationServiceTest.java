@@ -10,6 +10,7 @@ import com.dentsu.bootcamp.model.AdditionalProductEntity;
 import com.dentsu.bootcamp.model.LocationEntity;
 import com.dentsu.bootcamp.model.ReservationEntity;
 import com.dentsu.bootcamp.model.VehicleEntity;
+import com.dentsu.bootcamp.repository.AdditionalProductRepository;
 import com.dentsu.bootcamp.repository.LocationRepository;
 import com.dentsu.bootcamp.repository.ReservationRepository;
 import com.dentsu.bootcamp.repository.VehicleRepository;
@@ -47,7 +48,7 @@ class ReservationServiceTest {
     private VehicleRepository vehicleRepository;
 
     @Mock
-    private AdditionalProductService additionalProductService;
+    private AdditionalProductRepository additionalProductRepository;
 
     //@Mock
     //private LocationService locationService;
@@ -262,8 +263,8 @@ class ReservationServiceTest {
         when(vehicleRepository.findById(1L)).thenReturn(Optional.of(vehicle));
         when(locationRepository.findById(1L)).thenReturn(Optional.of(pickupLocation));
         when(locationRepository.findById(2L)).thenReturn(Optional.of(returnLocation));
-        when(additionalProductService.getAdditionProducts(1L)).thenReturn(product1);
-        when(additionalProductService.getAdditionProducts(2L)).thenReturn(product2);
+        when(additionalProductRepository.findById(1L)).thenReturn(Optional.of(product1));
+        when(additionalProductRepository.findById(2L)).thenReturn(Optional.of(product2));
 
         double totalPrice = reservationService.calculateTotalPrice(reservation);
 

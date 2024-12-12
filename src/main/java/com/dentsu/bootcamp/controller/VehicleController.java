@@ -1,8 +1,8 @@
 package com.dentsu.bootcamp.controller;
 
 import com.dentsu.bootcamp.dto.VehicleDTO;
-import com.dentsu.bootcamp.model.VehicleEntity;
 import com.dentsu.bootcamp.service.VehicleService;
+import io.reactivex.rxjava3.core.Flowable;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("vehicles")
@@ -22,7 +21,7 @@ public class VehicleController {
 
     @Operation(summary = "Retrieve all the vehicles")
     @GetMapping("/ListAll")
-    public List<VehicleDTO> getAllVehicles() {
+    public Flowable<VehicleDTO> getAllVehicles() {
         return vehicleService.getAllVehicles();
     }
 

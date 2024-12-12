@@ -10,7 +10,7 @@ public record ReservationDTO (
         @JsonProperty("confirmationNumber") String confirmationNumber,
         @JsonProperty("firstName") String firstName,
         @JsonProperty("lastName") String lastName,
-        @JsonProperty("mail") String email,
+        @JsonProperty("email") String email,
         @JsonProperty("phone") String phone,
         @JsonProperty("totalPrice") double totalPrice,
         @JsonProperty("pickupDate") LocalDate pickupDate,

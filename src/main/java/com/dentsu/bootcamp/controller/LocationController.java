@@ -5,6 +5,8 @@ import com.dentsu.bootcamp.dto.LocationDTO;
 import com.dentsu.bootcamp.dto.WeatherResponse;
 import com.dentsu.bootcamp.model.VehicleEntity;
 import com.dentsu.bootcamp.service.LocationService;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Maybe;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,7 @@ public class LocationController {
 
     @Operation(summary = "Retrieve all the locations")
     @GetMapping("/listAll")
-    public List<LocationDTO> getAllLocations(){
+    public Flowable<LocationDTO> getAllLocations(){
         return locationService.getAllLocations();
     }
 
@@ -40,7 +42,7 @@ public class LocationController {
 
     @Operation(summary = "Retrieve all vehicles from a specific location, searched by Id", description = "Pass the location id (number)")
     @GetMapping("/{location_id}/vehicles")
-    public List<VehicleEntity> listVehicles(@Parameter(description = "The unique identifier of the location") @PathVariable(value = "location_id")Long id){
+    public Maybe<List<VehicleEntity>> listVehicles(@Parameter(description = "The unique identifier of the location") @PathVariable(value = "location_id")Long id){
         return locationService.listVehicles(id);
     }
 

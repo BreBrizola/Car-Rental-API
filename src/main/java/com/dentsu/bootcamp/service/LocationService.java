@@ -2,13 +2,16 @@ package com.dentsu.bootcamp.service;
 
 import com.dentsu.bootcamp.client.WeatherClient;
 import com.dentsu.bootcamp.dto.LocationDTO;
+import com.dentsu.bootcamp.dto.VehicleDTO;
 import com.dentsu.bootcamp.dto.WeatherResponse;
 import com.dentsu.bootcamp.exception.LocationNotFoundException;
 import com.dentsu.bootcamp.exception.ReservationNotFoundException;
-import com.dentsu.bootcamp.mapping.LocationMapper;
 import com.dentsu.bootcamp.model.LocationEntity;
 import com.dentsu.bootcamp.model.VehicleEntity;
 import com.dentsu.bootcamp.repository.LocationRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Maybe;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,8 +19,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class LocationService {
@@ -29,32 +34,23 @@ public class LocationService {
     private WeatherClient weather;
 
     @Autowired
-    private LocationMapper locationMapper;
+    private ObjectMapper objectMapper;
 
     @Value("${apiKeys.weatherApiKey}")
     private String ApiKey;
 
-    public List<LocationDTO> getAllLocations() {
-        List<LocationEntity> locations = locationRepository.findAll();
-
-        return locations.stream()
-                .map(location -> locationMapper.apply(location, getLocationWeather(location)))
-                .toList();
+    public Flowable<LocationDTO> getAllLocations() {
+        return locationRepository.findAll()
+                .map(location -> objectMapper.convertValue(location, LocationDTO.class));
     }
 
     public LocationDTO getLocationById(Long id) {
-        LocationEntity locationEntity = locationRepository.findById(id)
-                .orElseThrow(() -> new LocationNotFoundException("Location not found"));
-
-        return locationMapper.apply(locationEntity, getLocationWeather(locationEntity));
+        return objectMapper.convertValue(locationRepository.findById(id), LocationDTO.class);
     }
 
     @Cacheable("locationsByName")
     public LocationDTO getLocationByName(String name){
-        LocationEntity locationEntity = locationRepository.findByName(name)
-                .orElseThrow(() -> new LocationNotFoundException("Location not found"));
-
-        return locationMapper.apply(locationEntity, getLocationWeather(locationEntity));
+        return objectMapper.convertValue(locationRepository.findByName(name), LocationDTO.class);
     }
 
     public WeatherResponse getLocationWeather(LocationEntity locationEntity){
@@ -63,12 +59,14 @@ public class LocationService {
         return weatherResponse;
     }
 
-    public List<VehicleEntity> listVehicles(Long id){
-        Optional <LocationEntity> location = locationRepository.findById(id);
-        if (location.isPresent()) {
-            return location.get().getVehicleList();
-        } else {
-            throw new EntityNotFoundException("Location not found for the ID");
-        }
+    public Maybe<List<VehicleEntity>> listVehicles(Long id){
+        return locationRepository.findById(id)
+                .map(location -> {
+                    if (location != null) {
+                        return location.getVehicleList();
+                    } else {
+                        throw new EntityNotFoundException("Location not found for the ID");
+                    }
+                });
     }
 }
