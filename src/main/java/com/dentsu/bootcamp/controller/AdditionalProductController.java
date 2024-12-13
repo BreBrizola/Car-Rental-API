@@ -17,8 +17,12 @@ import java.util.List;
 @RestController
 @RequestMapping("additional-products")
 public class AdditionalProductController {
-    @Autowired
-    private AdditionalProductService additionalProductService;
+
+    private final AdditionalProductService additionalProductService;
+
+    public AdditionalProductController (AdditionalProductService additionalProductService){
+        this.additionalProductService = additionalProductService;
+    }
 
     @Operation(summary = "Retrieve all the additional products")
     @GetMapping("/ListAll")

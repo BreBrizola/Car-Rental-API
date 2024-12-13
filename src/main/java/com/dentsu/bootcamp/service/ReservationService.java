@@ -2,9 +2,6 @@ package com.dentsu.bootcamp.service;
 
 import com.dentsu.bootcamp.dto.ReservationDTO;
 import com.dentsu.bootcamp.exception.LocationNotFoundException;
-import com.dentsu.bootcamp.exception.MissingEmailException;
-import com.dentsu.bootcamp.exception.MissingNameException;
-import com.dentsu.bootcamp.exception.MissingPhoneException;
 import com.dentsu.bootcamp.exception.ReservationNotFoundException;
 import com.dentsu.bootcamp.exception.VehicleNotFoundException;
 import com.dentsu.bootcamp.model.AdditionalProductEntity;
@@ -17,7 +14,6 @@ import com.dentsu.bootcamp.repository.ReservationRepository;
 import com.dentsu.bootcamp.repository.VehicleRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
@@ -37,31 +33,43 @@ public class ReservationService {
     public static final String RESERVATION_CONFIRMED = "Reservation Confirmed";
     public static final String RESERVATION_CREATED_STATUS = "Your reservation has been successfully created.";
 
-    @Autowired
-    private ReservationRepository reservationRepository;
+    private final ReservationRepository reservationRepository;
 
-    @Autowired
-    private LocationRepository locationRepository;
+    private final LocationRepository locationRepository;
 
-    @Autowired
-    private VehicleRepository vehicleRepository;
+    private final VehicleRepository vehicleRepository;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-    @Autowired
-    private AdditionalProductRepository additionalProductRepository;
+    private final AdditionalProductRepository additionalProductRepository;
 
-    @Autowired
-    private EmailService emailService;
+    private final EmailService emailService;
+
+    public ReservationService(ReservationRepository reservationRepository, LocationRepository locationRepository, VehicleRepository vehicleRepository,
+                              ObjectMapper objectMapper, AdditionalProductRepository additionalProductRepository, EmailService emailService){
+        this.reservationRepository = reservationRepository;
+        this.locationRepository = locationRepository;
+        this.vehicleRepository = vehicleRepository;
+        this.objectMapper = objectMapper;
+        this.additionalProductRepository = additionalProductRepository;
+        this.emailService = emailService;
+    }
 
     public ReservationDTO createReservation(ReservationEntity reservation) {
         LocationEntity pickupLocation = locationRepository.findById(reservation.getPickupLocation().getId()).blockingGet();
+        if(pickupLocation == null){
+            throw new LocationNotFoundException("Location not found");
+        }
 
         LocationEntity returnLocation = locationRepository.findById(reservation.getReturnLocation().getId()).blockingGet();
+        if(returnLocation == null){
+            throw new LocationNotFoundException("Location not found");
+        }
 
         VehicleEntity vehicle = vehicleRepository.findById(reservation.getVehicle().getId()).blockingGet();
-
+        if(vehicle == null){
+            throw new VehicleNotFoundException("Vehicle not found");
+        }
 
         reservation.setPickupLocation(pickupLocation);
         reservation.setReturnLocation(returnLocation);

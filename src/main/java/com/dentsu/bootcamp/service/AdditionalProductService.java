@@ -11,11 +11,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class AdditionalProductService {
 
-    @Autowired
-    private AdditionalProductRepository additionalProductRepository;
+    private final AdditionalProductRepository additionalProductRepository;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
+
+    public AdditionalProductService(AdditionalProductRepository additionalProductRepository, ObjectMapper objectMapper){
+        this.additionalProductRepository = additionalProductRepository;
+        this.objectMapper = objectMapper;
+    }
 
     public Maybe<AdditionalProductDTO> getAdditionProducts(long id) {
         return additionalProductRepository.findById(id)

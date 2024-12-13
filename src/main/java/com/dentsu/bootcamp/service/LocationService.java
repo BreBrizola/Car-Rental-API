@@ -1,12 +1,8 @@
 package com.dentsu.bootcamp.service;
 
 import com.dentsu.bootcamp.client.WeatherClient;
-import com.dentsu.bootcamp.dto.AdditionalProductDTO;
 import com.dentsu.bootcamp.dto.LocationDTO;
-import com.dentsu.bootcamp.dto.VehicleDTO;
 import com.dentsu.bootcamp.dto.WeatherResponse;
-import com.dentsu.bootcamp.exception.LocationNotFoundException;
-import com.dentsu.bootcamp.exception.ReservationNotFoundException;
 import com.dentsu.bootcamp.model.LocationEntity;
 import com.dentsu.bootcamp.model.VehicleEntity;
 import com.dentsu.bootcamp.repository.LocationRepository;
@@ -14,31 +10,29 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Maybe;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class LocationService {
 
-    @Autowired
-    private LocationRepository locationRepository;
+    private final LocationRepository locationRepository;
 
-    @Autowired
-    private WeatherClient weather;
+    private final WeatherClient weather;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-    @Value("${apiKeys.weatherApiKey}")
-    private String ApiKey;
+    private String apiKey;
+
+    public LocationService(LocationRepository locationRepository, WeatherClient weather,ObjectMapper objectMapper, @Value("${apiKeys.weatherApiKey}") String apiKey){
+        this.locationRepository = locationRepository;
+        this.weather = weather;
+        this.objectMapper = objectMapper;
+        this.apiKey = apiKey;
+    }
 
     public Flowable<LocationDTO> getAllLocations() {
         return locationRepository.findAll()
@@ -58,7 +52,7 @@ public class LocationService {
 
     public WeatherResponse getLocationWeather(LocationEntity locationEntity){
         String address = locationEntity.getAddress();
-        WeatherResponse weatherResponse = weather.getCurrentWeather(ApiKey, address, "no");
+        WeatherResponse weatherResponse = weather.getCurrentWeather(apiKey, address, "no");
         return weatherResponse;
     }
 

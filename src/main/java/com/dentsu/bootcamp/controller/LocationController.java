@@ -9,9 +9,11 @@ import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Maybe;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -19,14 +21,18 @@ import java.util.List;
 @RequestMapping("location")
 public class LocationController {
 
-    @Autowired
     private LocationService locationService;
 
-    @Autowired
     private WeatherClient weatherClient;
 
-    @Value("${apiKeys.weatherApiKey}")
-    private String ApiKey;
+    private String apiKey;
+
+    public LocationController(LocationService locationService, WeatherClient weatherClient, @Value("${apiKeys.weatherApiKey}") String apiKey){
+        this.locationService = locationService;
+        this.weatherClient = weatherClient;
+        this.apiKey = apiKey;
+    }
+
 
     @Operation(summary = "Retrieve all the locations")
     @GetMapping("/listAll")
@@ -49,7 +55,7 @@ public class LocationController {
     @Operation(summary = "Retrieve the current weather for a given location", description = "Pass US Zipcode, UK Postcode, Canada Postalcode, IP address, Latitude/Longitude (decimal degree) or city name.")
     @GetMapping("/weather/{location}")
     public WeatherResponse getWeather(@Parameter(description = "US Zipcode, UK Postcode, Canada Postalcode, IP address, Latitude/Longitude (decimal degree) or city name.")@PathVariable String location) {
-        return weatherClient.getCurrentWeather(ApiKey, location, "no");
+        return weatherClient.getCurrentWeather(apiKey, location, "no");
     }
 
     @Operation(summary = "Retrieve a specific location, searched by name", description = "Pass the location name(String).")

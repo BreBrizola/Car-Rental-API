@@ -23,13 +23,13 @@
 <tr>
 <td>
 <div class="infoBox" id="tests">
-<div class="counter">12</div>
+<div class="counter">1</div>
 <p>tests</p>
 </div>
 </td>
 <td>
 <div class="infoBox" id="failures">
-<div class="counter">3</div>
+<div class="counter">0</div>
 <p>failures</p>
 </div>
 </td>
@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.933s</div>
+<div class="counter">0.852s</div>
 <p>duration</p>
 </div>
 </td>
@@ -50,8 +50,8 @@
 </div>
 </td>
 <td>
-<div class="infoBox failures" id="successRate">
-<div class="percent">75%</div>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
 <p>successful</p>
 </div>
 </td>
@@ -61,82 +61,13 @@
 <div id="tabs">
 <ul class="tabLinks">
 <li>
-<a href="#tab0">Failed tests</a>
+<a href="#tab0">Tests</a>
 </li>
 <li>
-<a href="#tab1">Tests</a>
-</li>
-<li>
-<a href="#tab2">Standard output</a>
+<a href="#tab1">Standard output</a>
 </li>
 </ul>
 <div id="tab0" class="tab">
-<h2>Failed tests</h2>
-<div class="test">
-<a name="givenReservationWithoutEmail_whenCreateReservation_thenThrowMissingEmailException()"></a>
-<h3 class="failures">givenReservationWithoutEmail_whenCreateReservation_thenThrowMissingEmailException()</h3>
-<span class="code">
-<pre>org.opentest4j.AssertionFailedError: Unexpected exception type thrown, expected: &lt;com.dentsu.bootcamp.exception.MissingEmailException&gt; but was: &lt;java.lang.NullPointerException&gt;
-	at app//org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
-	at app//org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:67)
-	at app//org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
-	at app//org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
-	at app//com.dentsu.bootcamp.service.ReservationServiceTest.givenReservationWithoutEmail_whenCreateReservation_thenThrowMissingEmailException(ReservationServiceTest.java:82)
-	at java.base@17.0.13/java.lang.reflect.Method.invoke(Method.java:569)
-	at java.base@17.0.13/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at java.base@17.0.13/java.util.ArrayList.forEach(ArrayList.java:1511)
-Caused by: java.lang.NullPointerException: Cannot invoke &quot;com.dentsu.bootcamp.model.LocationEntity.getId()&quot; because the return value of &quot;com.dentsu.bootcamp.model.ReservationEntity.getPickupLocation()&quot; is null
-	at com.dentsu.bootcamp.service.ReservationService.createReservation(ReservationService.java:59)
-	at com.dentsu.bootcamp.service.ReservationServiceTest.lambda$givenReservationWithoutEmail_whenCreateReservation_thenThrowMissingEmailException$2(ReservationServiceTest.java:82)
-	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:53)
-	... 6 more
-</pre>
-</span>
-</div>
-<div class="test">
-<a name="givenReservationWithoutNames_whenCreateReservation_thenThrowMissingNameException()"></a>
-<h3 class="failures">givenReservationWithoutNames_whenCreateReservation_thenThrowMissingNameException()</h3>
-<span class="code">
-<pre>org.opentest4j.AssertionFailedError: Unexpected exception type thrown, expected: &lt;com.dentsu.bootcamp.exception.MissingNameException&gt; but was: &lt;java.lang.NullPointerException&gt;
-	at app//org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
-	at app//org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:67)
-	at app//org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
-	at app//org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
-	at app//com.dentsu.bootcamp.service.ReservationServiceTest.givenReservationWithoutNames_whenCreateReservation_thenThrowMissingNameException(ReservationServiceTest.java:65)
-	at java.base@17.0.13/java.lang.reflect.Method.invoke(Method.java:569)
-	at java.base@17.0.13/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at java.base@17.0.13/java.util.ArrayList.forEach(ArrayList.java:1511)
-Caused by: java.lang.NullPointerException: Cannot invoke &quot;com.dentsu.bootcamp.model.LocationEntity.getId()&quot; because the return value of &quot;com.dentsu.bootcamp.model.ReservationEntity.getPickupLocation()&quot; is null
-	at com.dentsu.bootcamp.service.ReservationService.createReservation(ReservationService.java:59)
-	at com.dentsu.bootcamp.service.ReservationServiceTest.lambda$givenReservationWithoutNames_whenCreateReservation_thenThrowMissingNameException$0(ReservationServiceTest.java:65)
-	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:53)
-	... 6 more
-</pre>
-</span>
-</div>
-<div class="test">
-<a name="givenReservationWithoutPhone_whenCreateReservation_thenThrowMissingPhoneException()"></a>
-<h3 class="failures">givenReservationWithoutPhone_whenCreateReservation_thenThrowMissingPhoneException()</h3>
-<span class="code">
-<pre>org.opentest4j.AssertionFailedError: Unexpected exception type thrown, expected: &lt;com.dentsu.bootcamp.exception.MissingPhoneException&gt; but was: &lt;java.lang.NullPointerException&gt;
-	at app//org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
-	at app//org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:67)
-	at app//org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
-	at app//org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
-	at app//com.dentsu.bootcamp.service.ReservationServiceTest.givenReservationWithoutPhone_whenCreateReservation_thenThrowMissingPhoneException(ReservationServiceTest.java:74)
-	at java.base@17.0.13/java.lang.reflect.Method.invoke(Method.java:569)
-	at java.base@17.0.13/java.util.ArrayList.forEach(ArrayList.java:1511)
-	at java.base@17.0.13/java.util.ArrayList.forEach(ArrayList.java:1511)
-Caused by: java.lang.NullPointerException: Cannot invoke &quot;com.dentsu.bootcamp.model.LocationEntity.getId()&quot; because the return value of &quot;com.dentsu.bootcamp.model.ReservationEntity.getPickupLocation()&quot; is null
-	at com.dentsu.bootcamp.service.ReservationService.createReservation(ReservationService.java:59)
-	at com.dentsu.bootcamp.service.ReservationServiceTest.lambda$givenReservationWithoutPhone_whenCreateReservation_thenThrowMissingPhoneException$1(ReservationServiceTest.java:74)
-	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:53)
-	... 6 more
-</pre>
-</span>
-</div>
-</div>
-<div id="tab1" class="tab">
 <h2>Tests</h2>
 <table>
 <thead>
@@ -147,71 +78,16 @@ Caused by: java.lang.NullPointerException: Cannot invoke &quot;com.dentsu.bootca
 </tr>
 </thead>
 <tr>
-<td class="success">givenCalculateTotalPrice_WhenHasAdditionalProducts_thenReturnCorrectPrice()</td>
-<td class="success">0.004s</td>
-<td class="success">passed</td>
-</tr>
-<tr>
-<td class="success">givenCalculateTotalPrice_WhenTimeIsOffOpeningHours_thenReturnPriceWithFeed()</td>
-<td class="success">0.006s</td>
-<td class="success">passed</td>
-</tr>
-<tr>
-<td class="success">givenCreateReservation_WhenCalculateTotalPrice_thenReturnCorrectPrice()</td>
-<td class="success">0.026s</td>
-<td class="success">passed</td>
-</tr>
-<tr>
-<td class="success">givenInvalidDetails_whenGetReservation_thenThrowReservationNotFoundException()</td>
-<td class="success">0.016s</td>
-<td class="success">passed</td>
-</tr>
-<tr>
-<td class="success">givenInvalidOpeningHoursFormat_whenCheckIfAfterHours_thenThrowDateTimeParseException()</td>
-<td class="success">0.003s</td>
-<td class="success">passed</td>
-</tr>
-<tr>
-<td class="failures">givenReservationWithoutEmail_whenCreateReservation_thenThrowMissingEmailException()</td>
-<td class="failures">0.003s</td>
-<td class="failures">failed</td>
-</tr>
-<tr>
-<td class="failures">givenReservationWithoutNames_whenCreateReservation_thenThrowMissingNameException()</td>
-<td class="failures">0.004s</td>
-<td class="failures">failed</td>
-</tr>
-<tr>
-<td class="failures">givenReservationWithoutPhone_whenCreateReservation_thenThrowMissingPhoneException()</td>
-<td class="failures">0.851s</td>
-<td class="failures">failed</td>
-</tr>
-<tr>
-<td class="success">givenTimeBetweenOpeningHours_whenCheckIfAfterHours_thenReturnFalse()</td>
-<td class="success">0.003s</td>
-<td class="success">passed</td>
-</tr>
-<tr>
-<td class="success">givenTimeIsAfterOpeningHours_whenCheckIfAfterHours_thenReturnTrue()</td>
-<td class="success">0.005s</td>
-<td class="success">passed</td>
-</tr>
-<tr>
-<td class="success">givenTimeIsBeforeOpeningHours_whenCheckIfAfterHours_thenReturnTrue()</td>
-<td class="success">0.002s</td>
-<td class="success">passed</td>
-</tr>
-<tr>
 <td class="success">givenValidReservation_whenCancelReservation_thenReservationIsDeleted()</td>
-<td class="success">0.010s</td>
+<td class="success">0.852s</td>
 <td class="success">passed</td>
 </tr>
 </table>
 </div>
-<div id="tab2" class="tab">
+<div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>09:16:01.425 [Test worker] ERROR com.dentsu.bootcamp.service.ReservationService -- email failed: null
+<pre>11:11:33.663 [Test worker] ERROR com.dentsu.bootcamp.service.ReservationService -- email failed: null
 </pre>
 </span>
 </div>
@@ -223,7 +99,7 @@ Caused by: java.lang.NullPointerException: Cannot invoke &quot;com.dentsu.bootca
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 8.10.2</a> at 13 de dez. de 2024 09:16:01</p>
+<a href="http://www.gradle.org">Gradle 8.10.2</a> at 13 de dez. de 2024 11:11:33</p>
 </div>
 </div>
 </body>
