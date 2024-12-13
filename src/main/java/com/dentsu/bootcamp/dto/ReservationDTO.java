@@ -1,6 +1,8 @@
 package com.dentsu.bootcamp.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -8,10 +10,10 @@ import java.util.List;
 public record ReservationDTO (
         @JsonProperty("id") Long id,
         @JsonProperty("confirmationNumber") String confirmationNumber,
-        @JsonProperty("firstName") String firstName,
-        @JsonProperty("lastName") String lastName,
-        @JsonProperty("email") String email,
-        @JsonProperty("phone") String phone,
+        @JsonProperty("firstName") @NotBlank(message = "First name is required") String firstName,
+        @JsonProperty("lastName") @NotBlank(message = "Last name is required") String lastName,
+        @JsonProperty("email") @NotBlank(message = "Email is required") String email,
+        @JsonProperty("phone") @NotBlank(message = "Phone number is required")String phone,
         @JsonProperty("totalPrice") double totalPrice,
         @JsonProperty("pickupDate") LocalDate pickupDate,
         @JsonProperty("returnDate")LocalDate returnDate,

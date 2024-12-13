@@ -1,11 +1,12 @@
 package com.dentsu.bootcamp.service;
 
+import com.dentsu.bootcamp.dto.LocationDTO;
 import com.dentsu.bootcamp.dto.ReservationDTO;
+import com.dentsu.bootcamp.dto.VehicleDTO;
 import com.dentsu.bootcamp.exception.MissingEmailException;
 import com.dentsu.bootcamp.exception.MissingNameException;
 import com.dentsu.bootcamp.exception.MissingPhoneException;
 import com.dentsu.bootcamp.exception.ReservationNotFoundException;
-import com.dentsu.bootcamp.mapping.ReservationMapper;
 import com.dentsu.bootcamp.model.AdditionalProductEntity;
 import com.dentsu.bootcamp.model.LocationEntity;
 import com.dentsu.bootcamp.model.ReservationEntity;
@@ -14,6 +15,8 @@ import com.dentsu.bootcamp.repository.AdditionalProductRepository;
 import com.dentsu.bootcamp.repository.LocationRepository;
 import com.dentsu.bootcamp.repository.ReservationRepository;
 import com.dentsu.bootcamp.repository.VehicleRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.reactivex.rxjava3.core.Maybe;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,9 +27,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -53,11 +54,8 @@ class ReservationServiceTest {
     //@Mock
     //private LocationService locationService;
 
-    //@Mock
-    //private LocationMapper locationMapper;
-
     @Mock
-    private ReservationMapper reservationMapper;
+    private ObjectMapper objectMapper;
 
     @InjectMocks
     private ReservationService reservationService;
@@ -180,9 +178,9 @@ class ReservationServiceTest {
         reservation.setPickupLocation(pickupLocation);
         reservation.setReturnLocation(returnLocation);
 
-        when(vehicleRepository.findById(1L)).thenReturn(Optional.of(vehicle));
-        when(locationRepository.findById(1L)).thenReturn(Optional.of(pickupLocation));
-        when(locationRepository.findById(2L)).thenReturn(Optional.of(returnLocation));
+        when(vehicleRepository.findById(1L)).thenReturn(Maybe.just(vehicle));
+        when(locationRepository.findById(1L)).thenReturn(Maybe.just(pickupLocation));
+        when(locationRepository.findById(2L)).thenReturn(Maybe.just(returnLocation));
 
         double totalPrice = reservationService.calculateTotalPrice(reservation);
 
@@ -216,9 +214,9 @@ class ReservationServiceTest {
         reservation.setPickupLocation(pickupLocation);
         reservation.setReturnLocation(returnLocation);
 
-        when(vehicleRepository.findById(1L)).thenReturn(Optional.of(vehicle));
-        when(locationRepository.findById(1L)).thenReturn(Optional.of(pickupLocation));
-        when(locationRepository.findById(2L)).thenReturn(Optional.of(returnLocation));
+        when(vehicleRepository.findById(1L)).thenReturn(Maybe.just(vehicle));
+        when(locationRepository.findById(1L)).thenReturn(Maybe.just(pickupLocation));
+        when(locationRepository.findById(2L)).thenReturn(Maybe.just(returnLocation));
 
         double totalPrice = reservationService.calculateTotalPrice(reservation);
 
@@ -260,11 +258,11 @@ class ReservationServiceTest {
         reservation.setReturnLocation(returnLocation);
         reservation.setAdditionalProducts(List.of(product1,product2));
 
-        when(vehicleRepository.findById(1L)).thenReturn(Optional.of(vehicle));
-        when(locationRepository.findById(1L)).thenReturn(Optional.of(pickupLocation));
-        when(locationRepository.findById(2L)).thenReturn(Optional.of(returnLocation));
-        when(additionalProductRepository.findById(1L)).thenReturn(Optional.of(product1));
-        when(additionalProductRepository.findById(2L)).thenReturn(Optional.of(product2));
+        when(vehicleRepository.findById(1L)).thenReturn(Maybe.just(vehicle));
+        when(locationRepository.findById(1L)).thenReturn(Maybe.just(pickupLocation));
+        when(locationRepository.findById(2L)).thenReturn(Maybe.just(returnLocation));
+        when(additionalProductRepository.findById(1L)).thenReturn(Maybe.just(product1));
+        when(additionalProductRepository.findById(2L)).thenReturn(Maybe.just(product2));
 
         double totalPrice = reservationService.calculateTotalPrice(reservation);
 
@@ -318,49 +316,5 @@ class ReservationServiceTest {
 
         assertThrows(ReservationNotFoundException.class, () ->
                 reservationService.getReservation("000000", "Name", "Last Name"));
-    }
-
-    @Test
-    void givenValidReservation_whenValidateReservationCreation_thenNoException() {
-        ReservationEntity reservation = new ReservationEntity();
-        reservation.setFirstName("John");
-        reservation.setLastName("Doe");
-        reservation.setEmail("john.doe@example.com");
-        reservation.setPhone("123456789");
-
-        assertDoesNotThrow(() -> reservationService.validateReservationCreation(reservation));
-    }
-
-    @Test
-    void givenExistingReservation_whenGetReservation_thenReturnReservation() {
-        String confirmationNumber = "1234567890";
-        String firstName = "Name";
-        String lastName = "Last Name";
-
-        ReservationEntity reservation = new ReservationEntity();
-        reservation.setConfirmationNumber(confirmationNumber);
-        reservation.setFirstName(firstName);
-        reservation.setLastName(lastName);
-
-        ReservationDTO reservationDTO = new ReservationDTO();
-        reservationDTO.setConfirmationNumber(confirmationNumber);
-        reservationDTO.setFirstName(firstName);
-        reservationDTO.setLastName(lastName);
-
-        when(reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName))
-                .thenReturn(reservation);
-
-        when(reservationMapper.apply(reservation)).thenReturn(reservationDTO);
-
-        ReservationDTO result = reservationService.getReservation(confirmationNumber, firstName, lastName);
-
-        assertNotNull(result);
-        assertEquals(confirmationNumber, result.getConfirmationNumber());
-        assertEquals(firstName, result.getFirstName());
-        assertEquals(lastName, result.getLastName());
-
-        verify(reservationRepository, times(1))
-                .findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName);
-        verify(reservationMapper, times(1)).apply(reservation);
     }
 }

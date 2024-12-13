@@ -37,6 +37,7 @@ dependencies {
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.18.2'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2'
 	implementation 'io.reactivex.rxjava3:rxjava:3.1.10'
+	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'

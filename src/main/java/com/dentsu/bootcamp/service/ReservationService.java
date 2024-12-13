@@ -56,8 +56,6 @@ public class ReservationService {
     private EmailService emailService;
 
     public ReservationDTO createReservation(ReservationEntity reservation) {
-        validateReservationCreation(reservation);
-
         LocationEntity pickupLocation = locationRepository.findById(reservation.getPickupLocation().getId()).blockingGet();
 
         LocationEntity returnLocation = locationRepository.findById(reservation.getReturnLocation().getId()).blockingGet();
@@ -210,16 +208,6 @@ public class ReservationService {
         LocalTime closingTime = LocalTime.parse(hours[1].trim(), timeFormatter);
 
         return localTime.isBefore(openingTime) || localTime.isAfter(closingTime);
-    }
-
-    public void validateReservationCreation(ReservationEntity reservation) {
-        if (Objects.isNull(reservation.getFirstName()) || Objects.isNull(reservation.getLastName())) {
-            throw new MissingNameException("First and last name are required");
-        } else if (Objects.isNull(reservation.getEmail())) {
-            throw new MissingEmailException("Email is required");
-        } else if (Objects.isNull(reservation.getPhone())) {
-            throw new MissingPhoneException("Phone number is required");
-        }
     }
 
     private void validateReservationExists(ReservationEntity reservation){

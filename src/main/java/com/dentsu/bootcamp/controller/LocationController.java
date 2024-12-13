@@ -36,7 +36,7 @@ public class LocationController {
 
     @Operation(summary = "Retrieve a specific location, searched by Id", description = "Pass the location id (number).")
     @GetMapping("/id/{id}")
-    public LocationDTO getLocationById(@Parameter(description = "The unique identifier of the location") @PathVariable(value = "id")Long id){
+    public Maybe<LocationDTO> getLocationById(@Parameter(description = "The unique identifier of the location") @PathVariable(value = "id")Long id){
         return locationService.getLocationById(id);
     }
 
@@ -54,7 +54,7 @@ public class LocationController {
 
     @Operation(summary = "Retrieve a specific location, searched by name", description = "Pass the location name(String).")
     @GetMapping("/name/{name}")
-    public LocationDTO getLocationByName(@Parameter(description = "The name of the location") @PathVariable(value = "name")String name){
+    public Maybe<LocationDTO> getLocationByName(@Parameter(description = "The name of the location") @PathVariable(value = "name")String name){
         return locationService.getLocationByName(name);
     }
 

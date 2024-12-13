@@ -3,6 +3,7 @@ package com.dentsu.bootcamp.controller;
 import com.dentsu.bootcamp.dto.AdditionalProductDTO;
 import com.dentsu.bootcamp.service.AdditionalProductService;
 import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Maybe;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class AdditionalProductController {
 
     @Operation(summary = "Retrieve a specific product, searched by Id", description = "Pass the product id (number).")
     @GetMapping("/{id}")
-    public AdditionalProductDTO getAdditionalProductById(@Parameter(description = "The unique identifier of the product.")@PathVariable(value = "id") Long id) {
+    public Maybe<AdditionalProductDTO> getAdditionalProductById(@Parameter(description = "The unique identifier of the product.")@PathVariable(value = "id") Long id) {
         return additionalProductService.getAdditionProducts(id);
     }
 }

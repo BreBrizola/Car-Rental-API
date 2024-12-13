@@ -1,6 +1,7 @@
 package com.dentsu.bootcamp.service;
 
 import com.dentsu.bootcamp.client.WeatherClient;
+import com.dentsu.bootcamp.dto.AdditionalProductDTO;
 import com.dentsu.bootcamp.dto.LocationDTO;
 import com.dentsu.bootcamp.dto.VehicleDTO;
 import com.dentsu.bootcamp.dto.WeatherResponse;
@@ -44,13 +45,15 @@ public class LocationService {
                 .map(location -> objectMapper.convertValue(location, LocationDTO.class));
     }
 
-    public LocationDTO getLocationById(Long id) {
-        return objectMapper.convertValue(locationRepository.findById(id), LocationDTO.class);
+    public Maybe<LocationDTO> getLocationById(Long id) {
+        return locationRepository.findById(id)
+                .map(location -> objectMapper.convertValue(location, LocationDTO.class));
     }
 
     @Cacheable("locationsByName")
-    public LocationDTO getLocationByName(String name){
-        return objectMapper.convertValue(locationRepository.findByName(name), LocationDTO.class);
+    public Maybe<LocationDTO> getLocationByName(String name){
+        return locationRepository.findByName(name)
+                .map(location -> objectMapper.convertValue(location, LocationDTO.class));
     }
 
     public WeatherResponse getLocationWeather(LocationEntity locationEntity){
