@@ -3,6 +3,7 @@ package com.dentsu.bootcamp.service;
 import com.dentsu.bootcamp.client.WeatherClient;
 import com.dentsu.bootcamp.dto.LocationDTO;
 import com.dentsu.bootcamp.dto.WeatherResponse;
+import com.dentsu.bootcamp.exception.LocationNotFoundException;
 import com.dentsu.bootcamp.model.LocationEntity;
 import com.dentsu.bootcamp.model.VehicleEntity;
 import com.dentsu.bootcamp.repository.LocationRepository;
@@ -41,13 +42,15 @@ public class LocationService {
 
     public Maybe<LocationDTO> getLocationById(Long id) {
         return locationRepository.findById(id)
-                .map(location -> objectMapper.convertValue(location, LocationDTO.class));
+                .map(location -> objectMapper.convertValue(location, LocationDTO.class))
+                .switchIfEmpty(Maybe.error(new LocationNotFoundException("Location not found")));
     }
 
     @Cacheable("locationsByName")
     public Maybe<LocationDTO> getLocationByName(String name){
         return locationRepository.findByName(name)
-                .map(location -> objectMapper.convertValue(location, LocationDTO.class));
+                .map(location -> objectMapper.convertValue(location, LocationDTO.class))
+                .switchIfEmpty(Maybe.error(new LocationNotFoundException("Location not found")));
     }
 
     public WeatherResponse getLocationWeather(LocationEntity locationEntity){

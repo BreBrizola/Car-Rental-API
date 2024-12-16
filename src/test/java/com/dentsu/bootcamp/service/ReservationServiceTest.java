@@ -1,12 +1,8 @@
 package com.dentsu.bootcamp.service;
 
-import com.dentsu.bootcamp.dto.LocationDTO;
-import com.dentsu.bootcamp.dto.ReservationDTO;
-import com.dentsu.bootcamp.dto.VehicleDTO;
-import com.dentsu.bootcamp.exception.MissingEmailException;
-import com.dentsu.bootcamp.exception.MissingNameException;
-import com.dentsu.bootcamp.exception.MissingPhoneException;
+import com.dentsu.bootcamp.exception.LocationNotFoundException;
 import com.dentsu.bootcamp.exception.ReservationNotFoundException;
+import com.dentsu.bootcamp.exception.VehicleNotFoundException;
 import com.dentsu.bootcamp.model.AdditionalProductEntity;
 import com.dentsu.bootcamp.model.LocationEntity;
 import com.dentsu.bootcamp.model.ReservationEntity;
@@ -15,7 +11,6 @@ import com.dentsu.bootcamp.repository.AdditionalProductRepository;
 import com.dentsu.bootcamp.repository.LocationRepository;
 import com.dentsu.bootcamp.repository.ReservationRepository;
 import com.dentsu.bootcamp.repository.VehicleRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.reactivex.rxjava3.core.Maybe;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +25,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
@@ -54,32 +48,49 @@ class ReservationServiceTest {
     //@Mock
     //private LocationService locationService;
 
-    @Mock
-    private ObjectMapper objectMapper;
-
     @InjectMocks
     private ReservationService reservationService;
 
     @Test
-    public void givenReservationWithoutNames_whenCreateReservation_thenThrowMissingNameException(){
-        assertThrows(MissingNameException.class, () -> reservationService.createReservation(new ReservationEntity()));
+    public void givenReservationWithInvalidPickupLocation_whenCreateReservation_thenThrowLocationNotFoundException() {
+        ReservationEntity reservationTest = new ReservationEntity();
+        reservationTest.setPickupLocation(new LocationEntity());
+        reservationTest.getPickupLocation().setId(123L);
+
+        when(locationRepository.findById(123L)).thenReturn(Maybe.empty());
+
+        assertThrows(LocationNotFoundException.class, () -> reservationService.createReservation(reservationTest));
     }
 
     @Test
-    public void givenReservationWithoutPhone_whenCreateReservation_thenThrowMissingPhoneException(){
+    public void givenReservationWithInvalidReturnLocation_whenCreateReservation_thenThrowLocationNotFoundException() {
         ReservationEntity reservationTest = new ReservationEntity();
-        reservationTest.setFirstName("name");
-        reservationTest.setLastName("last name");
-        reservationTest.setEmail("abcd@gmail.com");
-        assertThrows(MissingPhoneException.class, () -> reservationService.createReservation(reservationTest));
+        reservationTest.setPickupLocation(new LocationEntity());
+        reservationTest.getPickupLocation().setId(1L);
+        reservationTest.setReturnLocation(new LocationEntity());
+        reservationTest.getReturnLocation().setId(456L);
+
+        when(locationRepository.findById(1L)).thenReturn(Maybe.just(new LocationEntity()));
+        when(locationRepository.findById(456L)).thenReturn(Maybe.empty());
+
+        assertThrows(LocationNotFoundException.class, () -> reservationService.createReservation(reservationTest));
     }
 
     @Test
-    public void givenReservationWithoutEmail_whenCreateReservation_thenThrowMissingEmailException(){
+    public void givenReservationWithInvalidVehicle_whenCreateReservation_thenThrowVehicleNotFoundException() {
         ReservationEntity reservationTest = new ReservationEntity();
-        reservationTest.setFirstName("name");
-        reservationTest.setLastName("last name");
-        assertThrows(MissingEmailException.class, () -> reservationService.createReservation(reservationTest));
+        reservationTest.setPickupLocation(new LocationEntity());
+        reservationTest.getPickupLocation().setId(1L);
+        reservationTest.setReturnLocation(new LocationEntity());
+        reservationTest.getReturnLocation().setId(2L);
+        reservationTest.setVehicle(new VehicleEntity());
+        reservationTest.getVehicle().setId(789L);
+
+        when(locationRepository.findById(1L)).thenReturn(Maybe.just(new LocationEntity()));
+        when(locationRepository.findById(2L)).thenReturn(Maybe.just(new LocationEntity()));
+        when(vehicleRepository.findById(789L)).thenReturn(Maybe.empty());
+
+        assertThrows(VehicleNotFoundException.class, () -> reservationService.createReservation(reservationTest));
     }
 
 

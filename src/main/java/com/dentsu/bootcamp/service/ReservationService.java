@@ -13,6 +13,7 @@ import com.dentsu.bootcamp.repository.LocationRepository;
 import com.dentsu.bootcamp.repository.ReservationRepository;
 import com.dentsu.bootcamp.repository.VehicleRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.reactivex.rxjava3.core.Maybe;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -56,20 +57,14 @@ public class ReservationService {
     }
 
     public ReservationDTO createReservation(ReservationEntity reservation) {
-        LocationEntity pickupLocation = locationRepository.findById(reservation.getPickupLocation().getId()).blockingGet();
-        if(pickupLocation == null){
-            throw new LocationNotFoundException("Location not found");
-        }
+        LocationEntity pickupLocation = locationRepository.findById(reservation.getPickupLocation().getId())
+        .switchIfEmpty(Maybe.error(new LocationNotFoundException("Pickup location not found."))).blockingGet();
 
-        LocationEntity returnLocation = locationRepository.findById(reservation.getReturnLocation().getId()).blockingGet();
-        if(returnLocation == null){
-            throw new LocationNotFoundException("Location not found");
-        }
+        LocationEntity returnLocation = locationRepository.findById(reservation.getReturnLocation().getId())
+        .switchIfEmpty(Maybe.error(new LocationNotFoundException("Return location not found."))).blockingGet();
 
-        VehicleEntity vehicle = vehicleRepository.findById(reservation.getVehicle().getId()).blockingGet();
-        if(vehicle == null){
-            throw new VehicleNotFoundException("Vehicle not found");
-        }
+        VehicleEntity vehicle = vehicleRepository.findById(reservation.getVehicle().getId())
+        .switchIfEmpty(Maybe.error(new VehicleNotFoundException("Vehicle not found."))).blockingGet();
 
         reservation.setPickupLocation(pickupLocation);
         reservation.setReturnLocation(returnLocation);

@@ -61,7 +61,7 @@ class LocationServiceTest {
         when(locationRepository.findByName(locationName)).thenReturn(Maybe.empty());
 
         assertThrows(LocationNotFoundException.class,
-                () -> locationService.getLocationByName(locationName));
+                () -> locationService.getLocationByName(locationName).blockingGet());
     }
 
     @Test
@@ -71,6 +71,6 @@ class LocationServiceTest {
         when(locationRepository.findById(locationId)).thenReturn(Maybe.empty());
 
         assertThrows(LocationNotFoundException.class,
-                () -> locationService.getLocationById(locationId));
+                () -> locationService.getLocationById(locationId).blockingGet());
     }
 }

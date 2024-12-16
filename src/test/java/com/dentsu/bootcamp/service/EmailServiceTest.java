@@ -22,7 +22,6 @@ class EmailServiceTest {
     @Mock
     private MimeMessage mimeMessage;
 
-
     @InjectMocks
     private EmailService emailService;
 
