@@ -2,12 +2,13 @@ package com.dentsu.bootcamp.service;
 
 import com.dentsu.bootcamp.exception.VehicleNotFoundException;
 import com.dentsu.bootcamp.repository.VehicleRepository;
-import io.reactivex.rxjava3.core.Maybe;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -25,7 +26,7 @@ class VehicleServiceTest {
     public void givenGetVehicleById_whenVehicleDontExist_thenThrowException(){
         Long vehicleId = 1000L;
 
-        when(vehicleRepository.findById(vehicleId)).thenReturn(Maybe.empty());
+        when(vehicleRepository.findById(vehicleId)).thenReturn(Optional.empty());
 
         assertThrows(VehicleNotFoundException.class,
                 () -> vehicleService.getVehicleById(vehicleId));

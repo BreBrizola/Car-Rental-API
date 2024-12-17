@@ -5,6 +5,7 @@ import com.dentsu.bootcamp.model.LocationEntity;
 import com.dentsu.bootcamp.model.VehicleEntity;
 import com.dentsu.bootcamp.repository.LocationRepository;
 import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Observable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -46,9 +48,9 @@ class LocationServiceTest {
 
         locationTest.setVehicleList(List.of(vehicle1,vehicle2));
 
-        when(locationRepository.findById(locationTest.getId())).thenReturn(Maybe.just(locationTest));
+        when(locationRepository.findById(locationTest.getId())).thenReturn(Optional.of(locationTest));
 
-        Maybe<List<VehicleEntity>> vehicleList = locationService.listVehicles(locationTest.getId());
+        Observable<List<VehicleEntity>> vehicleList = locationService.listVehicles(locationTest.getId());
 
         assertNotNull(vehicleList);
         verify(locationRepository, times(1)).findById(locationTest.getId());
@@ -58,19 +60,19 @@ class LocationServiceTest {
     public void givenGetLocationByName_whenLocationDontExist_thenThrowException(){
         String locationName = "non Existing";
 
-        when(locationRepository.findByName(locationName)).thenReturn(Maybe.empty());
+        when(locationRepository.findByName(locationName)).thenReturn(Optional.empty());
 
         assertThrows(LocationNotFoundException.class,
-                () -> locationService.getLocationByName(locationName).blockingGet());
+                () -> locationService.getLocationByName(locationName).blockingFirst());
     }
 
     @Test
     public void givenGetLocationById_whenLocationDontExist_thenThrowException(){
         Long locationId = 1000L;
 
-        when(locationRepository.findById(locationId)).thenReturn(Maybe.empty());
+        when(locationRepository.findById(locationId)).thenReturn(Optional.empty());
 
         assertThrows(LocationNotFoundException.class,
-                () -> locationService.getLocationById(locationId).blockingGet());
+                () -> locationService.getLocationById(locationId).blockingFirst());
     }
 }

@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -57,7 +58,7 @@ class ReservationServiceTest {
         reservationTest.setPickupLocation(new LocationEntity());
         reservationTest.getPickupLocation().setId(123L);
 
-        when(locationRepository.findById(123L)).thenReturn(Maybe.empty());
+        when(locationRepository.findById(123L)).thenReturn(Optional.empty());
 
         assertThrows(LocationNotFoundException.class, () -> reservationService.createReservation(reservationTest));
     }
@@ -70,8 +71,8 @@ class ReservationServiceTest {
         reservationTest.setReturnLocation(new LocationEntity());
         reservationTest.getReturnLocation().setId(456L);
 
-        when(locationRepository.findById(1L)).thenReturn(Maybe.just(new LocationEntity()));
-        when(locationRepository.findById(456L)).thenReturn(Maybe.empty());
+        when(locationRepository.findById(1L)).thenReturn(Optional.of(new LocationEntity()));
+        when(locationRepository.findById(456L)).thenReturn(Optional.empty());
 
         assertThrows(LocationNotFoundException.class, () -> reservationService.createReservation(reservationTest));
     }
@@ -86,9 +87,9 @@ class ReservationServiceTest {
         reservationTest.setVehicle(new VehicleEntity());
         reservationTest.getVehicle().setId(789L);
 
-        when(locationRepository.findById(1L)).thenReturn(Maybe.just(new LocationEntity()));
-        when(locationRepository.findById(2L)).thenReturn(Maybe.just(new LocationEntity()));
-        when(vehicleRepository.findById(789L)).thenReturn(Maybe.empty());
+        when(locationRepository.findById(1L)).thenReturn(Optional.of(new LocationEntity()));
+        when(locationRepository.findById(2L)).thenReturn(Optional.of(new LocationEntity()));
+        when(vehicleRepository.findById(789L)).thenReturn(Optional.empty());
 
         assertThrows(VehicleNotFoundException.class, () -> reservationService.createReservation(reservationTest));
     }
@@ -189,9 +190,9 @@ class ReservationServiceTest {
         reservation.setPickupLocation(pickupLocation);
         reservation.setReturnLocation(returnLocation);
 
-        when(vehicleRepository.findById(1L)).thenReturn(Maybe.just(vehicle));
-        when(locationRepository.findById(1L)).thenReturn(Maybe.just(pickupLocation));
-        when(locationRepository.findById(2L)).thenReturn(Maybe.just(returnLocation));
+        when(vehicleRepository.findById(1L)).thenReturn(Optional.of(vehicle));
+        when(locationRepository.findById(1L)).thenReturn(Optional.of(pickupLocation));
+        when(locationRepository.findById(2L)).thenReturn(Optional.of(returnLocation));
 
         double totalPrice = reservationService.calculateTotalPrice(reservation);
 
@@ -225,9 +226,9 @@ class ReservationServiceTest {
         reservation.setPickupLocation(pickupLocation);
         reservation.setReturnLocation(returnLocation);
 
-        when(vehicleRepository.findById(1L)).thenReturn(Maybe.just(vehicle));
-        when(locationRepository.findById(1L)).thenReturn(Maybe.just(pickupLocation));
-        when(locationRepository.findById(2L)).thenReturn(Maybe.just(returnLocation));
+        when(vehicleRepository.findById(1L)).thenReturn(Optional.of(vehicle));
+        when(locationRepository.findById(1L)).thenReturn(Optional.of(pickupLocation));
+        when(locationRepository.findById(2L)).thenReturn(Optional.of(returnLocation));
 
         double totalPrice = reservationService.calculateTotalPrice(reservation);
 
@@ -269,11 +270,11 @@ class ReservationServiceTest {
         reservation.setReturnLocation(returnLocation);
         reservation.setAdditionalProducts(List.of(product1,product2));
 
-        when(vehicleRepository.findById(1L)).thenReturn(Maybe.just(vehicle));
-        when(locationRepository.findById(1L)).thenReturn(Maybe.just(pickupLocation));
-        when(locationRepository.findById(2L)).thenReturn(Maybe.just(returnLocation));
-        when(additionalProductRepository.findById(1L)).thenReturn(Maybe.just(product1));
-        when(additionalProductRepository.findById(2L)).thenReturn(Maybe.just(product2));
+        when(vehicleRepository.findById(1L)).thenReturn(Optional.of(vehicle));
+        when(locationRepository.findById(1L)).thenReturn(Optional.of(pickupLocation));
+        when(locationRepository.findById(2L)).thenReturn(Optional.of(returnLocation));
+        when(additionalProductRepository.findById(1L)).thenReturn(Optional.of(product1));
+        when(additionalProductRepository.findById(2L)).thenReturn(Optional.of(product2));
 
         double totalPrice = reservationService.calculateTotalPrice(reservation);
 
