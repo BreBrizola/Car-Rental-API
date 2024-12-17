@@ -1,12 +1,15 @@
 package com.dentsu.bootcamp.service;
 
 import com.dentsu.bootcamp.dto.AdditionalProductDTO;
+import com.dentsu.bootcamp.dto.VehicleDTO;
+import com.dentsu.bootcamp.exception.VehicleNotFoundException;
 import com.dentsu.bootcamp.repository.AdditionalProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Maybe;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.reactivex.rxjava3.core.Observable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class AdditionalProductService {
@@ -20,13 +23,16 @@ public class AdditionalProductService {
         this.objectMapper = objectMapper;
     }
 
-    public Maybe<AdditionalProductDTO> getAdditionProducts(long id) {
-        return additionalProductRepository.findById(id)
-                .map(product -> objectMapper.convertValue(product, AdditionalProductDTO.class));
+    public Observable<AdditionalProductDTO> getAdditionProducts(long id) {
+        return Observable.fromCallable(() -> additionalProductRepository.findById(id)
+                .map(product -> objectMapper.convertValue(product, AdditionalProductDTO.class))
+                .orElseThrow(() -> new RuntimeException("Additional product not found")));
     }
 
-    public Flowable<AdditionalProductDTO> getAllAdditionalProducts() {
-        return additionalProductRepository.findAll()
-                .map(product -> objectMapper.convertValue(product, AdditionalProductDTO.class));
+    public Observable<List<AdditionalProductDTO>> getAllAdditionalProducts() {
+        return Observable.fromCallable(() -> additionalProductRepository.findAll()
+                .stream()
+                .map(product -> objectMapper.convertValue(product, AdditionalProductDTO.class))
+                .toList());
     }
 }

@@ -13,7 +13,6 @@ import com.dentsu.bootcamp.repository.LocationRepository;
 import com.dentsu.bootcamp.repository.ReservationRepository;
 import com.dentsu.bootcamp.repository.VehicleRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.reactivex.rxjava3.core.Maybe;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -58,13 +58,13 @@ public class ReservationService {
 
     public ReservationDTO createReservation(ReservationEntity reservation) {
         LocationEntity pickupLocation = locationRepository.findById(reservation.getPickupLocation().getId())
-        .switchIfEmpty(Maybe.error(new LocationNotFoundException("Pickup location not found."))).blockingGet();
+        .orElseThrow(() -> new LocationNotFoundException("Location not found"));
 
         LocationEntity returnLocation = locationRepository.findById(reservation.getReturnLocation().getId())
-        .switchIfEmpty(Maybe.error(new LocationNotFoundException("Return location not found."))).blockingGet();
+        .orElseThrow(() -> new LocationNotFoundException("Location not found"));
 
         VehicleEntity vehicle = vehicleRepository.findById(reservation.getVehicle().getId())
-        .switchIfEmpty(Maybe.error(new VehicleNotFoundException("Vehicle not found."))).blockingGet();
+        .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"));
 
         reservation.setPickupLocation(pickupLocation);
         reservation.setReturnLocation(returnLocation);
@@ -102,11 +102,14 @@ public class ReservationService {
         ReservationEntity existingReservation = reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName);
         validateReservationExists(existingReservation);
 
-        LocationEntity pickupLocation = locationRepository.findById(updatedReservation.getPickupLocation().getId()).blockingGet();
+        LocationEntity pickupLocation = locationRepository.findById(existingReservation.getPickupLocation().getId())
+                .orElseThrow(() -> new LocationNotFoundException("Location not found"));
 
-        LocationEntity returnLocation = locationRepository.findById(updatedReservation.getReturnLocation().getId()).blockingGet();
+        LocationEntity returnLocation = locationRepository.findById(existingReservation.getReturnLocation().getId())
+                .orElseThrow(() -> new LocationNotFoundException("Location not found"));
 
-        VehicleEntity vehicle = vehicleRepository.findById(updatedReservation.getVehicle().getId()).blockingGet();
+        VehicleEntity vehicle = vehicleRepository.findById(existingReservation.getVehicle().getId())
+                .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"));
 
 
         existingReservation.setFirstName(updatedReservation.getFirstName());
@@ -168,17 +171,22 @@ public class ReservationService {
     }
 
     public double calculateTotalPrice(ReservationEntity reservation) {
-        VehicleEntity vehicle = vehicleRepository.findById(reservation.getVehicle().getId()).blockingGet();
+        LocationEntity pickupLocation = locationRepository.findById(reservation.getPickupLocation().getId())
+                .orElseThrow(() -> new LocationNotFoundException("Location not found"));
 
-        LocationEntity pickupLocation = locationRepository.findById(reservation.getPickupLocation().getId()).blockingGet();
+        LocationEntity returnLocation = locationRepository.findById(reservation.getReturnLocation().getId())
+                .orElseThrow(() -> new LocationNotFoundException("Location not found"));
 
-        LocationEntity returnLocation = locationRepository.findById(reservation.getReturnLocation().getId()).blockingGet();
+        VehicleEntity vehicle = vehicleRepository.findById(reservation.getVehicle().getId())
+                .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"));
 
         double vehiclePrice = vehicle.getPrice();
 
         for (AdditionalProductEntity item : reservation.getAdditionalProducts()) {
-            AdditionalProductEntity product = additionalProductRepository.findById(item.getId()).blockingGet();
-            vehiclePrice += product.getPrice();
+            Optional<AdditionalProductEntity> product = additionalProductRepository.findById(item.getId());
+            if (product.isPresent()) {
+                vehiclePrice += product.get().getPrice();
+            }
         }
         long rentalDuration = ChronoUnit.DAYS.between(reservation.getPickupDate(), reservation.getReturnDate());
         double basePrice = vehiclePrice * rentalDuration;
