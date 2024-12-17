@@ -1,10 +1,10 @@
 package com.dentsu.bootcamp.dto;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@Data
-public class VehicleDTO {
-    private long id;
-    private String model;
-    private double price;
+public record VehicleDTO(
+        @JsonProperty("id")long id,
+        @JsonProperty("model")String model,
+        @JsonProperty("price")double price
+){
 }

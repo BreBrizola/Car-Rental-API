@@ -2,21 +2,18 @@ package com.dentsu.bootcamp.service;
 
 import com.dentsu.bootcamp.dto.ReservationDTO;
 import com.dentsu.bootcamp.exception.LocationNotFoundException;
-import com.dentsu.bootcamp.exception.MissingEmailException;
-import com.dentsu.bootcamp.exception.MissingNameException;
-import com.dentsu.bootcamp.exception.MissingPhoneException;
 import com.dentsu.bootcamp.exception.ReservationNotFoundException;
 import com.dentsu.bootcamp.exception.VehicleNotFoundException;
-import com.dentsu.bootcamp.mapping.ReservationMapper;
 import com.dentsu.bootcamp.model.AdditionalProductEntity;
 import com.dentsu.bootcamp.model.LocationEntity;
 import com.dentsu.bootcamp.model.ReservationEntity;
 import com.dentsu.bootcamp.model.VehicleEntity;
+import com.dentsu.bootcamp.repository.AdditionalProductRepository;
 import com.dentsu.bootcamp.repository.LocationRepository;
 import com.dentsu.bootcamp.repository.ReservationRepository;
 import com.dentsu.bootcamp.repository.VehicleRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
@@ -24,9 +21,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
-
-//Commit deu certo :)
 
 @Service
 @Slf4j
@@ -38,39 +34,37 @@ public class ReservationService {
     public static final String RESERVATION_CONFIRMED = "Reservation Confirmed";
     public static final String RESERVATION_CREATED_STATUS = "Your reservation has been successfully created.";
 
-    @Autowired
-    private ReservationRepository reservationRepository;
+    private final ReservationRepository reservationRepository;
 
-    @Autowired
-    private VehicleService vehicleService;
+    private final LocationRepository locationRepository;
 
-    @Autowired
-    private LocationService locationService;
+    private final VehicleRepository vehicleRepository;
 
-    @Autowired
-    private AdditionalProductService additionalProductService;
+    private final ObjectMapper objectMapper;
 
-    @Autowired
-    private LocationRepository locationRepository;
+    private final AdditionalProductRepository additionalProductRepository;
 
-    @Autowired
-    private VehicleRepository vehicleRepository;
+    private final EmailService emailService;
 
-    @Autowired
-    private ReservationMapper reservationMapper;
-
-    @Autowired
-    private EmailService emailService;
+    public ReservationService(ReservationRepository reservationRepository, LocationRepository locationRepository, VehicleRepository vehicleRepository,
+                              ObjectMapper objectMapper, AdditionalProductRepository additionalProductRepository, EmailService emailService){
+        this.reservationRepository = reservationRepository;
+        this.locationRepository = locationRepository;
+        this.vehicleRepository = vehicleRepository;
+        this.objectMapper = objectMapper;
+        this.additionalProductRepository = additionalProductRepository;
+        this.emailService = emailService;
+    }
 
     public ReservationDTO createReservation(ReservationEntity reservation) {
-        validateReservationCreation(reservation);
-
         LocationEntity pickupLocation = locationRepository.findById(reservation.getPickupLocation().getId())
-                .orElseThrow(() -> new LocationNotFoundException("Pickup location not found"));
+        .orElseThrow(() -> new LocationNotFoundException("Location not found"));
+
         LocationEntity returnLocation = locationRepository.findById(reservation.getReturnLocation().getId())
-                .orElseThrow(() -> new LocationNotFoundException("Return location not found"));
+        .orElseThrow(() -> new LocationNotFoundException("Location not found"));
+
         VehicleEntity vehicle = vehicleRepository.findById(reservation.getVehicle().getId())
-                .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"));
+        .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"));
 
         reservation.setPickupLocation(pickupLocation);
         reservation.setReturnLocation(returnLocation);
@@ -90,34 +84,33 @@ public class ReservationService {
             log.error("email failed: " + e.getCause());
         }
 
-        ReservationDTO reservationDTO = reservationMapper.apply(
-        reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(
-                reservation.getConfirmationNumber(),
-                reservation.getFirstName(),
-                reservation.getLastName()
-        ));
+        ReservationDTO reservationDTO = objectMapper.convertValue(reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(
+                        reservation.getConfirmationNumber(),
+                        reservation.getFirstName(),
+                        reservation.getLastName()), ReservationDTO.class);
 
         return reservationDTO;
     }
 
     public ReservationDTO getReservation(String confirmationNumber, String firstName, String lastName) {
-        ReservationDTO reservationDTO = reservationMapper
-                .apply(reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName));
-        return reservationDTO;
+        ReservationEntity reservation = reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName);
+        validateReservationExists(reservation);
+        return objectMapper.convertValue(reservation, ReservationDTO.class);
     }
 
     public ReservationDTO updateReservation(String confirmationNumber, String firstName, String lastName, ReservationEntity updatedReservation) {
         ReservationEntity existingReservation = reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName);
         validateReservationExists(existingReservation);
 
-        LocationEntity pickupLocation = locationRepository.findById(updatedReservation.getPickupLocation().getId())
-                .orElseThrow(() -> new LocationNotFoundException("Pickup location not found"));
+        LocationEntity pickupLocation = locationRepository.findById(existingReservation.getPickupLocation().getId())
+                .orElseThrow(() -> new LocationNotFoundException("Location not found"));
 
-        LocationEntity returnLocation = locationRepository.findById(updatedReservation.getReturnLocation().getId())
-                .orElseThrow(() -> new LocationNotFoundException("Return location not found"));
+        LocationEntity returnLocation = locationRepository.findById(existingReservation.getReturnLocation().getId())
+                .orElseThrow(() -> new LocationNotFoundException("Location not found"));
 
-        VehicleEntity vehicle = vehicleRepository.findById(updatedReservation.getVehicle().getId())
+        VehicleEntity vehicle = vehicleRepository.findById(existingReservation.getVehicle().getId())
                 .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"));
+
 
         existingReservation.setFirstName(updatedReservation.getFirstName());
         existingReservation.setLastName(updatedReservation.getLastName());
@@ -144,12 +137,10 @@ public class ReservationService {
 
         reservationRepository.save(existingReservation);
 
-        ReservationDTO reservationDTO = reservationMapper.apply(
-                reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(
-                        existingReservation.getConfirmationNumber(),
-                        existingReservation.getFirstName(),
-                        existingReservation.getLastName()
-                ));
+        ReservationDTO reservationDTO = objectMapper.convertValue(reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(
+                existingReservation.getConfirmationNumber(),
+                existingReservation.getFirstName(),
+                existingReservation.getLastName()), ReservationDTO.class);
 
         return reservationDTO;
     }
@@ -179,18 +170,23 @@ public class ReservationService {
         return confirmationNumber.toString();
     }
 
-    private double calculateTotalPrice(ReservationEntity reservation) {
-        VehicleEntity vehicle = vehicleService.getVehicleById(reservation.getVehicle().getId()).get();
+    public double calculateTotalPrice(ReservationEntity reservation) {
         LocationEntity pickupLocation = locationRepository.findById(reservation.getPickupLocation().getId())
-                .orElseThrow(() -> new LocationNotFoundException("Pickup location not found"));
+                .orElseThrow(() -> new LocationNotFoundException("Location not found"));
+
         LocationEntity returnLocation = locationRepository.findById(reservation.getReturnLocation().getId())
-                .orElseThrow(() -> new LocationNotFoundException("Return location not found"));
+                .orElseThrow(() -> new LocationNotFoundException("Location not found"));
+
+        VehicleEntity vehicle = vehicleRepository.findById(reservation.getVehicle().getId())
+                .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"));
 
         double vehiclePrice = vehicle.getPrice();
 
         for (AdditionalProductEntity item : reservation.getAdditionalProducts()) {
-            AdditionalProductEntity product = additionalProductService.getAdditionProducts(item.getId());
-            vehiclePrice += product.getPrice();
+            Optional<AdditionalProductEntity> product = additionalProductRepository.findById(item.getId());
+            if (product.isPresent()) {
+                vehiclePrice += product.get().getPrice();
+            }
         }
         long rentalDuration = ChronoUnit.DAYS.between(reservation.getPickupDate(), reservation.getReturnDate());
         double basePrice = vehiclePrice * rentalDuration;
@@ -223,16 +219,6 @@ public class ReservationService {
         LocalTime closingTime = LocalTime.parse(hours[1].trim(), timeFormatter);
 
         return localTime.isBefore(openingTime) || localTime.isAfter(closingTime);
-    }
-
-    private void validateReservationCreation(ReservationEntity reservation) {
-        if (Objects.isNull(reservation.getFirstName()) || Objects.isNull(reservation.getLastName())) {
-            throw new MissingNameException("First and last name are required");
-        } else if (Objects.isNull(reservation.getEmail())) {
-            throw new MissingEmailException("Email is required");
-        } else if (Objects.isNull(reservation.getPhone())) {
-            throw new MissingPhoneException("Phone number is required");
-        }
     }
 
     private void validateReservationExists(ReservationEntity reservation){

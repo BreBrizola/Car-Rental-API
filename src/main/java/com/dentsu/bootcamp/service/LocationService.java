@@ -2,68 +2,71 @@ package com.dentsu.bootcamp.service;
 
 import com.dentsu.bootcamp.client.WeatherClient;
 import com.dentsu.bootcamp.dto.LocationDTO;
+import com.dentsu.bootcamp.dto.VehicleDTO;
 import com.dentsu.bootcamp.dto.WeatherResponse;
-import com.dentsu.bootcamp.exception.ReservationNotFoundException;
-import com.dentsu.bootcamp.mapping.LocationMapper;
+import com.dentsu.bootcamp.exception.LocationNotFoundException;
+import com.dentsu.bootcamp.exception.VehicleNotFoundException;
 import com.dentsu.bootcamp.model.LocationEntity;
 import com.dentsu.bootcamp.model.VehicleEntity;
 import com.dentsu.bootcamp.repository.LocationRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Observable;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LocationService {
 
-    @Autowired
-    private LocationRepository locationRepository;
+    private final LocationRepository locationRepository;
 
-    @Autowired
-    private WeatherClient weather;
+    private final WeatherClient weather;
 
-    @Autowired
-    private LocationMapper locationMapper;
+    private final ObjectMapper objectMapper;
 
-    @Value("${apiKeys.weatherApiKey}")
-    private String ApiKey;
+    private String apiKey;
 
-    public List<LocationDTO> getAllLocations() {
-        List<LocationEntity> locations = locationRepository.findAll();
-
-        return locations.stream()
-                .map(location -> locationMapper.apply(location, getLocationWeather(location)))
-                .toList();
+    public LocationService(LocationRepository locationRepository, WeatherClient weather,ObjectMapper objectMapper, @Value("${apiKeys.weatherApiKey}") String apiKey){
+        this.locationRepository = locationRepository;
+        this.weather = weather;
+        this.objectMapper = objectMapper;
+        this.apiKey = apiKey;
     }
 
-    public LocationDTO getLocationById(Long id) {
-        Optional<LocationEntity> locationOptional = locationRepository.findById(id);
-        LocationEntity locationEntity = new LocationEntity();
+    public Observable<List<LocationDTO>> getAllLocations() {
+        return Observable.fromCallable(() -> locationRepository.findAll()
+                .stream()
+                .map(location -> objectMapper.convertValue(location, LocationDTO.class))
+                .toList());
+    }
 
-        if(locationOptional.isPresent()){
-            locationEntity = locationOptional.get();
-        } else {throw new ReservationNotFoundException("Reservation not found");}
+    public Observable<LocationDTO> getLocationById(Long id) {
+        return Observable.fromCallable(() -> locationRepository.findById(id)
+                .map(location -> objectMapper.convertValue(location, LocationDTO.class))
+                .orElseThrow(() -> new LocationNotFoundException("Location not found")));
+    }
 
-        LocationDTO locationDTO = locationMapper.apply(locationEntity, getLocationWeather(locationEntity));
-
-        return locationDTO;
+    @Cacheable("locationsByName")
+    public Observable<LocationDTO> getLocationByName(String name){
+        return Observable.fromCallable(() -> locationRepository.findByName(name)
+                .map(location -> objectMapper.convertValue(location, LocationDTO.class))
+                .orElseThrow(() -> new LocationNotFoundException("Location not found")));
     }
 
     public WeatherResponse getLocationWeather(LocationEntity locationEntity){
         String address = locationEntity.getAddress();
-        WeatherResponse weatherResponse = weather.getCurrentWeather(ApiKey, address, "no");
+        WeatherResponse weatherResponse = weather.getCurrentWeather(apiKey, address, "no");
         return weatherResponse;
     }
 
-    public List<VehicleEntity> listVehicles(Long id){
-        Optional <LocationEntity> location = locationRepository.findById(id);
-        if (location.isPresent()) {
-            return location.get().getVehicleList();
-        } else {
-            throw new EntityNotFoundException("Location not found for the ID");
-        }
+    public Observable<List<VehicleEntity>> listVehicles(Long id){
+        return Observable.fromCallable(() -> locationRepository.findById(id)
+                .map(location -> location.getVehicleList())
+                .orElseThrow(() -> new LocationNotFoundException("Location not found")));
+                }
     }
-}

@@ -1,24 +1,36 @@
 package com.dentsu.bootcamp.service;
 
-import com.dentsu.bootcamp.model.VehicleEntity;
+import com.dentsu.bootcamp.dto.VehicleDTO;
+import com.dentsu.bootcamp.exception.VehicleNotFoundException;
 import com.dentsu.bootcamp.repository.VehicleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.reactivex.rxjava3.core.Observable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class VehicleService {
 
-    @Autowired
-    private VehicleRepository vehicleRepository;
+    private final VehicleRepository vehicleRepository;
 
-    public List<VehicleEntity> getAllVehicles() {
-        return vehicleRepository.findAll();
+    private final ObjectMapper objectMapper;
+
+    public VehicleService(VehicleRepository vehicleRepository, ObjectMapper objectMapper){
+        this.vehicleRepository = vehicleRepository;
+        this.objectMapper = objectMapper;
     }
 
-    public Optional<VehicleEntity> getVehicleById(Long id) {
-        return vehicleRepository.findById(id);
+    public Observable<List<VehicleDTO>> getAllVehicles() {
+        return Observable.fromCallable(() -> vehicleRepository.findAll()
+                .stream()
+                .map(vehicle -> objectMapper.convertValue(vehicle, VehicleDTO.class))
+                .toList());
+    }
+
+    public Observable<VehicleDTO> getVehicleById(Long id) {
+        return Observable.fromCallable(() -> vehicleRepository.findById(id)
+                .map(vehicle -> objectMapper.convertValue(vehicle, VehicleDTO.class))
+                .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found")));
     }
 }

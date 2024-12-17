@@ -1,29 +1,31 @@
 package com.dentsu.bootcamp.dto;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Data
-public class ReservationDTO {
-    private Long id;
-    private String confirmationNumber;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String phone;
-    private double totalPrice;
-    private LocalDate pickupDate;
-    private LocalDate returnDate;
-    private String pickupTime;
-    private  String returnTime;
+public record ReservationDTO (
+        @JsonProperty("id") Long id,
+        @JsonProperty("confirmationNumber") String confirmationNumber,
+        @JsonProperty("firstName") @NotBlank(message = "First name is required") String firstName,
+        @JsonProperty("lastName") @NotBlank(message = "Last name is required") String lastName,
+        @JsonProperty("email") @NotBlank(message = "Email is required") String email,
+        @JsonProperty("phone") @NotBlank(message = "Phone number is required")String phone,
+        @JsonProperty("totalPrice") double totalPrice,
+        @JsonProperty("pickupDate") LocalDate pickupDate,
+        @JsonProperty("returnDate")LocalDate returnDate,
+        @JsonProperty("pickupTime") String pickupTime,
+        @JsonProperty("returnTime") String returnTime,
 
-    private LocationDTO pickupLocation;
+        @JsonProperty("pickupLocation") LocationDTO pickupLocation,
 
-    private LocationDTO returnLocation;
+        @JsonProperty("returnLocation") LocationDTO returnLocation,
 
-    private VehicleDTO vehicle;
+        @JsonProperty("vehicle") VehicleDTO vehicle,
 
-    private List<AdditionalProductDTO> additionalProducts;
+        @JsonProperty("additionalProducts") List<AdditionalProductDTO> additionalProducts
+) {
 }

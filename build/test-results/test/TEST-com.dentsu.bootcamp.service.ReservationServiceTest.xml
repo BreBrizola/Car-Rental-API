@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.dentsu.bootcamp.service.ReservationServiceTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-12-16T12:58:54" hostname="BR-FVFFH46JQ6LT" time="0.847">
+  <properties/>
+  <testcase name="givenReservationWithInvalidVehicle_whenCreateReservation_thenThrowVehicleNotFoundException()" classname="com.dentsu.bootcamp.service.ReservationServiceTest" time="0.847"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
