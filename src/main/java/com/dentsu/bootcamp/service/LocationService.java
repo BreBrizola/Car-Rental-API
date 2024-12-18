@@ -1,6 +1,5 @@
 package com.dentsu.bootcamp.service;
 
-import com.dentsu.bootcamp.client.WeatherClient;
 import com.dentsu.bootcamp.client.WeatherRetroFitClient;
 import com.dentsu.bootcamp.dto.LocationDTO;
 import com.dentsu.bootcamp.dto.WeatherResponse;
