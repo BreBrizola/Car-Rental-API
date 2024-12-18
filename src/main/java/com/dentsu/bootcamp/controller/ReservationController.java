@@ -3,6 +3,7 @@ package com.dentsu.bootcamp.controller;
 import com.dentsu.bootcamp.dto.ReservationDTO;
 import com.dentsu.bootcamp.model.ReservationEntity;
 import com.dentsu.bootcamp.service.ReservationService;
+import io.reactivex.rxjava3.core.Observable;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
@@ -35,9 +36,9 @@ public class ReservationController {
 
     @Operation(summary = "Retrieve information from a specific reservation", description = "Pass the confirmation number, first and last name.")
     @GetMapping("/retrieve")
-    public ReservationDTO getReservation(@Parameter(description = "The unique confirmation number of the reservation.") @RequestParam String confirmationNumber,
-                                            @Parameter(description = "The first name of the customer associated with the reservation.")@RequestParam String firstName,
-                                            @Parameter(description = "The last name of the customer associated with the reservation.")@RequestParam String lastName) {
+    public Observable<ReservationDTO> getReservation(@Parameter(description = "The unique confirmation number of the reservation.") @RequestParam String confirmationNumber,
+                                                    @Parameter(description = "The first name of the customer associated with the reservation.")@RequestParam String firstName,
+                                                    @Parameter(description = "The last name of the customer associated with the reservation.")@RequestParam String lastName) {
         return reservationService.getReservation(confirmationNumber, firstName, lastName);
     }
 
@@ -52,9 +53,9 @@ public class ReservationController {
 
     @Operation(summary = "Cancel a specific reservation", description = "Pass the confirmation number, first and last name.")
     @DeleteMapping("/cancel")
-    public void cancelReservation(@Parameter(description = "The unique confirmation number of the reservation.") @RequestParam String confirmationNumber,
+    public Observable<Boolean> cancelReservation(@Parameter(description = "The unique confirmation number of the reservation.") @RequestParam String confirmationNumber,
                                   @Parameter(description = "The first name of the customer associated with the reservation.") @RequestParam String firstName,
                                   @Parameter(description = "The last name of the customer associated with the reservation.") @RequestParam String lastName) {
-        reservationService.cancelReservation(confirmationNumber, firstName, lastName);
+        return reservationService.cancelReservation(confirmationNumber, firstName, lastName);
     }
 }

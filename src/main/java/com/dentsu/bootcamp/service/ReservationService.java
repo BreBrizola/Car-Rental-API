@@ -13,6 +13,7 @@ import com.dentsu.bootcamp.repository.LocationRepository;
 import com.dentsu.bootcamp.repository.ReservationRepository;
 import com.dentsu.bootcamp.repository.VehicleRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.reactivex.rxjava3.core.Observable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -69,8 +70,8 @@ public class ReservationService {
         reservation.setPickupLocation(pickupLocation);
         reservation.setReturnLocation(returnLocation);
         reservation.setVehicle(vehicle);
-        reservation.setConfirmationNumber(generateConfirmationNumber());
-        reservation.setTotalPrice(calculateTotalPrice(reservation));
+        reservation.setConfirmationNumber(generateConfirmationNumber().blockingFirst());
+        reservation.setTotalPrice(calculateTotalPrice(reservation).blockingFirst());
 
         reservationRepository.save(reservation);
 
@@ -92,10 +93,46 @@ public class ReservationService {
         return reservationDTO;
     }
 
-    public ReservationDTO getReservation(String confirmationNumber, String firstName, String lastName) {
-        ReservationEntity reservation = reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName);
-        validateReservationExists(reservation);
-        return objectMapper.convertValue(reservation, ReservationDTO.class);
+    public Observable<ReservationDTO> createReservationObs(ReservationEntity reservation) {
+        return Observable.zip(
+                Observable.fromCallable(() -> locationRepository.findById(reservation.getPickupLocation().getId())
+                        .orElseThrow(() -> new LocationNotFoundException("Pickup location not found"))),
+                Observable.fromCallable(() -> locationRepository.findById(reservation.getReturnLocation().getId())
+                        .orElseThrow(() -> new LocationNotFoundException("Return location not found"))),
+                Observable.fromCallable(() -> vehicleRepository.findById(reservation.getVehicle().getId())
+                        .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"))),
+                (pickupLocation, returnLocation, vehicle) -> {
+        reservation.setPickupLocation(pickupLocation);
+        reservation.setReturnLocation(returnLocation);
+        reservation.setVehicle(vehicle);
+        reservation.setConfirmationNumber(generateConfirmationNumber().blockingFirst());
+        reservation.setTotalPrice(calculateTotalPrice(reservation).blockingFirst());
+
+        reservationRepository.save(reservation);
+
+        try {
+            emailService.sendMail(
+                    reservation.getEmail(),
+                    RESERVATION_CONFIRMED, reservation.getConfirmationNumber(), reservation.getFirstName(), reservation.getLastName(), RESERVATION_CREATED_STATUS);
+            log.info("email sent");
+
+        } catch (Exception e) {
+            log.error("email failed: " + e.getCause());
+        }
+
+        ReservationDTO reservationDTO = objectMapper.convertValue(reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(
+                reservation.getConfirmationNumber(),
+                reservation.getFirstName(),
+                reservation.getLastName()), ReservationDTO.class);
+
+        return reservationDTO;
+    });
+    }
+
+    public Observable<ReservationDTO> getReservation(String confirmationNumber, String firstName, String lastName){
+        return Observable.fromCallable(() -> reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName))
+                .doOnNext(reservationEntity -> validateReservationExists(reservationEntity))
+                .map(reservationEntity -> objectMapper.convertValue(reservationEntity, ReservationDTO.class));
     }
 
     public ReservationDTO updateReservation(String confirmationNumber, String firstName, String lastName, ReservationEntity updatedReservation) {
@@ -124,7 +161,7 @@ public class ReservationService {
         existingReservation.setAdditionalProducts(updatedReservation.getAdditionalProducts());
         existingReservation.setPickupTime(updatedReservation.getPickupTime());
         existingReservation.setReturnTime(updatedReservation.getReturnTime());
-        existingReservation.setTotalPrice(calculateTotalPrice(updatedReservation));
+        existingReservation.setTotalPrice(calculateTotalPrice(updatedReservation).blockingFirst());
 
         try {
             emailService.sendMail(
@@ -145,80 +182,84 @@ public class ReservationService {
         return reservationDTO;
     }
 
-    public void cancelReservation(String confirmationNumber, String firstName, String lastName) {
-        ReservationEntity existingReservation = reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName);
-        validateReservationExists(existingReservation);
-
-        try {
-            emailService.sendCancellingEmail(
-                    existingReservation.getEmail(),
-                    RESERVATION_CANCELLED, existingReservation.getConfirmationNumber(), existingReservation.getFirstName());
-            log.info("email sent");
-        } catch (Exception e) {
-            log.error("email failed: " + e.getCause());
-        }
-
-        reservationRepository.delete(existingReservation);
+    public Observable<Boolean> cancelReservation(String confirmationNumber, String firstName, String lastName){
+        return Observable.fromCallable(()-> reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName))
+                .doOnNext(reservationEntity -> validateReservationExists(reservationEntity))
+                .flatMap(existingReservation -> {
+                    emailService.sendCancellingEmail(
+                            existingReservation.getEmail(),
+                            RESERVATION_CANCELLED, existingReservation.getConfirmationNumber(), existingReservation.getFirstName());
+                    return Observable.just(existingReservation);
+                })
+                .flatMap(reservationEntity -> {
+                    reservationRepository.delete(reservationEntity);
+                    return Observable.just(Boolean.TRUE);
+                })
+                .onErrorReturnItem(Boolean.FALSE);
     }
 
-    private String generateConfirmationNumber() {
-        Random random = new Random();
+    private Observable<String> generateConfirmationNumber() {
+        return Observable.fromCallable(() -> {Random random = new Random();
         StringBuilder confirmationNumber = new StringBuilder();
         for (int i = 0; i < 10; i++) {
             confirmationNumber.append(random.nextInt(10));
         }
-        return confirmationNumber.toString();
+            return confirmationNumber.toString();
+        }
+        );
     }
 
-    public double calculateTotalPrice(ReservationEntity reservation) {
-        LocationEntity pickupLocation = locationRepository.findById(reservation.getPickupLocation().getId())
-                .orElseThrow(() -> new LocationNotFoundException("Location not found"));
+    public Observable<Double> calculateTotalPrice(ReservationEntity reservation) {
+        return Observable.zip(
+                Observable.fromCallable(() -> locationRepository.findById(reservation.getPickupLocation().getId())
+                        .orElseThrow(() -> new LocationNotFoundException("Pickup location not found"))),
+                Observable.fromCallable(() -> locationRepository.findById(reservation.getReturnLocation().getId())
+                        .orElseThrow(() -> new LocationNotFoundException("Return location not found"))),
+                Observable.fromCallable(() -> vehicleRepository.findById(reservation.getVehicle().getId())
+                        .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"))),
+                (pickupLocation, returnLocation, vehicle) -> {
+                    double vehiclePrice = vehicle.getPrice();
 
-        LocationEntity returnLocation = locationRepository.findById(reservation.getReturnLocation().getId())
-                .orElseThrow(() -> new LocationNotFoundException("Location not found"));
+                    for (AdditionalProductEntity item : reservation.getAdditionalProducts()) {
+                        Optional<AdditionalProductEntity> additionalProduct = additionalProductRepository.findById(item.getId());
+                        if (additionalProduct.isPresent()) {
+                            vehiclePrice += additionalProduct.get().getPrice();
+                        }
+                    }
 
-        VehicleEntity vehicle = vehicleRepository.findById(reservation.getVehicle().getId())
-                .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"));
+                    long rentalDuration = ChronoUnit.DAYS.between(reservation.getPickupDate(), reservation.getReturnDate());
+                    double basePrice = vehiclePrice * rentalDuration;
 
-        double vehiclePrice = vehicle.getPrice();
+                    String pickupTime = reservation.getPickupTime();
+                    String returnTime = reservation.getReturnTime();
+                    String pickupOpeningHours = pickupLocation.getOpeningHours();
+                    String returnOpeningHours = returnLocation.getOpeningHours();
 
-        for (AdditionalProductEntity item : reservation.getAdditionalProducts()) {
-            Optional<AdditionalProductEntity> product = additionalProductRepository.findById(item.getId());
-            if (product.isPresent()) {
-                vehiclePrice += product.get().getPrice();
-            }
-        }
-        long rentalDuration = ChronoUnit.DAYS.between(reservation.getPickupDate(), reservation.getReturnDate());
-        double basePrice = vehiclePrice * rentalDuration;
+                    try {
+                        if (isAfterHours(pickupTime, pickupOpeningHours).blockingFirst()) {
+                            basePrice += pickupLocation.getAfterHoursFeed();
+                        }
+                        if (isAfterHours(returnTime, returnOpeningHours).blockingFirst()) {
+                            basePrice += returnLocation.getAfterHoursFeed();
+                        }
+                    } catch (DateTimeParseException e) {
+                        log.error("Error parsing time: " + e.getMessage(), e);
+                    }
 
-        String pickupTime = reservation.getPickupTime();
-        String returnTime = reservation.getReturnTime();
-
-        String pickupOpeningHours = pickupLocation.getOpeningHours();
-        String returnOpeningHours = returnLocation.getOpeningHours();
-
-        try {
-            if (isAfterHours(pickupTime, pickupOpeningHours)) {
-                basePrice += reservation.getPickupLocation().getAfterHoursFeed();
-            }
-            if (isAfterHours(returnTime, returnOpeningHours)) {
-                basePrice += reservation.getReturnLocation().getAfterHoursFeed();
-            }
-        } catch (DateTimeParseException e) {
-            e.printStackTrace();
-        }
-
-        return basePrice;
+                    return basePrice;
+                }
+        );
     }
 
-    public boolean isAfterHours(String time, String openingHours) throws DateTimeParseException {
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+    public Observable<Boolean> isAfterHours(String time, String openingHours) throws DateTimeParseException {
+        return Observable.fromCallable(() -> {DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         LocalTime localTime = LocalTime.parse(time, timeFormatter);
         String[] hours = openingHours.split("-");
         LocalTime openingTime = LocalTime.parse(hours[0].trim(), timeFormatter);
         LocalTime closingTime = LocalTime.parse(hours[1].trim(), timeFormatter);
 
         return localTime.isBefore(openingTime) || localTime.isAfter(closingTime);
+        });
     }
 
     private void validateReservationExists(ReservationEntity reservation){

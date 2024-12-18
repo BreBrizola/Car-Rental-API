@@ -22,15 +22,17 @@ public class VehicleService {
     }
 
     public Observable<List<VehicleDTO>> getAllVehicles() {
-        return Observable.fromCallable(() -> vehicleRepository.findAll()
-                .stream()
+        return Observable.fromCallable(() -> vehicleRepository.findAll())
+                .flatMap(list -> Observable.fromIterable(list)
                 .map(vehicle -> objectMapper.convertValue(vehicle, VehicleDTO.class))
-                .toList());
+                .toList()
+                .toObservable());
     }
 
     public Observable<VehicleDTO> getVehicleById(Long id) {
-        return Observable.fromCallable(() -> vehicleRepository.findById(id)
-                .map(vehicle -> objectMapper.convertValue(vehicle, VehicleDTO.class))
-                .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found")));
+        return Observable.fromCallable(() -> vehicleRepository.findById(id))
+                .flatMap(optionalVehicle -> optionalVehicle
+                .map(vehicle -> Observable.just(objectMapper.convertValue(vehicle, VehicleDTO.class)))
+                .orElse(Observable.error(new VehicleNotFoundException("Vehicle not found"))));
     }
 }

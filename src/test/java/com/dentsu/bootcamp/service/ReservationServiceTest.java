@@ -11,7 +11,6 @@ import com.dentsu.bootcamp.repository.AdditionalProductRepository;
 import com.dentsu.bootcamp.repository.LocationRepository;
 import com.dentsu.bootcamp.repository.ReservationRepository;
 import com.dentsu.bootcamp.repository.VehicleRepository;
-import io.reactivex.rxjava3.core.Maybe;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -194,7 +193,7 @@ class ReservationServiceTest {
         when(locationRepository.findById(1L)).thenReturn(Optional.of(pickupLocation));
         when(locationRepository.findById(2L)).thenReturn(Optional.of(returnLocation));
 
-        double totalPrice = reservationService.calculateTotalPrice(reservation);
+        double totalPrice = reservationService.calculateTotalPrice(reservation).blockingFirst();
 
         assertEquals(300.0, totalPrice, 0.01);
     }
@@ -230,7 +229,7 @@ class ReservationServiceTest {
         when(locationRepository.findById(1L)).thenReturn(Optional.of(pickupLocation));
         when(locationRepository.findById(2L)).thenReturn(Optional.of(returnLocation));
 
-        double totalPrice = reservationService.calculateTotalPrice(reservation);
+        double totalPrice = reservationService.calculateTotalPrice(reservation).blockingFirst();
 
         assertEquals(320.0, totalPrice);
     }
@@ -276,7 +275,7 @@ class ReservationServiceTest {
         when(additionalProductRepository.findById(1L)).thenReturn(Optional.of(product1));
         when(additionalProductRepository.findById(2L)).thenReturn(Optional.of(product2));
 
-        double totalPrice = reservationService.calculateTotalPrice(reservation);
+        double totalPrice = reservationService.calculateTotalPrice(reservation).blockingFirst();
 
         assertEquals(690.0, totalPrice);
     }
@@ -296,7 +295,7 @@ class ReservationServiceTest {
         String time = "07:30";
         String openingHours = "08:00 - 18:00";
 
-        boolean result = reservationService.isAfterHours(time, openingHours);
+        boolean result = reservationService.isAfterHours(time, openingHours).blockingFirst();
 
         assertTrue(result);
     }
@@ -306,7 +305,7 @@ class ReservationServiceTest {
         String time = "20:00";
         String openingHours = "08:00 - 18:00";
 
-        boolean result = reservationService.isAfterHours(time, openingHours);
+        boolean result = reservationService.isAfterHours(time, openingHours).blockingFirst();
 
         assertTrue(result);
     }
@@ -316,7 +315,7 @@ class ReservationServiceTest {
         String time = "15:00";
         String openingHours = "08:00 - 18:00";
 
-        boolean result = reservationService.isAfterHours(time, openingHours);
+        boolean result = reservationService.isAfterHours(time, openingHours).blockingFirst();
 
         assertFalse(result);
     }
@@ -327,6 +326,6 @@ class ReservationServiceTest {
                 "000000", "Name", "Last Name")).thenReturn(null);
 
         assertThrows(ReservationNotFoundException.class, () ->
-                reservationService.getReservation("000000", "Name", "Last Name"));
+                reservationService.getReservation("000000", "Name", "Last Name").blockingFirst());
     }
 }
