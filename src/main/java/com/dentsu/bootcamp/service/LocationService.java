@@ -1,6 +1,7 @@
 package com.dentsu.bootcamp.service;
 
 import com.dentsu.bootcamp.client.WeatherClient;
+import com.dentsu.bootcamp.client.WeatherRetroFitClient;
 import com.dentsu.bootcamp.dto.LocationDTO;
 import com.dentsu.bootcamp.dto.WeatherResponse;
 import com.dentsu.bootcamp.exception.LocationNotFoundException;
@@ -20,15 +21,15 @@ public class LocationService {
 
     private final LocationRepository locationRepository;
 
-    private final WeatherClient weather;
+    private final WeatherRetroFitClient weatherRetroFitClient;
 
     private final ObjectMapper objectMapper;
 
     private String apiKey;
 
-    public LocationService(LocationRepository locationRepository, WeatherClient weather,ObjectMapper objectMapper, @Value("${apiKeys.weatherApiKey}") String apiKey){
+    public LocationService(LocationRepository locationRepository, WeatherRetroFitClient weatherRetroFitClient, ObjectMapper objectMapper, @Value("${apiKeys.weatherApiKey}") String apiKey){
         this.locationRepository = locationRepository;
-        this.weather = weather;
+        this.weatherRetroFitClient = weatherRetroFitClient;
         this.objectMapper = objectMapper;
         this.apiKey = apiKey;
     }
@@ -56,9 +57,9 @@ public class LocationService {
                 .orElse(Observable.error(new LocationNotFoundException("Location not found"))));
     }
 
-    public WeatherResponse getLocationWeather(LocationEntity locationEntity){
+    public Observable<WeatherResponse> getLocationWeather(LocationEntity locationEntity){
         String address = locationEntity.getAddress();
-        WeatherResponse weatherResponse = weather.getCurrentWeather(apiKey, address, "no");
+        Observable<WeatherResponse> weatherResponse = weatherRetroFitClient.getCurrentWeather(apiKey, address, "no");
         return weatherResponse;
     }
 

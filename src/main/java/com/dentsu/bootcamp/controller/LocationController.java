@@ -1,6 +1,7 @@
 package com.dentsu.bootcamp.controller;
 
 import com.dentsu.bootcamp.client.WeatherClient;
+import com.dentsu.bootcamp.client.WeatherRetroFitClient;
 import com.dentsu.bootcamp.dto.LocationDTO;
 import com.dentsu.bootcamp.dto.WeatherResponse;
 import com.dentsu.bootcamp.model.VehicleEntity;
@@ -22,13 +23,13 @@ public class LocationController {
 
     private LocationService locationService;
 
-    private WeatherClient weatherClient;
+    private WeatherRetroFitClient weatherRetroFitClient;
 
     private String apiKey;
 
-    public LocationController(LocationService locationService, WeatherClient weatherClient, @Value("${apiKeys.weatherApiKey}") String apiKey){
+    public LocationController(LocationService locationService, WeatherRetroFitClient weatherRetroFitClient, @Value("${apiKeys.weatherApiKey}") String apiKey){
         this.locationService = locationService;
-        this.weatherClient = weatherClient;
+        this.weatherRetroFitClient = weatherRetroFitClient;
         this.apiKey = apiKey;
     }
 
@@ -53,8 +54,8 @@ public class LocationController {
 
     @Operation(summary = "Retrieve the current weather for a given location", description = "Pass US Zipcode, UK Postcode, Canada Postalcode, IP address, Latitude/Longitude (decimal degree) or city name.")
     @GetMapping("/weather/{location}")
-    public WeatherResponse getWeather(@Parameter(description = "US Zipcode, UK Postcode, Canada Postalcode, IP address, Latitude/Longitude (decimal degree) or city name.")@PathVariable String location) {
-        return weatherClient.getCurrentWeather(apiKey, location, "no");
+    public Observable<WeatherResponse> getWeather(@Parameter(description = "US Zipcode, UK Postcode, Canada Postalcode, IP address, Latitude/Longitude (decimal degree) or city name.")@PathVariable String location) {
+        return weatherRetroFitClient.getCurrentWeather(apiKey, location, "no");
     }
 
     @Operation(summary = "Retrieve a specific location, searched by name", description = "Pass the location name(String).")
