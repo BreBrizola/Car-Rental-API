@@ -30,7 +30,7 @@ public class ReservationController {
 
     @Operation(summary = "Create a new reservation", description = "Submit the required details including first and last name, email, phone number, pickup and return dates, pickup and return locations, and vehicle information. Additional products can be included optionally.")
     @PostMapping("/create")
-    public ReservationDTO createReservation(@RequestBody @Valid ReservationEntity reservation) {
+    public Observable<ReservationDTO> createReservation(@RequestBody @Valid ReservationEntity reservation) {
         return reservationService.createReservation(reservation);
     }
 

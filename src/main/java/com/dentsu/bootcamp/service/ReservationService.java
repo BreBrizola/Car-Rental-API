@@ -57,76 +57,52 @@ public class ReservationService {
         this.emailService = emailService;
     }
 
-    public ReservationDTO createReservation(ReservationEntity reservation) {
-        LocationEntity pickupLocation = locationRepository.findById(reservation.getPickupLocation().getId())
-        .orElseThrow(() -> new LocationNotFoundException("Location not found"));
-
-        LocationEntity returnLocation = locationRepository.findById(reservation.getReturnLocation().getId())
-        .orElseThrow(() -> new LocationNotFoundException("Location not found"));
-
-        VehicleEntity vehicle = vehicleRepository.findById(reservation.getVehicle().getId())
-        .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"));
-
-        reservation.setPickupLocation(pickupLocation);
-        reservation.setReturnLocation(returnLocation);
-        reservation.setVehicle(vehicle);
-        reservation.setConfirmationNumber(generateConfirmationNumber().blockingFirst());
-        reservation.setTotalPrice(calculateTotalPrice(reservation).blockingFirst());
-
-        reservationRepository.save(reservation);
-
-        try {
-            emailService.sendMail(
-                    reservation.getEmail(),
-                    RESERVATION_CONFIRMED, reservation.getConfirmationNumber(), reservation.getFirstName(), reservation.getLastName(), RESERVATION_CREATED_STATUS);
-            log.info("email sent");
-
-        } catch (Exception e) {
-            log.error("email failed: " + e.getCause());
-        }
-
-        ReservationDTO reservationDTO = objectMapper.convertValue(reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(
-                        reservation.getConfirmationNumber(),
-                        reservation.getFirstName(),
-                        reservation.getLastName()), ReservationDTO.class);
-
-        return reservationDTO;
-    }
-
-    public Observable<ReservationDTO> createReservationObs(ReservationEntity reservation) {
+    public Observable<ReservationDTO> createReservation(ReservationEntity reservation) {
         return Observable.zip(
-                Observable.fromCallable(() -> locationRepository.findById(reservation.getPickupLocation().getId())
-                        .orElseThrow(() -> new LocationNotFoundException("Pickup location not found"))),
-                Observable.fromCallable(() -> locationRepository.findById(reservation.getReturnLocation().getId())
-                        .orElseThrow(() -> new LocationNotFoundException("Return location not found"))),
-                Observable.fromCallable(() -> vehicleRepository.findById(reservation.getVehicle().getId())
-                        .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"))),
-                (pickupLocation, returnLocation, vehicle) -> {
-        reservation.setPickupLocation(pickupLocation);
-        reservation.setReturnLocation(returnLocation);
-        reservation.setVehicle(vehicle);
-        reservation.setConfirmationNumber(generateConfirmationNumber().blockingFirst());
-        reservation.setTotalPrice(calculateTotalPrice(reservation).blockingFirst());
+                        Observable.fromCallable(() -> locationRepository.findById(reservation.getPickupLocation().getId())
+                                .orElseThrow(() -> new LocationNotFoundException("Pickup location not found"))),
+                        Observable.fromCallable(() -> locationRepository.findById(reservation.getReturnLocation().getId())
+                                .orElseThrow(() -> new LocationNotFoundException("Return location not found"))),
+                        Observable.fromCallable(() -> vehicleRepository.findById(reservation.getVehicle().getId())
+                                .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"))),
+                        (pickupLocation, returnLocation, vehicle) -> {
+                            reservation.setPickupLocation(pickupLocation);
+                            reservation.setReturnLocation(returnLocation);
+                            reservation.setVehicle(vehicle);
+                            return reservation;
+                        })
+                .flatMap(reservationEntity -> generateConfirmationNumber()
+                        .map(confirmationNumber -> {
+                            reservationEntity.setConfirmationNumber(confirmationNumber);
+                            return reservationEntity;
+                        }))
+                .flatMap(reservationEntity -> calculateTotalPrice(reservationEntity)
+                        .map(totalPrice -> {
+                            reservationEntity.setTotalPrice(totalPrice);
+                            return reservationEntity;
+                        }))
+                .flatMap(reservationEntity -> Observable.fromCallable(() -> {
+                    reservationRepository.save(reservationEntity);
 
-        reservationRepository.save(reservation);
+                    try {
+                        emailService.sendMail(
+                                reservationEntity.getEmail(),
+                                RESERVATION_CONFIRMED, reservationEntity.getConfirmationNumber(),
+                                reservationEntity.getFirstName(), reservationEntity.getLastName(), RESERVATION_CREATED_STATUS);
+                        log.info("email sent");
+                    } catch (Exception e) {
+                        log.error("email failed: " + e.getCause());
+                    }
 
-        try {
-            emailService.sendMail(
-                    reservation.getEmail(),
-                    RESERVATION_CONFIRMED, reservation.getConfirmationNumber(), reservation.getFirstName(), reservation.getLastName(), RESERVATION_CREATED_STATUS);
-            log.info("email sent");
-
-        } catch (Exception e) {
-            log.error("email failed: " + e.getCause());
-        }
-
-        ReservationDTO reservationDTO = objectMapper.convertValue(reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(
-                reservation.getConfirmationNumber(),
-                reservation.getFirstName(),
-                reservation.getLastName()), ReservationDTO.class);
-
-        return reservationDTO;
-    });
+                    return reservationEntity;
+                }))
+                .flatMap(reservationEntity -> Observable.fromCallable(() -> {
+                    ReservationEntity savedReservation = reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(
+                            reservationEntity.getConfirmationNumber(),
+                            reservationEntity.getFirstName(),
+                            reservationEntity.getLastName());
+                    return objectMapper.convertValue(savedReservation, ReservationDTO.class);
+                }));
     }
 
     public Observable<ReservationDTO> getReservation(String confirmationNumber, String firstName, String lastName){
@@ -230,25 +206,16 @@ public class ReservationService {
                     long rentalDuration = ChronoUnit.DAYS.between(reservation.getPickupDate(), reservation.getReturnDate());
                     double basePrice = vehiclePrice * rentalDuration;
 
-                    String pickupTime = reservation.getPickupTime();
-                    String returnTime = reservation.getReturnTime();
-                    String pickupOpeningHours = pickupLocation.getOpeningHours();
-                    String returnOpeningHours = returnLocation.getOpeningHours();
-
-                    try {
-                        if (isAfterHours(pickupTime, pickupOpeningHours).blockingFirst()) {
-                            basePrice += pickupLocation.getAfterHoursFeed();
-                        }
-                        if (isAfterHours(returnTime, returnOpeningHours).blockingFirst()) {
-                            basePrice += returnLocation.getAfterHoursFeed();
-                        }
-                    } catch (DateTimeParseException e) {
-                        log.error("Error parsing time: " + e.getMessage(), e);
-                    }
-
-                    return basePrice;
+                    return Observable.zip(
+                            isAfterHours(reservation.getPickupTime(), pickupLocation.getOpeningHours())
+                                    .map(isAfterHours -> isAfterHours ? pickupLocation.getAfterHoursFeed() : 0),
+                            isAfterHours(reservation.getReturnTime(), returnLocation.getOpeningHours())
+                                    .map(isAfterHours -> isAfterHours ? returnLocation.getAfterHoursFeed() : 0),
+                            (pickupFee, returnFee) -> basePrice + pickupFee + returnFee
+                    );
                 }
-        );
+
+        ).flatMap(priceObservable -> priceObservable);
     }
 
     public Observable<Boolean> isAfterHours(String time, String openingHours) throws DateTimeParseException {
