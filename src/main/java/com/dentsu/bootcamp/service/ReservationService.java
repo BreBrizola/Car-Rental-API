@@ -30,7 +30,7 @@ import java.util.Random;
 public class ReservationService {
 
     public static final String RESERVATION_UPDATED = "Reservation Updated";
-    public static final String RESERVATION__UPDATED_STATUS = "Your reservation has been successfully updated.";
+    public static final String RESERVATION_UPDATED_STATUS = "Your reservation has been successfully updated.";
     public static final String RESERVATION_CANCELLED = "Reservation Cancelled";
     public static final String RESERVATION_CONFIRMED = "Reservation Confirmed";
     public static final String RESERVATION_CREATED_STATUS = "Your reservation has been successfully created.";
@@ -111,51 +111,58 @@ public class ReservationService {
                 .map(reservationEntity -> objectMapper.convertValue(reservationEntity, ReservationDTO.class));
     }
 
-    public ReservationDTO updateReservation(String confirmationNumber, String firstName, String lastName, ReservationEntity updatedReservation) {
-        ReservationEntity existingReservation = reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName);
-        validateReservationExists(existingReservation);
+    public Observable <ReservationDTO> updateReservation(String confirmationNumber, String firstName, String lastName, ReservationEntity updatedReservation) {
+        return Observable.fromCallable(()-> {
+                    ReservationEntity existingReservation = reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName);
+                    validateReservationExists(existingReservation);
+                    return existingReservation;
+                })
+                .flatMap(existingReservation -> Observable.zip(
+                Observable.fromCallable(() -> locationRepository.findById(updatedReservation.getPickupLocation().getId())
+                        .orElseThrow(() -> new LocationNotFoundException("Pickup location not found"))),
+                Observable.fromCallable(() -> locationRepository.findById(updatedReservation.getReturnLocation().getId())
+                        .orElseThrow(() -> new LocationNotFoundException("Return location not found"))),
+                Observable.fromCallable(() -> vehicleRepository.findById(updatedReservation.getVehicle().getId())
+                        .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"))),
+                (pickupLocation, returnLocation, vehicle) -> {
+                    existingReservation.setFirstName(updatedReservation.getFirstName());
+                    existingReservation.setLastName(updatedReservation.getLastName());
+                    existingReservation.setEmail(updatedReservation.getEmail());
+                    existingReservation.setPhone(updatedReservation.getPhone());
+                    existingReservation.setPickupLocation(pickupLocation);
+                    existingReservation.setPickupDate(updatedReservation.getPickupDate());
+                    existingReservation.setReturnLocation(returnLocation);
+                    existingReservation.setReturnDate(updatedReservation.getReturnDate());
+                    existingReservation.setVehicle(vehicle);
+                    existingReservation.setAdditionalProducts(updatedReservation.getAdditionalProducts());
+                    existingReservation.setPickupTime(updatedReservation.getPickupTime());
+                    existingReservation.setReturnTime(updatedReservation.getReturnTime());
 
-        LocationEntity pickupLocation = locationRepository.findById(existingReservation.getPickupLocation().getId())
-                .orElseThrow(() -> new LocationNotFoundException("Location not found"));
-
-        LocationEntity returnLocation = locationRepository.findById(existingReservation.getReturnLocation().getId())
-                .orElseThrow(() -> new LocationNotFoundException("Location not found"));
-
-        VehicleEntity vehicle = vehicleRepository.findById(existingReservation.getVehicle().getId())
-                .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"));
-
-
-        existingReservation.setFirstName(updatedReservation.getFirstName());
-        existingReservation.setLastName(updatedReservation.getLastName());
-        existingReservation.setEmail(updatedReservation.getEmail());
-        existingReservation.setPhone(updatedReservation.getPhone());
-        existingReservation.setPickupLocation(pickupLocation);
-        existingReservation.setPickupDate(updatedReservation.getPickupDate());
-        existingReservation.setReturnLocation(returnLocation);
-        existingReservation.setReturnDate(updatedReservation.getReturnDate());
-        existingReservation.setVehicle(vehicle);
-        existingReservation.setAdditionalProducts(updatedReservation.getAdditionalProducts());
-        existingReservation.setPickupTime(updatedReservation.getPickupTime());
-        existingReservation.setReturnTime(updatedReservation.getReturnTime());
-        existingReservation.setTotalPrice(calculateTotalPrice(updatedReservation).blockingFirst());
-
-        try {
-            emailService.sendMail(
-                    existingReservation.getEmail(),
-                    RESERVATION_UPDATED, existingReservation.getConfirmationNumber(), existingReservation.getFirstName(), existingReservation.getLastName(), RESERVATION__UPDATED_STATUS);
-            log.info("email sent");
-        } catch (Exception e) {
-            log.error("email failed: " + e.getCause());
-        }
-
-        reservationRepository.save(existingReservation);
-
-        ReservationDTO reservationDTO = objectMapper.convertValue(reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(
-                existingReservation.getConfirmationNumber(),
-                existingReservation.getFirstName(),
-                existingReservation.getLastName()), ReservationDTO.class);
-
-        return reservationDTO;
+                    return existingReservation;
+                }))
+                .flatMap(reservation -> calculateTotalPrice(reservation).map(price -> {
+                    reservation.setTotalPrice(price);
+                    reservationRepository.save(reservation);
+                    return reservation;
+                })).flatMap(reservation -> Observable.fromCallable(() -> {
+                            try {
+                                emailService.sendMail(
+                                        reservation.getEmail(),
+                                        RESERVATION_UPDATED, reservation.getConfirmationNumber(),
+                                        reservation.getFirstName(), reservation.getLastName(), RESERVATION_UPDATED_STATUS);
+                                log.info("email sent");
+                            } catch (Exception e) {
+                                log.error("email failed: " + e.getCause());
+                            }
+                            return reservation;
+                        }))
+                        .map(reservation -> {
+                            ReservationEntity updatedReservationEntity = reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(
+                                    reservation.getConfirmationNumber(),
+                                    reservation.getFirstName(),
+                                    reservation.getLastName());
+                            return objectMapper.convertValue(updatedReservationEntity, ReservationDTO.class);
+                        });
     }
 
     public Observable<Boolean> cancelReservation(String confirmationNumber, String firstName, String lastName){
