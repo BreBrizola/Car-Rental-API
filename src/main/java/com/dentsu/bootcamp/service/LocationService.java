@@ -2,6 +2,7 @@ package com.dentsu.bootcamp.service;
 
 import com.dentsu.bootcamp.client.WeatherRetroFitClient;
 import com.dentsu.bootcamp.dto.LocationDTO;
+import com.dentsu.bootcamp.dto.VehicleDTO;
 import com.dentsu.bootcamp.dto.WeatherResponse;
 import com.dentsu.bootcamp.exception.LocationNotFoundException;
 import com.dentsu.bootcamp.model.LocationEntity;
@@ -35,25 +36,24 @@ public class LocationService {
 
     public Observable<List<LocationDTO>> getAllLocations() {
         return Observable.fromCallable(() -> locationRepository.findAll())
-                .flatMap(list -> Observable.fromIterable(list)
+                .map(location -> convertToDTO(location));
+    }
+
+    public List<LocationDTO> convertToDTO(List<LocationEntity> list){
+        return list.stream()
                 .map(location -> objectMapper.convertValue(location, LocationDTO.class))
-                .toList()
-                .toObservable());
+                .toList();
     }
 
     public Observable<LocationDTO> getLocationById(Long id) {
         return Observable.fromCallable(() -> locationRepository.findById(id))
-                .flatMap(optinalLocation -> optinalLocation
-                .map(location -> Observable.just(objectMapper.convertValue(location, LocationDTO.class)))
-                .orElse(Observable.error(new LocationNotFoundException("Location not found"))));
+                .map(location -> objectMapper.convertValue(location, LocationDTO.class));
     }
 
     @Cacheable("locationsByName")
     public Observable<LocationDTO> getLocationByName(String name){
         return Observable.fromCallable(() -> locationRepository.findByName(name))
-                .flatMap(optinalLocation -> optinalLocation
-                .map(location -> Observable.just(objectMapper.convertValue(location, LocationDTO.class)))
-                .orElse(Observable.error(new LocationNotFoundException("Location not found"))));
+                .map(location -> objectMapper.convertValue(location, LocationDTO.class));
     }
 
     public Observable<WeatherResponse> getLocationWeather(LocationEntity locationEntity){
@@ -64,10 +64,8 @@ public class LocationService {
 
     public Observable<List<VehicleEntity>> listVehicles(Long id){
         return Observable.fromCallable(() -> locationRepository.findById(id))
-                .flatMap(optinalLocation -> optinalLocation
-                .map(location -> Observable.fromIterable(location.getVehicleList())
-                .toList()
-                .toObservable())
+                .flatMap(locationOptional -> locationOptional
+                .map(location -> Observable.just(location.getVehicleList()))
                 .orElse(Observable.error(new LocationNotFoundException("Location not found"))));
                 }
-    }
+    }//Não deu pra usar location.getVehicleList direto por ele ser optinal quando é encontrado pelo repository

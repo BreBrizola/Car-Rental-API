@@ -1,6 +1,9 @@
 package com.dentsu.bootcamp.service;
 
 import com.dentsu.bootcamp.dto.AdditionalProductDTO;
+import com.dentsu.bootcamp.dto.LocationDTO;
+import com.dentsu.bootcamp.model.AdditionalProductEntity;
+import com.dentsu.bootcamp.model.LocationEntity;
 import com.dentsu.bootcamp.repository.AdditionalProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.reactivex.rxjava3.core.Observable;
@@ -22,16 +25,17 @@ public class AdditionalProductService {
 
     public Observable<AdditionalProductDTO> getAdditionProducts(long id) {
         return Observable.fromCallable(() -> additionalProductRepository.findById(id))
-                .flatMap(optinalProduct -> optinalProduct
-                .map(product -> Observable.just(objectMapper.convertValue(product, AdditionalProductDTO.class)))
-                .orElse(Observable.error(new RuntimeException("Product not found"))));
+                .map(product -> objectMapper.convertValue(product, AdditionalProductDTO.class));
     }
 
     public Observable<List<AdditionalProductDTO>> getAllAdditionalProducts() {
         return Observable.fromCallable(() -> additionalProductRepository.findAll())
-                .flatMap(list -> Observable.fromIterable(list)
+                .map(products -> convertToDTO(products));
+    }
+
+    public List<AdditionalProductDTO> convertToDTO(List<AdditionalProductEntity> list){
+        return list.stream()
                 .map(product -> objectMapper.convertValue(product, AdditionalProductDTO.class))
-                .toList()
-                .toObservable());
+                .toList();
     }
 }

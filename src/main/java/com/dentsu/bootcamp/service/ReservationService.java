@@ -71,38 +71,20 @@ public class ReservationService {
                             reservation.setVehicle(vehicle);
                             return reservation;
                         })
-                .flatMap(reservationEntity -> generateConfirmationNumber()
-                        .map(confirmationNumber -> {
-                            reservationEntity.setConfirmationNumber(confirmationNumber);
-                            return reservationEntity;
-                        }))
+                .doOnNext(reservationEntity -> reservationEntity.setConfirmationNumber(generateConfirmationNumber()))
                 .flatMap(reservationEntity -> calculateTotalPrice(reservationEntity)
-                        .map(totalPrice -> {
-                            reservationEntity.setTotalPrice(totalPrice);
-                            return reservationEntity;
-                        }))
-                .flatMap(reservationEntity -> Observable.fromCallable(() -> {
-                    reservationRepository.save(reservationEntity);
+                .doOnNext(reservationEntity::setTotalPrice)
+                .map(totalPrice -> reservationEntity))
+                .flatMap(reservationEntity -> Observable.fromCallable(() -> reservationRepository.save(reservationEntity)))
+                .flatMap(reservationEntity -> {
+                    emailService.sendMail(
+                            reservationEntity.getEmail(),
+                            RESERVATION_CONFIRMED, reservationEntity.getConfirmationNumber(),
+                            reservationEntity.getFirstName(), reservationEntity.getLastName(), RESERVATION_CREATED_STATUS);
 
-                    try {
-                        emailService.sendMail(
-                                reservationEntity.getEmail(),
-                                RESERVATION_CONFIRMED, reservationEntity.getConfirmationNumber(),
-                                reservationEntity.getFirstName(), reservationEntity.getLastName(), RESERVATION_CREATED_STATUS);
-                        log.info("email sent");
-                    } catch (Exception e) {
-                        log.error("email failed: " + e.getCause());
-                    }
-
-                    return reservationEntity;
-                }))
-                .flatMap(reservationEntity -> Observable.fromCallable(() -> {
-                    ReservationEntity savedReservation = reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(
-                            reservationEntity.getConfirmationNumber(),
-                            reservationEntity.getFirstName(),
-                            reservationEntity.getLastName());
-                    return objectMapper.convertValue(savedReservation, ReservationDTO.class);
-                }));
+                    return Observable.just(reservationEntity);
+                })
+                .map(reservationEntity -> objectMapper.convertValue(reservationEntity, ReservationDTO.class));
     }
 
     public Observable<ReservationDTO> getReservation(String confirmationNumber, String firstName, String lastName){
@@ -112,57 +94,50 @@ public class ReservationService {
     }
 
     public Observable <ReservationDTO> updateReservation(String confirmationNumber, String firstName, String lastName, ReservationEntity updatedReservation) {
-        return Observable.fromCallable(()-> {
-                    ReservationEntity existingReservation = reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName);
-                    validateReservationExists(existingReservation);
-                    return existingReservation;
-                })
+        return Observable.fromCallable(() -> reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName))
+                .doOnNext(this::validateReservationExists)
                 .flatMap(existingReservation -> Observable.zip(
-                Observable.fromCallable(() -> locationRepository.findById(updatedReservation.getPickupLocation().getId())
-                        .orElseThrow(() -> new LocationNotFoundException("Pickup location not found"))),
-                Observable.fromCallable(() -> locationRepository.findById(updatedReservation.getReturnLocation().getId())
-                        .orElseThrow(() -> new LocationNotFoundException("Return location not found"))),
-                Observable.fromCallable(() -> vehicleRepository.findById(updatedReservation.getVehicle().getId())
-                        .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"))),
-                (pickupLocation, returnLocation, vehicle) -> {
-                    existingReservation.setFirstName(updatedReservation.getFirstName());
-                    existingReservation.setLastName(updatedReservation.getLastName());
-                    existingReservation.setEmail(updatedReservation.getEmail());
-                    existingReservation.setPhone(updatedReservation.getPhone());
-                    existingReservation.setPickupLocation(pickupLocation);
-                    existingReservation.setPickupDate(updatedReservation.getPickupDate());
-                    existingReservation.setReturnLocation(returnLocation);
-                    existingReservation.setReturnDate(updatedReservation.getReturnDate());
-                    existingReservation.setVehicle(vehicle);
-                    existingReservation.setAdditionalProducts(updatedReservation.getAdditionalProducts());
-                    existingReservation.setPickupTime(updatedReservation.getPickupTime());
-                    existingReservation.setReturnTime(updatedReservation.getReturnTime());
+                        Observable.fromCallable(() -> locationRepository.findById(updatedReservation.getPickupLocation().getId())
+                                .orElseThrow(() -> new LocationNotFoundException("Pickup location not found"))),
+                        Observable.fromCallable(() -> locationRepository.findById(updatedReservation.getReturnLocation().getId())
+                                .orElseThrow(() -> new LocationNotFoundException("Return location not found"))),
+                        Observable.fromCallable(() -> vehicleRepository.findById(updatedReservation.getVehicle().getId())
+                                .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"))),
+                        (pickupLocation, returnLocation, vehicle) -> {
+                            existingReservation.setFirstName(updatedReservation.getFirstName());
+                            existingReservation.setLastName(updatedReservation.getLastName());
+                            existingReservation.setEmail(updatedReservation.getEmail());
+                            existingReservation.setPhone(updatedReservation.getPhone());
+                            existingReservation.setPickupLocation(pickupLocation);
+                            existingReservation.setPickupDate(updatedReservation.getPickupDate());
+                            existingReservation.setReturnLocation(returnLocation);
+                            existingReservation.setReturnDate(updatedReservation.getReturnDate());
+                            existingReservation.setVehicle(vehicle);
+                            existingReservation.setAdditionalProducts(updatedReservation.getAdditionalProducts());
+                            existingReservation.setPickupTime(updatedReservation.getPickupTime());
+                            existingReservation.setReturnTime(updatedReservation.getReturnTime());
 
-                    return existingReservation;
-                }))
-                .flatMap(reservation -> calculateTotalPrice(reservation).map(price -> {
-                    reservation.setTotalPrice(price);
-                    reservationRepository.save(reservation);
-                    return reservation;
-                })).flatMap(reservation -> Observable.fromCallable(() -> {
-                            try {
-                                emailService.sendMail(
-                                        reservation.getEmail(),
-                                        RESERVATION_UPDATED, reservation.getConfirmationNumber(),
-                                        reservation.getFirstName(), reservation.getLastName(), RESERVATION_UPDATED_STATUS);
-                                log.info("email sent");
-                            } catch (Exception e) {
-                                log.error("email failed: " + e.getCause());
-                            }
-                            return reservation;
+                            return existingReservation;
                         }))
-                        .map(reservation -> {
-                            ReservationEntity updatedReservationEntity = reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(
-                                    reservation.getConfirmationNumber(),
-                                    reservation.getFirstName(),
-                                    reservation.getLastName());
-                            return objectMapper.convertValue(updatedReservationEntity, ReservationDTO.class);
-                        });
+                .flatMap(reservation -> calculateTotalPrice(reservation)
+                        .map(price -> {
+                            reservation.setTotalPrice(price);
+                            return reservation;
+                        })
+                )
+                .flatMap(reservation -> Observable.fromCallable(() -> reservationRepository.save(reservation)))
+                .flatMap(savedReservation -> Observable.fromCallable(() -> {
+                    emailService.sendMail(
+                            savedReservation.getEmail(),
+                            RESERVATION_UPDATED,
+                            savedReservation.getConfirmationNumber(),
+                            savedReservation.getFirstName(),
+                            savedReservation.getLastName(),
+                            RESERVATION_UPDATED_STATUS
+                    );
+                    return savedReservation;
+                }))
+                .map(savedReservation -> objectMapper.convertValue(savedReservation, ReservationDTO.class));
     }
 
     public Observable<Boolean> cancelReservation(String confirmationNumber, String firstName, String lastName){
@@ -181,16 +156,14 @@ public class ReservationService {
                 .onErrorReturnItem(Boolean.FALSE);
     }
 
-    private Observable<String> generateConfirmationNumber() {
-        return Observable.fromCallable(() -> {Random random = new Random();
+    private String generateConfirmationNumber() {
+        Random random = new Random();
         StringBuilder confirmationNumber = new StringBuilder();
         for (int i = 0; i < 10; i++) {
             confirmationNumber.append(random.nextInt(10));
         }
             return confirmationNumber.toString();
         }
-        );
-    }
 
     public Observable<Double> calculateTotalPrice(ReservationEntity reservation) {
         return Observable.zip(
@@ -209,31 +182,29 @@ public class ReservationService {
                             vehiclePrice += additionalProduct.get().getPrice();
                         }
                     }
+                    //dar uma olhada no que daria pra fazer nessa parte pra usar uma lista de Observable
 
                     long rentalDuration = ChronoUnit.DAYS.between(reservation.getPickupDate(), reservation.getReturnDate());
                     double basePrice = vehiclePrice * rentalDuration;
 
-                    return Observable.zip(
-                            isAfterHours(reservation.getPickupTime(), pickupLocation.getOpeningHours())
-                                    .map(isAfterHours -> isAfterHours ? pickupLocation.getAfterHoursFeed() : 0),
-                            isAfterHours(reservation.getReturnTime(), returnLocation.getOpeningHours())
-                                    .map(isAfterHours -> isAfterHours ? returnLocation.getAfterHoursFeed() : 0),
-                            (pickupFee, returnFee) -> basePrice + pickupFee + returnFee
-                    );
-                }
+                    double pickupFee = isAfterHours(reservation.getPickupTime(), pickupLocation.getOpeningHours())
+                            ? pickupLocation.getAfterHoursFeed() : 0;
+                    double returnFee = isAfterHours(reservation.getReturnTime(), returnLocation.getOpeningHours())
+                            ? returnLocation.getAfterHoursFeed() : 0;
 
-        ).flatMap(priceObservable -> priceObservable);
+                    return basePrice + pickupFee + returnFee;
+                }
+        );
     }
 
-    public Observable<Boolean> isAfterHours(String time, String openingHours) throws DateTimeParseException {
-        return Observable.fromCallable(() -> {DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+    public boolean isAfterHours(String time, String openingHours) throws DateTimeParseException {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         LocalTime localTime = LocalTime.parse(time, timeFormatter);
         String[] hours = openingHours.split("-");
         LocalTime openingTime = LocalTime.parse(hours[0].trim(), timeFormatter);
         LocalTime closingTime = LocalTime.parse(hours[1].trim(), timeFormatter);
 
         return localTime.isBefore(openingTime) || localTime.isAfter(closingTime);
-        });
     }
 
     private void validateReservationExists(ReservationEntity reservation){
