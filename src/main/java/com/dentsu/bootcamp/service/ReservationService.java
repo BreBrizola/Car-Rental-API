@@ -21,6 +21,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
@@ -174,18 +175,14 @@ public class ReservationService {
                 Observable.fromCallable(() -> vehicleRepository.findById(reservation.getVehicle().getId())
                         .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"))),
                 (pickupLocation, returnLocation, vehicle) -> {
-                    double vehiclePrice = vehicle.getPrice();
+                    final double[] vehiclePrice = {vehicle.getPrice()};
 
-                    for (AdditionalProductEntity item : reservation.getAdditionalProducts()) {
-                        Optional<AdditionalProductEntity> additionalProduct = additionalProductRepository.findById(item.getId());
-                        if (additionalProduct.isPresent()) {
-                            vehiclePrice += additionalProduct.get().getPrice();
-                        }
-                    }
-                    //dar uma olhada no que daria pra fazer nessa parte pra usar uma lista de Observable
+                    List<Long> productList = reservation.getAdditionalProducts().stream().map(product -> product.getId()).toList();
+                    Observable.fromIterable(additionalProductRepository.findAllById(productList))
+                            .forEach(product -> vehiclePrice[0] += product.getPrice());
 
                     long rentalDuration = ChronoUnit.DAYS.between(reservation.getPickupDate(), reservation.getReturnDate());
-                    double basePrice = vehiclePrice * rentalDuration;
+                    double basePrice = vehiclePrice[0] * rentalDuration;
 
                     double pickupFee = isAfterHours(reservation.getPickupTime(), pickupLocation.getOpeningHours())
                             ? pickupLocation.getAfterHoursFeed() : 0;

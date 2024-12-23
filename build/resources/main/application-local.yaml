@@ -1,5 +1,5 @@
 apiKeys:
-  weatherApiKey: accb42b433fc4d23898223148242011
+  weatherApiKey: 63116e295a0d4a11b4f02500242212
 
 spring:
     mail:

@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,7 +60,7 @@ class ReservationServiceTest {
 
         when(locationRepository.findById(123L)).thenReturn(Optional.empty());
 
-        assertThrows(LocationNotFoundException.class, () -> reservationService.createReservation(reservationTest));
+        assertThrows(LocationNotFoundException.class, () -> reservationService.createReservation(reservationTest).blockingFirst());
     }
 
     @Test
@@ -73,7 +74,7 @@ class ReservationServiceTest {
         when(locationRepository.findById(1L)).thenReturn(Optional.of(new LocationEntity()));
         when(locationRepository.findById(456L)).thenReturn(Optional.empty());
 
-        assertThrows(LocationNotFoundException.class, () -> reservationService.createReservation(reservationTest));
+        assertThrows(LocationNotFoundException.class, () -> reservationService.createReservation(reservationTest).blockingFirst());
     }
 
     @Test
@@ -90,7 +91,7 @@ class ReservationServiceTest {
         when(locationRepository.findById(2L)).thenReturn(Optional.of(new LocationEntity()));
         when(vehicleRepository.findById(789L)).thenReturn(Optional.empty());
 
-        assertThrows(VehicleNotFoundException.class, () -> reservationService.createReservation(reservationTest));
+        assertThrows(VehicleNotFoundException.class, () -> reservationService.createReservation(reservationTest).blockingFirst());
     }
 
 
@@ -235,7 +236,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    public void givenCalculateTotalPrice_WhenHasAdditionalProducts_thenReturnCorrectPrice(){
+    public void givenCalculateTotalPrice_WhenHasAdditionalProducts_thenReturnCorrectPrice() {
         ReservationEntity reservation = new ReservationEntity();
         reservation.setPickupDate(LocalDate.now());
         reservation.setReturnDate(LocalDate.now().plusDays(3));
@@ -267,13 +268,13 @@ class ReservationServiceTest {
         reservation.setVehicle(vehicle);
         reservation.setPickupLocation(pickupLocation);
         reservation.setReturnLocation(returnLocation);
-        reservation.setAdditionalProducts(List.of(product1,product2));
+        reservation.setAdditionalProducts(List.of(product1, product2));
 
         when(vehicleRepository.findById(1L)).thenReturn(Optional.of(vehicle));
         when(locationRepository.findById(1L)).thenReturn(Optional.of(pickupLocation));
         when(locationRepository.findById(2L)).thenReturn(Optional.of(returnLocation));
-        when(additionalProductRepository.findById(1L)).thenReturn(Optional.of(product1));
-        when(additionalProductRepository.findById(2L)).thenReturn(Optional.of(product2));
+        when(additionalProductRepository.findAllById(anyList()))
+                .thenReturn(List.of(product1, product2));
 
         double totalPrice = reservationService.calculateTotalPrice(reservation).blockingFirst();
 
@@ -295,7 +296,7 @@ class ReservationServiceTest {
         String time = "07:30";
         String openingHours = "08:00 - 18:00";
 
-        boolean result = reservationService.isAfterHours(time, openingHours).blockingFirst();
+        boolean result = reservationService.isAfterHours(time, openingHours);
 
         assertTrue(result);
     }
@@ -305,7 +306,7 @@ class ReservationServiceTest {
         String time = "20:00";
         String openingHours = "08:00 - 18:00";
 
-        boolean result = reservationService.isAfterHours(time, openingHours).blockingFirst();
+        boolean result = reservationService.isAfterHours(time, openingHours);
 
         assertTrue(result);
     }
@@ -315,7 +316,7 @@ class ReservationServiceTest {
         String time = "15:00";
         String openingHours = "08:00 - 18:00";
 
-        boolean result = reservationService.isAfterHours(time, openingHours).blockingFirst();
+        boolean result = reservationService.isAfterHours(time, openingHours);
 
         assertFalse(result);
     }

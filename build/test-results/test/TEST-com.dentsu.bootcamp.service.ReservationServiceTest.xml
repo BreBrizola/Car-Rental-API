@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.dentsu.bootcamp.service.ReservationServiceTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-12-17T12:35:57" hostname="BR-FVFFH46JQ6LT" time="0.717">
+<testsuite name="com.dentsu.bootcamp.service.ReservationServiceTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-12-23T02:26:58" hostname="BR-FVFFH46JQ6LT" time="0.731">
   <properties/>
-  <testcase name="givenCreateReservation_WhenCalculateTotalPrice_thenReturnCorrectPrice()" classname="com.dentsu.bootcamp.service.ReservationServiceTest" time="0.717"/>
+  <testcase name="givenCalculateTotalPrice_WhenHasAdditionalProducts_thenReturnCorrectPrice()" classname="com.dentsu.bootcamp.service.ReservationServiceTest" time="0.731"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
