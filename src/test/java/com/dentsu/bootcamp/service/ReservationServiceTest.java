@@ -46,6 +46,9 @@ class ReservationServiceTest {
     @Mock
     private AdditionalProductRepository additionalProductRepository;
 
+    @Mock
+    private EmailService emailService;
+
     //@Mock
     //private LocationService locationService;
 
@@ -157,10 +160,10 @@ class ReservationServiceTest {
         when(reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(
                 confirmationNumber, firstName, lastName)).thenReturn(reservationEntity);
 
-        reservationService.cancelReservation(confirmationNumber, firstName, lastName);
+        Boolean b = reservationService.cancelReservation(confirmationNumber, firstName, lastName).blockingFirst();
 
         verify(reservationRepository,times(1)).delete(reservationEntity);
-        //adicionar times no verify
+        assertTrue(b);
     }
 
     @Test
