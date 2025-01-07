@@ -10,7 +10,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 @Data
-@Entity
+@Entity (name = "additional_product")
 public class AdditionalProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

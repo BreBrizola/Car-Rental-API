@@ -22,9 +22,10 @@ import org.springframework.security.web.context.SecurityContextRepository;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http.authorizeHttpRequests(auth ->
-                auth.requestMatchers ("login") .permitAll()
+                auth.requestMatchers ("login/login").permitAll()
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .securityContext(securityContext -> securityContext.securityContextRepository(securityContextRepository()));

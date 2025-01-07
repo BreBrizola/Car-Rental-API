@@ -15,7 +15,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
-@Entity
+@Entity (name = "reservation")
 public class ReservationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

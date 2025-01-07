@@ -13,7 +13,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@Entity
+@Entity (name = "vehicle")
 public class VehicleEntity {
 
     @Id
