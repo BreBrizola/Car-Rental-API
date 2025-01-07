@@ -1,11 +1,10 @@
 spring:
   datasource:
-    datasource:
-      username: sa
-      initialization-mode: always
-      url: jdbc:h2:mem:testdb
-      driverClassName: org.h2.Driver
-      password: password
+    username: sa
+    initialization-mode: always
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    password: password
   application:
     name: car-rental
   jpa:

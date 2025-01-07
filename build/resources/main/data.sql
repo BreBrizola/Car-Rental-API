@@ -42,7 +42,7 @@ CREATE TABLE reservation (
     FOREIGN KEY (vehicle_id) REFERENCES vehicle(id)
 );
 
-//Inserts
+--Inserts
 INSERT INTO location (name, address, opening_hours, after_hours_fee)
 VALUES
     ('ZoomCar Rentals', 'Rua das Flores, 750, Belo Horizonte, MG, 30110-010', '07:00 - 19:00', 40.00),
