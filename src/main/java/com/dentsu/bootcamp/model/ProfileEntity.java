@@ -15,10 +15,8 @@ import java.time.LocalDate;
 @Data
 @Entity(name = "profile")
 public class ProfileEntity {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long loyaltyNumber;
+    private String loyaltyNumber;
     private String firstName;
     private String lastName;
     private String email;

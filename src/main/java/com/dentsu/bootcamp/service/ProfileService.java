@@ -1,7 +1,9 @@
 package com.dentsu.bootcamp.service;
 
+import com.dentsu.bootcamp.dto.ProfileDTO;
 import com.dentsu.bootcamp.model.ProfileEntity;
 import com.dentsu.bootcamp.repository.ProfileRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hibernate.validator.internal.constraintvalidators.bv.AssertFalseValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,15 +11,16 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ProfileService {
-    private final AssertFalseValidator assertFalseValidator;
     private ProfileRepository profileRepository;
+    private ObjectMapper objectMapper;
 
-    public ProfileService(ProfileRepository profileRepository, AssertFalseValidator assertFalseValidator){
+    public ProfileService(ProfileRepository profileRepository, ObjectMapper objectMapper){
         this.profileRepository = profileRepository;
-        this.assertFalseValidator = assertFalseValidator;
+        this.objectMapper = objectMapper;
     }
 
     public ResponseEntity<String> userProfileSearch(String driversLicenseNumber, String lastName, String issuingCountry, String issuingAuthority){
@@ -34,17 +37,33 @@ public class ProfileService {
         }
     }
 
-    public ProfileEntity submitPersonalInformation(ProfileEntity profileEntity){
-        if (!isLegalAge(profileEntity.getDateOfBirth(), profileEntity.getAddress().getCountry())) {
-        throw new IllegalArgumentException("User must be at Legal Age");
-        }
-        if(!isValidEmail(profileEntity.getEmail())){
-        throw new IllegalArgumentException("Provided email is invalid, please try again");
-        }
+    public ResponseEntity<String> submitPersonalInformation(ProfileEntity profileEntity){
+        try {
+            if (!isLegalAge(profileEntity.getDateOfBirth(), profileEntity.getAddress().getCountry())) {
+                throw new IllegalArgumentException("User must be at Legal Age");
+            }
+            if (!isValidEmail(profileEntity.getEmail())) {
+                throw new IllegalArgumentException("Provided email is invalid, please try again");
+            }
+            if (!isDriversLicenseValid(profileEntity.getDriversLicense().getLicenseExpirationDate())) {
+                throw new IllegalArgumentException("Driver's License is expired.");
+            }
 
-        if(!isDriversLicenseValid(profileEntity.getDriversLicense().getLicenseExpirationDate())){
-            throw new IllegalArgumentException("Driver's License is expired.");
+            profileEntity.setLoyaltyNumber(generateLoyaltyNumber());
+            profileRepository.save(profileEntity);
+
+            String confirmationMessage = "Enrollment successful! Your loyalty number is " + profileEntity.getLoyaltyNumber();
+
+            return ResponseEntity.ok(confirmationMessage);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    private String generateLoyaltyNumber(){
+        UUID loyaltyNumber = UUID.randomUUID();
+        return loyaltyNumber.toString();
     }
 
     private boolean isLegalAge(LocalDate dateOfBirth, String country){
@@ -63,7 +82,6 @@ public class ProfileService {
         if(dotIndex <= index + 1){
             return false;
         }
-
         return true;
     }
 
