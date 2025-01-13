@@ -1,53 +1,28 @@
 package com.dentsu.bootcamp.controller;
 
-import com.dentsu.bootcamp.dto.LoginRequest;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextHolderStrategy;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.context.SecurityContextRepository;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import com.dentsu.bootcamp.service.ProfileService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("login")
+@RequestMapping("enroll")
 public class ProfileController {
+    private ProfileService profileService;
 
-    private final AuthenticationManager authenticationManager;
-    private final SecurityContextRepository securityContextRepository;
-    private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
-    private final SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
-
-    public ProfileController(AuthenticationManager authenticationManager, SecurityContextRepository securityContextRepository) {
-        this.authenticationManager = authenticationManager;
-        this.securityContextRepository = securityContextRepository;
+    public ProfileController(ProfileService profileService) {
+        this.profileService = profileService;
     }
 
-    @PostMapping("/login")
-    public void login(@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response){
-        Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.username(), loginRequest.password());
-        Authentication authenticationResponse = authenticationManager.authenticate(authenticationRequest);
+    @GetMapping("/profileSearch")
+    public ResponseEntity<String> searchUserProfile(
+            @RequestParam String driversLicenseNumber,
+            @RequestParam String lastName,
+            @RequestParam String issuingCountry,
+            @RequestParam(required = false) String issuingAuthority) {
 
-        if(authenticationResponse.isAuthenticated()){
-            SecurityContext securityContext = securityContextHolderStrategy.createEmptyContext();
-            securityContext.setAuthentication(authenticationResponse);
-            securityContextHolderStrategy.setContext(securityContext);
-            securityContextRepository.saveContext(securityContext, request, response);
-        }
+        return profileService.userProfileSearch(driversLicenseNumber, lastName, issuingCountry, issuingAuthority);
     }
-
-    @PostMapping("/logout")
-        public String logout(HttpServletRequest request, HttpServletResponse response){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        this.logoutHandler.logout(request, response, authentication);
-        return "logout sucessful";
-    } //Da pra fazer passando authentication como parametro tambem
 }

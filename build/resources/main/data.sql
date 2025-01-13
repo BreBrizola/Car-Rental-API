@@ -42,6 +42,34 @@ CREATE TABLE reservation (
     FOREIGN KEY (vehicle_id) REFERENCES vehicle(id)
 );
 
+CREATE TABLE login (
+                       id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                       username VARCHAR(255) NOT NULL,
+                       password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE profile (
+                         loyalty_number BIGINT AUTO_INCREMENT PRIMARY KEY,
+                         first_name VARCHAR(255) NOT NULL,
+                         last_name VARCHAR(255) NOT NULL,
+                         email VARCHAR(255) NOT NULL,
+                         phone VARCHAR(255) NOT NULL,
+                         date_of_birth DATE,
+                         address_type VARCHAR(255),
+                         city VARCHAR(255),
+                         country VARCHAR(255),
+                         country_subdivision VARCHAR(255),
+                         postal VARCHAR(255),
+                         street_addresses VARCHAR(255),
+                         country_code VARCHAR(255),
+                         country_subdivision_code VARCHAR(255),
+                         drivers_license_number VARCHAR(255),
+                         drivers_license_state VARCHAR(255),
+                         drivers_license_expiry DATE,
+                         login_id BIGINT,
+                         FOREIGN KEY (login_id) REFERENCES login(id)
+);
+
 --Inserts
 INSERT INTO location (name, address, opening_hours, after_hours_fee)
 VALUES
@@ -98,3 +126,4 @@ VALUES
     ('Sunroof Cover', 18, 8);
 
 COMMIT;
+--http://localhost:8090/h2-console
