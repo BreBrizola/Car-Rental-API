@@ -4,10 +4,7 @@ import com.dentsu.bootcamp.dto.ReservationDTO;
 import com.dentsu.bootcamp.exception.LocationNotFoundException;
 import com.dentsu.bootcamp.exception.ReservationNotFoundException;
 import com.dentsu.bootcamp.exception.VehicleNotFoundException;
-import com.dentsu.bootcamp.model.AdditionalProductEntity;
-import com.dentsu.bootcamp.model.LocationEntity;
 import com.dentsu.bootcamp.model.ReservationEntity;
-import com.dentsu.bootcamp.model.VehicleEntity;
 import com.dentsu.bootcamp.repository.AdditionalProductRepository;
 import com.dentsu.bootcamp.repository.LocationRepository;
 import com.dentsu.bootcamp.repository.ProfileRepository;
@@ -24,7 +21,6 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Random;
 
 @Service

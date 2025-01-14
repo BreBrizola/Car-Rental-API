@@ -8,6 +8,7 @@ import com.dentsu.bootcamp.service.LocationService;
 import io.reactivex.rxjava3.core.Observable;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,7 @@ import java.util.List;
 @RequestMapping("location")
 public class LocationController {
 
+    @Resource
     private LocationService locationService;
 
     private WeatherRetroFitClient weatherRetroFitClient;
