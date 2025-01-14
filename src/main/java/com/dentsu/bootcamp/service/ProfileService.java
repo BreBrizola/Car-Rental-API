@@ -67,6 +67,24 @@ public class ProfileService {
         }
     }
 
+    public ProfileDTO editPersonalInformation(String loyaltyNumber, ProfileEntity updatedProfile){
+        Optional<ProfileEntity> existingProfileOpt = profileRepository.findByLoyaltyNumber(loyaltyNumber);
+
+        ProfileEntity existingProfile = existingProfileOpt.orElseThrow(() ->
+                new RuntimeException("Profile not found with loyalty number: " + loyaltyNumber)
+        );
+
+        existingProfile.setEmail(updatedProfile.getEmail());
+        existingProfile.setPhone(updatedProfile.getPhone());
+        existingProfile.setAddress(updatedProfile.getAddress());
+        existingProfile.setDriversLicense(updatedProfile.getDriversLicense());
+        existingProfile.setLogin(updatedProfile.getLogin());
+
+        profileRepository.save(existingProfile);
+
+        return objectMapper.convertValue(existingProfile, ProfileDTO.class);
+    }
+
     private String generateLoyaltyNumber(){
         UUID loyaltyNumber = UUID.randomUUID();
         return loyaltyNumber.toString();
