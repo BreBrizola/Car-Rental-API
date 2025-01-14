@@ -10,6 +10,7 @@ import com.dentsu.bootcamp.model.ReservationEntity;
 import com.dentsu.bootcamp.model.VehicleEntity;
 import com.dentsu.bootcamp.repository.AdditionalProductRepository;
 import com.dentsu.bootcamp.repository.LocationRepository;
+import com.dentsu.bootcamp.repository.ProfileRepository;
 import com.dentsu.bootcamp.repository.ReservationRepository;
 import com.dentsu.bootcamp.repository.VehicleRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,28 +49,34 @@ public class ReservationService {
 
     private final EmailService emailService;
 
+    private final ProfileRepository profileRepository;
+
     public ReservationService(ReservationRepository reservationRepository, LocationRepository locationRepository, VehicleRepository vehicleRepository,
-                              ObjectMapper objectMapper, AdditionalProductRepository additionalProductRepository, EmailService emailService){
+                              ObjectMapper objectMapper, AdditionalProductRepository additionalProductRepository, EmailService emailService, ProfileRepository profileRepository){
         this.reservationRepository = reservationRepository;
         this.locationRepository = locationRepository;
         this.vehicleRepository = vehicleRepository;
         this.objectMapper = objectMapper;
         this.additionalProductRepository = additionalProductRepository;
         this.emailService = emailService;
+        this.profileRepository = profileRepository;
     }
 
     public Observable<ReservationDTO> createReservation(ReservationEntity reservation) {
         return Observable.zip(
+                        Observable.fromCallable(() -> profileRepository.findByLoyaltyNumber(reservation.getProfile().getLoyaltyNumber())
+                                .orElseThrow(() -> new RuntimeException("Invalid loyalty number"))),
                         Observable.fromCallable(() -> locationRepository.findById(reservation.getPickupLocation().getId())
                                 .orElseThrow(() -> new LocationNotFoundException("Pickup location not found"))),
                         Observable.fromCallable(() -> locationRepository.findById(reservation.getReturnLocation().getId())
                                 .orElseThrow(() -> new LocationNotFoundException("Return location not found"))),
                         Observable.fromCallable(() -> vehicleRepository.findById(reservation.getVehicle().getId())
                                 .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"))),
-                        (pickupLocation, returnLocation, vehicle) -> {
+                        (profile, pickupLocation, returnLocation, vehicle) -> {
                             reservation.setPickupLocation(pickupLocation);
                             reservation.setReturnLocation(returnLocation);
                             reservation.setVehicle(vehicle);
+                            reservation.setProfile(profile);
                             return reservation;
                         })
                 .doOnNext(reservationEntity -> reservationEntity.setConfirmationNumber(generateConfirmationNumber()))
@@ -140,6 +147,7 @@ public class ReservationService {
                 }))
                 .map(savedReservation -> objectMapper.convertValue(savedReservation, ReservationDTO.class));
     }
+//Nao coloquei a opção de mudar o loyaltyNumber da reservation porque nao faria muito sentido dar essa opção ao usuario
 
     public Observable<Boolean> cancelReservation(String confirmationNumber, String firstName, String lastName){
         return Observable.fromCallable(()-> reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName))

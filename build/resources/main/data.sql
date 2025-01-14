@@ -22,26 +22,6 @@ CREATE TABLE additional_product (
     FOREIGN KEY (vehicle_id) REFERENCES vehicle(id)
 );
 
-CREATE TABLE reservation (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    first_name VARCHAR(255) NOT NULL,
-    last_name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    phone VARCHAR(255) NOT NULL,
-    confirmation_number VARCHAR(10) NOT NULL,
-    total_price DOUBLE NOT NULL,
-    pickup_location_id BIGINT,
-    return_location_id BIGINT,
-    vehicle_id BIGINT,
-    pickup_date DATE,
-    return_date DATE,
-    pickup_time VARCHAR(255),
-    return_time VARCHAR(255),
-    FOREIGN KEY (pickup_location_id) REFERENCES location(id),
-    FOREIGN KEY (return_location_id) REFERENCES location(id),
-    FOREIGN KEY (vehicle_id) REFERENCES vehicle(id)
-);
-
 CREATE TABLE login (
                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
                        username VARCHAR(255) NOT NULL,
@@ -67,6 +47,28 @@ CREATE TABLE profile (
                          drivers_license_expiry DATE,
                          login_id BIGINT,
                          FOREIGN KEY (login_id) REFERENCES login(id)
+);
+
+CREATE TABLE reservation (
+                             id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                             loyalty_number VARCHAR(255) NOT NULL,
+                             first_name VARCHAR(255) NOT NULL,
+                             last_name VARCHAR(255) NOT NULL,
+                             email VARCHAR(255) NOT NULL,
+                             phone VARCHAR(255) NOT NULL,
+                             confirmation_number VARCHAR(10) NOT NULL,
+                             total_price DOUBLE NOT NULL,
+                             pickup_location_id BIGINT,
+                             return_location_id BIGINT,
+                             vehicle_id BIGINT,
+                             pickup_date DATE,
+                             return_date DATE,
+                             pickup_time VARCHAR(255),
+                             return_time VARCHAR(255),
+                             FOREIGN KEY (pickup_location_id) REFERENCES location(id),
+                             FOREIGN KEY (return_location_id) REFERENCES location(id),
+                             FOREIGN KEY (vehicle_id) REFERENCES vehicle(id),
+                             FOREIGN KEY (loyalty_number) REFERENCES profile(loyalty_number)
 );
 
 --Inserts

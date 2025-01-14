@@ -10,6 +10,9 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public record ProfileDTO(
+        @JsonProperty("loyaltyNumber")
+        String loyaltyNumber,
+
         @JsonProperty("firstName")
         @NotEmpty(message = "First name is required.")
         String firstName,

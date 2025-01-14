@@ -1,15 +1,17 @@
 package com.dentsu.bootcamp.dto;
 
+import com.dentsu.bootcamp.model.ProfileEntity;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public record ReservationDTO (
         @JsonProperty("id") Long id,
-        @JsonProperty("confirmationNumber") String confirmationNumber,
+        @JsonProperty("confirmationNumber") @NotBlank(message = "Loyalty number is required") String confirmationNumber,
         @JsonProperty("firstName") @NotBlank(message = "First name is required") String firstName,
         @JsonProperty("lastName") @NotBlank(message = "Last name is required") String lastName,
         @JsonProperty("email") @NotBlank(message = "Email is required") String email,

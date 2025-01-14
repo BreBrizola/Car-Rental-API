@@ -30,8 +30,10 @@ public class ReservationEntity {
     private LocalDate returnDate;
     private String pickupTime;
     private  String returnTime;
-    //private boolean pickupAfterHours;
-    //private boolean returnAfterHours;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "loyalty_number")
+    private ProfileEntity profile;
 
     @ManyToOne
     @JoinColumn(name = "pickup_location_id")
