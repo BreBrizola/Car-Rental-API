@@ -49,13 +49,12 @@ CREATE TABLE login (
 );
 
 CREATE TABLE profile (
-                         loyalty_number BIGINT AUTO_INCREMENT PRIMARY KEY,
+                         loyalty_number VARCHAR(255) PRIMARY KEY,
                          first_name VARCHAR(255) NOT NULL,
                          last_name VARCHAR(255) NOT NULL,
                          email VARCHAR(255) NOT NULL,
                          phone VARCHAR(255) NOT NULL,
                          date_of_birth DATE,
-                         address_type VARCHAR(255),
                          city VARCHAR(255),
                          country VARCHAR(255),
                          country_subdivision VARCHAR(255),

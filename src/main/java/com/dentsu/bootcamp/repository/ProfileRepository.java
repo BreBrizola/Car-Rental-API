@@ -14,4 +14,6 @@ public interface ProfileRepository  extends JpaRepository<ProfileEntity, Long> {
             String countryCode,
             String countrySubdivision
     );
+
+    Optional<ProfileEntity> findByLoyaltyNumber(String loyaltyNumber);
 }

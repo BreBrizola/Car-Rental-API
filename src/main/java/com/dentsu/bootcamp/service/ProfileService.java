@@ -37,6 +37,12 @@ public class ProfileService {
         }
     }
 
+    public ProfileDTO getProfile(String loyaltyNumber){
+        Optional<ProfileEntity> profile = profileRepository.findByLoyaltyNumber(loyaltyNumber);
+
+        return objectMapper.convertValue(profile, ProfileDTO.class);
+    }
+
     public ResponseEntity<String> submitPersonalInformation(ProfileEntity profileEntity){
         try {
             if (!isLegalAge(profileEntity.getDateOfBirth(), profileEntity.getAddress().getCountry())) {
