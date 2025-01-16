@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("enroll")
 public class ProfileController {
@@ -46,5 +48,10 @@ public class ProfileController {
     @PutMapping("/editProfile")
     public ProfileDTO editProfile(@RequestParam String loyaltyNumber, @RequestBody ProfileEntity updatedProfile){
         return profileService.editPersonalInformation(loyaltyNumber, updatedProfile);
+    }
+
+    @GetMapping("/StatesAndProvinces/{country}")
+    public List<String> getStatesAndProvinces(@PathVariable String country){
+        return profileService.getStatesAndProvinces(country);
     }
 }

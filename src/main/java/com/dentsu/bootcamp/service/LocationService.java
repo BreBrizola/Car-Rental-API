@@ -13,6 +13,7 @@ import io.reactivex.rxjava3.core.Observable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,13 +27,16 @@ public class LocationService {
 
     private final ObjectMapper objectMapper;
 
+    private RedisTemplate<String, Object> redisTemplate;
+
     private String apiKey;
 
-    public LocationService(LocationRepository locationRepository, WeatherRetroFitClient weatherRetroFitClient, ObjectMapper objectMapper, @Value("${apiKeys.weatherApiKey}") String apiKey){
+    public LocationService(LocationRepository locationRepository, WeatherRetroFitClient weatherRetroFitClient, ObjectMapper objectMapper, @Value("${apiKeys.weatherApiKey}") String apiKey, RedisTemplate<String, Object> redisTemplate){
         this.locationRepository = locationRepository;
         this.weatherRetroFitClient = weatherRetroFitClient;
         this.objectMapper = objectMapper;
         this.apiKey = apiKey;
+        this.redisTemplate = redisTemplate;
     }
 
     public Observable<List<LocationDTO>> getAllLocations() {

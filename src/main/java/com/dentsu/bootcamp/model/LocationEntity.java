@@ -6,7 +6,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
-import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
 import java.util.List;

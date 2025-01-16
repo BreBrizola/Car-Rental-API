@@ -10,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -83,6 +86,26 @@ public class ProfileService {
         profileRepository.save(existingProfile);
 
         return objectMapper.convertValue(existingProfile, ProfileDTO.class);
+    }
+
+    public List<String> getStatesAndProvinces(String country){
+        List<String> statesAndProvinces = new ArrayList<>();
+        if(country.equalsIgnoreCase("USA") || country.equalsIgnoreCase("United States")){
+            statesAndProvinces.addAll(Arrays.asList(
+                    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN",
+                    "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV",
+                    "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN",
+                    "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+            ));
+        }
+
+        if(country.equalsIgnoreCase("CA") || country.equalsIgnoreCase("Canada")){
+            statesAndProvinces.addAll(Arrays.asList(
+                    "AB", "BC", "MB", "NB", "NL", "NS", "ON", "PE", "QC", "SK"
+            ));
+        }
+
+        return statesAndProvinces;
     }
 
     private String generateLoyaltyNumber(){
