@@ -4,7 +4,6 @@ import com.dentsu.bootcamp.dto.ProfileDTO;
 import com.dentsu.bootcamp.model.ProfileEntity;
 import com.dentsu.bootcamp.repository.ProfileRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hibernate.validator.internal.constraintvalidators.bv.AssertFalseValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
