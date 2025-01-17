@@ -1,7 +1,9 @@
 package com.dentsu.bootcamp.service;
 
 import com.dentsu.bootcamp.dto.ProfileDTO;
+import com.dentsu.bootcamp.model.DriversLicenseEntity;
 import com.dentsu.bootcamp.model.ProfileEntity;
+import com.dentsu.bootcamp.repository.DriversLicenseRepository;
 import com.dentsu.bootcamp.repository.ProfileRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
@@ -19,19 +21,21 @@ import java.util.UUID;
 public class ProfileService {
     private ProfileRepository profileRepository;
     private ObjectMapper objectMapper;
+    private DriversLicenseRepository driversLicenseRepository;
 
-    public ProfileService(ProfileRepository profileRepository, ObjectMapper objectMapper){
+    public ProfileService(ProfileRepository profileRepository, ObjectMapper objectMapper, DriversLicenseRepository driversLicenseRepository){
         this.profileRepository = profileRepository;
         this.objectMapper = objectMapper;
+        this.driversLicenseRepository = driversLicenseRepository;
     }
 
     public ResponseEntity<String> userProfileSearch(String driversLicenseNumber, String lastName, String issuingCountry, String issuingAuthority){
-        Optional<ProfileEntity> existingProfile = profileRepository.findByDriversLicense_LicenseNumberAndLastNameAndDriversLicense_CountryCodeAndDriversLicense_CountrySubdivision(
-                driversLicenseNumber,
-                lastName,
-                issuingCountry,
-                issuingAuthority
+        Optional<DriversLicenseEntity> driversLicense = driversLicenseRepository.findByLicenseNumberAndCountryCodeAndCountrySubdivision(
+                driversLicenseNumber, issuingCountry, issuingAuthority
         );
+
+        Optional<ProfileEntity> existingProfile = driversLicense.flatMap(dl -> profileRepository.findByDriversLicenseAndLastName(dl, lastName));
+
         if (existingProfile.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("There is already an account with this driver's license, please login");
         } else {
