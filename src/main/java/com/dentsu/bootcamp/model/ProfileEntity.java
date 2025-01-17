@@ -21,11 +21,13 @@ public class ProfileEntity {
     private String phone;
     private LocalDate dateOfBirth;
 
-    @Embedded
-    private Address address;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id", referencedColumnName = "id")
+    private AddressEntity address;
 
-    @Embedded
-    private DriversLicense driversLicense;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "driversLicense_id", referencedColumnName = "id")
+    private DriversLicenseEntity driversLicense;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "login_id")

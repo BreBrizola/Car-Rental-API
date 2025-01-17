@@ -1,12 +1,19 @@
 package com.dentsu.bootcamp.model;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import lombok.Data;
+import jakarta.persistence.Id;
 
 @Data
-@Embeddable
-public class Address {
+@Entity
+public class AddressEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String city;
     private String country;
 

@@ -1,7 +1,7 @@
 package com.dentsu.bootcamp.dto;
 
-import com.dentsu.bootcamp.model.Address;
-import com.dentsu.bootcamp.model.DriversLicense;
+import com.dentsu.bootcamp.model.AddressEntity;
+import com.dentsu.bootcamp.model.DriversLicenseEntity;
 import com.dentsu.bootcamp.model.LoginEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
@@ -35,11 +35,11 @@ public record ProfileDTO(
 
         @JsonProperty("address")
         @NotNull(message = "Address is required.")
-        Address address,
+        AddressEntity addressEntity,
 
         @JsonProperty("driversLicense")
         @NotNull(message = "Driver's license is required.")
-        DriversLicense driversLicense,
+        DriversLicenseEntity driversLicenseEntity,
 
         @JsonProperty("login")
         @NotNull(message = "Login credentials are required.")

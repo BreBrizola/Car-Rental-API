@@ -28,6 +28,23 @@ CREATE TABLE login (
                        password VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE Address (
+                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                         city VARCHAR(255),
+                         country VARCHAR(255),
+                         COUNTRY_SUBDIVISION VARCHAR(255),
+                         postal VARCHAR(255),
+                         streetAddresses VARCHAR(255)
+);
+
+CREATE TABLE DriversLicense (
+                                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                countryCode VARCHAR(255),
+                                DRIVERS_LICENSE_STATE VARCHAR(255),
+                                DRIVERS_LICENSE_EXPIRY DATE,
+                                DRIVERS_LICENSE_NUMBER VARCHAR(255)
+);
+
 CREATE TABLE profile (
                          loyalty_number VARCHAR(255) PRIMARY KEY,
                          first_name VARCHAR(255) NOT NULL,
