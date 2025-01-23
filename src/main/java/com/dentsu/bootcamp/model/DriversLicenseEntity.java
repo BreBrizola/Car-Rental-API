@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 import java.time.LocalDate;
 
 @Data
-@Entity
+@Entity(name = "driversLicense")
 public class DriversLicenseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

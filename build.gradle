@@ -44,6 +44,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'redis.clients:jedis:5.2.0'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive:3.4.1'
+	implementation 'org.springframework.session:spring-session-data-redis:3.4.1'
 	runtimeOnly 'com.h2database:h2'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

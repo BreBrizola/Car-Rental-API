@@ -9,9 +9,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
 @Entity (name = "additional_product")
-public class AdditionalProductEntity {
+public class AdditionalProductEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -1,10 +1,13 @@
 package com.dentsu.bootcamp.service;
 
 import com.dentsu.bootcamp.dto.ReservationDTO;
+import com.dentsu.bootcamp.dto.Session;
 import com.dentsu.bootcamp.exception.LocationNotFoundException;
 import com.dentsu.bootcamp.exception.ReservationNotFoundException;
 import com.dentsu.bootcamp.exception.VehicleNotFoundException;
+import com.dentsu.bootcamp.model.AdditionalProductEntity;
 import com.dentsu.bootcamp.model.ReservationEntity;
+import com.dentsu.bootcamp.model.VehicleEntity;
 import com.dentsu.bootcamp.repository.AdditionalProductRepository;
 import com.dentsu.bootcamp.repository.LocationRepository;
 import com.dentsu.bootcamp.repository.ProfileRepository;
@@ -47,8 +50,10 @@ public class ReservationService {
 
     private final ProfileRepository profileRepository;
 
+    private Session session;
+
     public ReservationService(ReservationRepository reservationRepository, LocationRepository locationRepository, VehicleRepository vehicleRepository,
-                              ObjectMapper objectMapper, AdditionalProductRepository additionalProductRepository, EmailService emailService, ProfileRepository profileRepository){
+                              ObjectMapper objectMapper, AdditionalProductRepository additionalProductRepository, EmailService emailService, ProfileRepository profileRepository, Session session){
         this.reservationRepository = reservationRepository;
         this.locationRepository = locationRepository;
         this.vehicleRepository = vehicleRepository;
@@ -56,7 +61,29 @@ public class ReservationService {
         this.additionalProductRepository = additionalProductRepository;
         this.emailService = emailService;
         this.profileRepository = profileRepository;
+        this.session = session;
     }
+
+    public Observable<Session> initiateReservation(ReservationEntity reservation){
+        return Observable.zip(
+                Observable.fromCallable(() -> locationRepository.findById(reservation.getPickupLocation().getId())
+                        .orElseThrow(() -> new LocationNotFoundException("Pickup location not found"))),
+                Observable.fromCallable(() -> locationRepository.findById(reservation.getReturnLocation().getId())
+                        .orElseThrow(() -> new LocationNotFoundException("Return location not found"))),
+                (pickupLocation, returnLocation) -> {
+                    reservation.setPickupLocation(pickupLocation);
+                    reservation.setReturnLocation(returnLocation);
+                    return reservation;
+                }).flatMap(reservationEntity -> {
+                    session.setReservation(objectMapper.convertValue(reservationEntity, ReservationDTO.class));
+                    return Observable.just(session);
+        });
+    }
+    //pickupTime, pickupDate, pickupLocation, returnTime, returnDate e returnLocation
+
+    //public Observable<Session> selectCar(VehicleEntity vehicle){
+
+    //}
 
     public Observable<ReservationDTO> createReservation(ReservationEntity reservation) {
         return Observable.zip(

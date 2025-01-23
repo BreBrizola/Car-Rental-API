@@ -1,6 +1,7 @@
 package com.dentsu.bootcamp.controller;
 
 import com.dentsu.bootcamp.dto.ReservationDTO;
+import com.dentsu.bootcamp.dto.Session;
 import com.dentsu.bootcamp.model.ReservationEntity;
 import com.dentsu.bootcamp.service.ReservationService;
 import io.reactivex.rxjava3.core.Observable;
@@ -32,6 +33,11 @@ public class ReservationController {
     @PostMapping("/create")
     public Observable<ReservationDTO> createReservation(@RequestBody @Valid ReservationEntity reservation) {
         return reservationService.createReservation(reservation);
+    }
+
+    @PostMapping("/iniciate")
+    public Observable<Session> iniciateReservation(@RequestBody ReservationEntity reservation){
+        return reservationService.initiateReservation(reservation);
     }
 
     @Operation(summary = "Retrieve information from a specific reservation", description = "Pass the confirmation number, first and last name.")

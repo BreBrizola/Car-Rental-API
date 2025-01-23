@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -29,5 +30,5 @@ public record ReservationDTO (
         @JsonProperty("vehicle") VehicleDTO vehicle,
 
         @JsonProperty("additionalProducts") List<AdditionalProductDTO> additionalProducts
-) {
+) implements Serializable {
 }

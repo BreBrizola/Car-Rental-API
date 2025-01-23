@@ -29,4 +29,7 @@ spring:
   cache:
     type: redis
 server:
+  servlet:
+    session:
+      timeout: 20m
   port: '8090'
