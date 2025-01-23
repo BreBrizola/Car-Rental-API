@@ -109,6 +109,41 @@ public class ReservationService {
         );
     }
 
+    public Observable<Session> commit(ReservationEntity reservation){
+        return Observable.fromCallable(() ->
+                        profileRepository.findByLoyaltyNumber(reservation.getProfile().getLoyaltyNumber())
+                                .orElseThrow(() -> new RuntimeException("Invalid loyalty number"))
+                ).flatMap(profile -> {
+                    ReservationEntity existingReservation = objectMapper.convertValue(session.getReservation(), ReservationEntity.class);
+
+                    existingReservation.setProfile(profile);
+                    existingReservation.setFirstName(reservation.getFirstName());
+                    existingReservation.setLastName(reservation.getLastName());
+                    existingReservation.setEmail(reservation.getEmail());
+                    existingReservation.setPhone(reservation.getPhone());
+
+                    existingReservation.setConfirmationNumber(generateConfirmationNumber());
+
+                    return Observable.fromCallable(() -> reservationRepository.save(existingReservation));
+                })
+                .flatMap(savedReservation -> Observable.fromCallable(() -> {
+                    emailService.sendMail(
+                            savedReservation.getEmail(),
+                            RESERVATION_UPDATED,
+                            savedReservation.getConfirmationNumber(),
+                            savedReservation.getFirstName(),
+                            savedReservation.getLastName(),
+                            RESERVATION_UPDATED_STATUS
+                    );
+                    return savedReservation;
+                }))
+                .map(savedReservation -> {
+                    session.setReservation(objectMapper.convertValue(savedReservation, ReservationDTO.class));
+                    return session;
+                });
+    }
+    //firstName, lastName, email, phone, confirmationNumber e salvar
+
     public Observable<ReservationDTO> createReservation(ReservationEntity reservation) {
         return Observable.zip(
                         Observable.fromCallable(() -> profileRepository.findByLoyaltyNumber(reservation.getProfile().getLoyaltyNumber())

@@ -54,6 +54,11 @@ public class ReservationController {
         return reservationService.extras(additionalProducts);
     }
 
+    @PostMapping("/commit")
+    public Observable<Session> commit(@RequestBody ReservationEntity reservation){
+        return reservationService.commit(reservation);
+    }
+
     @Operation(summary = "Retrieve information from a specific reservation", description = "Pass the confirmation number, first and last name.")
     @GetMapping("/retrieve")
     public Observable<ReservationDTO> getReservation(@Parameter(description = "The unique confirmation number of the reservation.") @RequestParam String confirmationNumber,
