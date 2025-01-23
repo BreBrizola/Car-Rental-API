@@ -95,6 +95,20 @@ public class ReservationService {
         });
     }
 
+    public Observable<Session> extras(List<AdditionalProductEntity> additionalProducts){
+        return Observable.fromCallable(() -> {
+            ReservationEntity reservation = objectMapper.convertValue(session.getReservation(), ReservationEntity.class);
+            reservation.setAdditionalProducts(additionalProducts);
+            return reservation;
+        }).flatMap(reservation -> calculateTotalPrice(reservation)
+                .map(totalPrice -> {
+                    reservation.setTotalPrice(totalPrice);
+                    session.setReservation(objectMapper.convertValue(reservation, ReservationDTO.class));
+                    return session;
+                })
+        );
+    }
+
     public Observable<ReservationDTO> createReservation(ReservationEntity reservation) {
         return Observable.zip(
                         Observable.fromCallable(() -> profileRepository.findByLoyaltyNumber(reservation.getProfile().getLoyaltyNumber())

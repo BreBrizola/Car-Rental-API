@@ -1,8 +1,5 @@
 package com.dentsu.bootcamp.dto;
 
-import com.dentsu.bootcamp.model.ProfileEntity;
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 

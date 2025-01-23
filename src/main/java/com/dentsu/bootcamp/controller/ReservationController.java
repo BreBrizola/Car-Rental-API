@@ -2,6 +2,7 @@ package com.dentsu.bootcamp.controller;
 
 import com.dentsu.bootcamp.dto.ReservationDTO;
 import com.dentsu.bootcamp.dto.Session;
+import com.dentsu.bootcamp.model.AdditionalProductEntity;
 import com.dentsu.bootcamp.model.ReservationEntity;
 import com.dentsu.bootcamp.model.VehicleEntity;
 import com.dentsu.bootcamp.service.ReservationService;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("reservation")
@@ -44,6 +47,11 @@ public class ReservationController {
     @PostMapping("/selectCar")
     public Observable<Session> selectCar(@RequestBody VehicleEntity vehicle){
         return reservationService.selectCar(vehicle);
+    }
+
+    @PostMapping("/extras")
+    public Observable<Session> extras(@RequestBody List<AdditionalProductEntity> additionalProducts){
+        return reservationService.extras(additionalProducts);
     }
 
     @Operation(summary = "Retrieve information from a specific reservation", description = "Pass the confirmation number, first and last name.")
