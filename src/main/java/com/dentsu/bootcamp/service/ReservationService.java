@@ -81,9 +81,19 @@ public class ReservationService {
     }
     //pickupTime, pickupDate, pickupLocation, returnTime, returnDate e returnLocation
 
-    //public Observable<Session> selectCar(VehicleEntity vehicle){
+    public Observable<Session> selectCar(VehicleEntity vehicle){
+        return Observable.fromCallable(() -> {
+            VehicleEntity foundVehicle = vehicleRepository.findById(vehicle.getId())
+                    .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"));
 
-    //}
+            ReservationEntity reservation = objectMapper.convertValue(session.getReservation(), ReservationEntity.class);
+            reservation.setVehicle(foundVehicle);
+
+            session.setReservation(objectMapper.convertValue(reservation, ReservationDTO.class));
+
+            return session;
+        });
+    }
 
     public Observable<ReservationDTO> createReservation(ReservationEntity reservation) {
         return Observable.zip(
