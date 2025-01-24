@@ -16,10 +16,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 public class RedisConfig {
     @Bean
     JedisConnectionFactory jedisConnectionFactory() {
-        JedisConnectionFactory jedisConFactory
-                = new JedisConnectionFactory();
-        jedisConFactory.setHostName("localhost");
-        jedisConFactory.setPort(6379);
+        JedisConnectionFactory jedisConFactory = new JedisConnectionFactory();
         return jedisConFactory;
     }
 
