@@ -97,55 +97,6 @@ class ReservationServiceTest {
         assertThrows(VehicleNotFoundException.class, () -> reservationService.createReservation(reservationTest).blockingFirst());
     }
 
-
-    /* Metodo falhando, verificar porque
-    @Test
-     public void givenCreateReservation_whenCreateReservation_thenSaveNewReservation(){
-        ReservationEntity reservationEntity = new ReservationEntity();
-        reservationEntity.setFirstName("name");
-        reservationEntity.setLastName("last name");
-        reservationEntity.setPhone("1234567");
-        reservationEntity.setEmail("abcde@gmail.com");
-        reservationEntity.setPickupTime("13:00");
-        reservationEntity.setReturnTime("15:00");
-        reservationEntity.setPickupDate(LocalDate.now());
-        reservationEntity.setReturnDate(LocalDate.now().plusDays(4));
-        reservationEntity.setAdditionalProducts(Collections.emptyList());
-
-        VehicleEntity vehicle = new VehicleEntity();
-        vehicle.setId(1);
-        vehicle.setPrice(300.0);
-
-        reservationEntity.setVehicle(vehicle);
-
-        LocationEntity location = new LocationEntity();
-        location.setId(1L);
-        location.setName("Location 1");
-        location.setAddress("Rua X");
-        location.setOpeningHours("9:00 - 19:00");
-        location.setAfterHoursFeed(15L);
-
-        reservationEntity.setPickupLocation(location);
-        reservationEntity.setReturnLocation(location);
-
-        when(vehicleService.getVehicleById(Long.valueOf(1))).thenReturn(Optional.of(vehicle));
-        when(locationService.getLocationById(Long.valueOf(1))).thenReturn(locationMapper.apply(location));
-        when(reservationRepository.save(reservationEntity)).thenReturn(reservationEntity);
-        when(reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(anyString(), anyString(), anyString()))
-                .thenReturn(reservationEntity);
-
-        ReservationDTO reservationTest = reservationService.createReservation(reservationEntity);
-
-        assertNotNull(reservationTest);
-        assertNotNull(reservationTest.getConfirmationNumber());
-        assertEquals("name", reservationTest.getFirstName());
-        assertEquals("last name", reservationTest.getLastName());
-        assertEquals("1234567", reservationTest.getPhone());
-        assertEquals("abcde@gmail.com", reservationTest.getEmail());
-        assertEquals(vehicle, reservationTest.getVehicle());
-    }
-     */
-
     @Test
     public void givenValidReservation_whenCancelReservation_thenReservationIsDeleted() {
         String confirmationNumber = "23456";
@@ -332,4 +283,7 @@ class ReservationServiceTest {
         assertThrows(ReservationNotFoundException.class, () ->
                 reservationService.getReservation("000000", "Name", "Last Name").blockingFirst());
     }
+
+
+
 }

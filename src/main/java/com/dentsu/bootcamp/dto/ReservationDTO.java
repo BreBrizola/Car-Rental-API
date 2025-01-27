@@ -2,30 +2,55 @@ package com.dentsu.bootcamp.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
-public record ReservationDTO (
-        @JsonProperty("id") Long id,
-        @JsonProperty("confirmationNumber") @NotBlank(message = "Loyalty number is required") String confirmationNumber,
-        @JsonProperty("firstName") @NotBlank(message = "First name is required") String firstName,
-        @JsonProperty("lastName") @NotBlank(message = "Last name is required") String lastName,
-        @JsonProperty("email") @NotBlank(message = "Email is required") String email,
-        @JsonProperty("phone") @NotBlank(message = "Phone number is required")String phone,
-        @JsonProperty("totalPrice") double totalPrice,
-        @JsonProperty("pickupDate") LocalDate pickupDate,
-        @JsonProperty("returnDate")LocalDate returnDate,
-        @JsonProperty("pickupTime") String pickupTime,
-        @JsonProperty("returnTime") String returnTime,
+@Data
+public class ReservationDTO implements Serializable {
+    @JsonProperty("id") private Long id;
 
-        @JsonProperty("pickupLocation") LocationDTO pickupLocation,
+    @JsonProperty("confirmationNumber") @NotBlank(message = "Loyalty number is required")
+    private String confirmationNumber;
 
-        @JsonProperty("returnLocation") LocationDTO returnLocation,
+    @JsonProperty("firstName") @NotBlank(message = "First name is required")
+    private String firstName;
 
-        @JsonProperty("vehicle") VehicleDTO vehicle,
+    @JsonProperty("lastName") @NotBlank(message = "Last name is required")
+    private String lastName;
 
-        @JsonProperty("additionalProducts") List<AdditionalProductDTO> additionalProducts
-) implements Serializable {
+    @JsonProperty("email") @NotBlank(message = "Email is required")
+    private String email;
+
+    @JsonProperty("phone") @NotBlank(message = "Phone number is required")
+    private String phone;
+
+    @JsonProperty("totalPrice")
+    private double totalPrice;
+
+    @JsonProperty("pickupDate")
+    private LocalDate pickupDate;
+
+    @JsonProperty("returnDate")
+    private LocalDate returnDate;
+
+    @JsonProperty("pickupTime")
+    private String pickupTime;
+
+    @JsonProperty("returnTime")
+    private String returnTime;
+
+    @JsonProperty("pickupLocation")
+    LocationDTO pickupLocation;
+
+    @JsonProperty("returnLocation")
+    LocationDTO returnLocation;
+
+    @JsonProperty("vehicle")
+    VehicleDTO vehicle;
+
+    @JsonProperty("additionalProducts")
+    List<AdditionalProductDTO> additionalProducts;
 }
