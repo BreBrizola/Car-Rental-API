@@ -1,7 +1,10 @@
 package com.dentsu.bootcamp.service;
 
+import com.dentsu.bootcamp.dto.AdditionalProductDTO;
+import com.dentsu.bootcamp.dto.ProfileDTO;
 import com.dentsu.bootcamp.dto.ReservationDTO;
 import com.dentsu.bootcamp.dto.Session;
+import com.dentsu.bootcamp.dto.VehicleDTO;
 import com.dentsu.bootcamp.exception.LocationNotFoundException;
 import com.dentsu.bootcamp.exception.ReservationNotFoundException;
 import com.dentsu.bootcamp.exception.VehicleNotFoundException;
@@ -81,42 +84,42 @@ public class ReservationService {
     }
     //pickupTime, pickupDate, pickupLocation, returnTime, returnDate e returnLocation
 
-    public Observable<Session> selectCar(VehicleEntity vehicle){
+    public Observable<Session> selectCar(VehicleDTO vehicle){
         return Observable.fromCallable(() -> {
             VehicleEntity foundVehicle = vehicleRepository.findById(vehicle.getId())
                     .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"));
 
-            ReservationEntity reservation = objectMapper.convertValue(session.getReservation(), ReservationEntity.class);
-            reservation.setVehicle(foundVehicle);
+            ReservationDTO reservation = session.getReservation();
+            reservation.setVehicle(objectMapper.convertValue(foundVehicle, VehicleDTO.class));
 
-            session.setReservation(objectMapper.convertValue(reservation, ReservationDTO.class));
+            session.setReservation(reservation);
 
             return session;
         });
     }
 
-    public Observable<Session> extras(List<AdditionalProductEntity> additionalProducts){
+    public Observable<Session> extras(List<AdditionalProductDTO> additionalProducts){
         return Observable.fromCallable(() -> {
-            ReservationEntity reservation = objectMapper.convertValue(session.getReservation(), ReservationEntity.class);
+            ReservationDTO reservation = session.getReservation();
             reservation.setAdditionalProducts(additionalProducts);
             return reservation;
         }).flatMap(reservation -> calculateTotalPrice(reservation)
                 .map(totalPrice -> {
                     reservation.setTotalPrice(totalPrice);
-                    session.setReservation(objectMapper.convertValue(reservation, ReservationDTO.class));
+                    session.setReservation(reservation);
                     return session;
                 })
         );
     }
 
-    public Observable<Session> commit(ReservationEntity reservation){
+    public Observable<Session> commit(ReservationDTO reservation){
         return Observable.fromCallable(() ->
                         profileRepository.findByLoyaltyNumber(reservation.getProfile().getLoyaltyNumber())
                                 .orElseThrow(() -> new RuntimeException("Invalid loyalty number"))
                 ).flatMap(profile -> {
-                    ReservationEntity existingReservation = objectMapper.convertValue(session.getReservation(), ReservationEntity.class);
+                    ReservationDTO existingReservation = session.getReservation();
 
-                    existingReservation.setProfile(profile);
+                    existingReservation.setProfile(objectMapper.convertValue(profile, ProfileDTO.class));
                     existingReservation.setFirstName(reservation.getFirstName());
                     existingReservation.setLastName(reservation.getLastName());
                     existingReservation.setEmail(reservation.getEmail());
@@ -124,7 +127,7 @@ public class ReservationService {
 
                     existingReservation.setConfirmationNumber(generateConfirmationNumber());
 
-                    return Observable.fromCallable(() -> reservationRepository.save(existingReservation));
+                    return Observable.fromCallable(() -> reservationRepository.save(objectMapper.convertValue(existingReservation, ReservationEntity.class) ));
                 })
                 .flatMap(savedReservation -> Observable.fromCallable(() -> {
                     emailService.sendMail(
@@ -162,7 +165,7 @@ public class ReservationService {
                             return reservation;
                         })
                 .doOnNext(reservationEntity -> reservationEntity.setConfirmationNumber(generateConfirmationNumber()))
-                .flatMap(reservationEntity -> calculateTotalPrice(reservationEntity)
+                .flatMap(reservationEntity -> calculateTotalPrice(objectMapper.convertValue(reservationEntity, ReservationDTO.class))
                 .doOnNext(reservationEntity::setTotalPrice)
                 .map(totalPrice -> reservationEntity))
                 .flatMap(reservationEntity -> Observable.fromCallable(() -> reservationRepository.save(reservationEntity)))
@@ -209,7 +212,7 @@ public class ReservationService {
 
                             return existingReservation;
                         }))
-                .flatMap(reservation -> calculateTotalPrice(reservation)
+                .flatMap(reservation -> calculateTotalPrice(objectMapper.convertValue(reservation, ReservationDTO.class))
                         .map(price -> {
                             reservation.setTotalPrice(price);
                             return reservation;
@@ -256,7 +259,7 @@ public class ReservationService {
             return confirmationNumber.toString();
         }
 
-    public Observable<Double> calculateTotalPrice(ReservationEntity reservation) {
+    public Observable<Double> calculateTotalPrice(ReservationDTO reservation) {
         return Observable.zip(
                 Observable.fromCallable(() -> locationRepository.findById(reservation.getPickupLocation().getId())
                         .orElseThrow(() -> new LocationNotFoundException("Pickup location not found"))),

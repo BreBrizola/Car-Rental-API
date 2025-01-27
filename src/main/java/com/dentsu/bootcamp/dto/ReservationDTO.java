@@ -42,6 +42,9 @@ public class ReservationDTO implements Serializable {
     @JsonProperty("returnTime")
     private String returnTime;
 
+    @JsonProperty("profile")
+    private ProfileDTO profile;
+
     @JsonProperty("pickupLocation")
     LocationDTO pickupLocation;
 
@@ -53,4 +56,5 @@ public class ReservationDTO implements Serializable {
 
     @JsonProperty("additionalProducts")
     List<AdditionalProductDTO> additionalProducts;
+
 }

@@ -7,9 +7,11 @@ import jakarta.persistence.GenerationType;
 import lombok.Data;
 import jakarta.persistence.Id;
 
+import java.io.Serializable;
+
 @Data
 @Entity(name = "address")
-public class AddressEntity {
+public class AddressEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

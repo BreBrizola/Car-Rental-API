@@ -1,7 +1,9 @@
 package com.dentsu.bootcamp.controller;
 
+import com.dentsu.bootcamp.dto.AdditionalProductDTO;
 import com.dentsu.bootcamp.dto.ReservationDTO;
 import com.dentsu.bootcamp.dto.Session;
+import com.dentsu.bootcamp.dto.VehicleDTO;
 import com.dentsu.bootcamp.model.AdditionalProductEntity;
 import com.dentsu.bootcamp.model.ReservationEntity;
 import com.dentsu.bootcamp.model.VehicleEntity;
@@ -45,17 +47,17 @@ public class ReservationController {
     }
 
     @PostMapping("/selectCar")
-    public Observable<Session> selectCar(@RequestBody VehicleEntity vehicle){
+    public Observable<Session> selectCar(@RequestBody VehicleDTO vehicle){
         return reservationService.selectCar(vehicle);
     }
 
     @PostMapping("/extras")
-    public Observable<Session> extras(@RequestBody List<AdditionalProductEntity> additionalProducts){
+    public Observable<Session> extras(@RequestBody List<AdditionalProductDTO> additionalProducts){
         return reservationService.extras(additionalProducts);
     }
 
     @PostMapping("/commit")
-    public Observable<Session> commit(@RequestBody ReservationEntity reservation){
+    public Observable<Session> commit(@RequestBody ReservationDTO reservation){
         return reservationService.commit(reservation);
     }
 

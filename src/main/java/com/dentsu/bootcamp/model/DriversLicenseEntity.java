@@ -7,11 +7,12 @@ import jakarta.persistence.GenerationType;
 import lombok.Data;
 import jakarta.persistence.Id;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
 @Entity(name = "driversLicense")
-public class DriversLicenseEntity {
+public class DriversLicenseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
