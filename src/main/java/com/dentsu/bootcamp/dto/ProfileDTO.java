@@ -38,13 +38,13 @@ public class ProfileDTO implements Serializable {
 
         @JsonProperty("address")
         @NotNull(message = "Address is required.")
-        private AddressEntity addressEntity;
+        private AddressDTO address;
 
         @JsonProperty("driversLicense")
         @NotNull(message = "Driver's license is required.")
-        private DriversLicenseEntity driversLicenseEntity;
+        private DriversLicenseDTO driversLicense;
 
         @JsonProperty("login")
         @NotNull(message = "Login credentials are required.")
-        private LoginEntity login;
+        private LoginDTO login;
 }

@@ -20,6 +20,7 @@ public class JacksonConfig {
         mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        //mapper.enable(SerializationFeature.WRAP_ROOT_VALUE);
 
         mapper.registerModule(new Jdk8Module());
         mapper.registerModule(new JavaTimeModule());

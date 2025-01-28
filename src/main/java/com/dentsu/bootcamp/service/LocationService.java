@@ -30,7 +30,7 @@ public class LocationService {
 
     public LocationService(LocationRepository locationRepository, WeatherRetroFitClient weatherRetroFitClient, ObjectMapper objectMapper, @Value("${apiKeys.weatherApiKey}") String apiKey){
         this.locationRepository = locationRepository;
-        this.weatherRetroFitClient = weatherRetroFitClient;
+        this.weatherRetroFitClient = weatherRetroFitClient; //
         this.objectMapper = objectMapper;
         this.apiKey = apiKey;
     }
