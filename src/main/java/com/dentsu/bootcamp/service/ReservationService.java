@@ -182,9 +182,11 @@ public class ReservationService {
     }
 
     public Single<ReservationDTO> getReservation(String confirmationNumber, String firstName, String lastName){
-        return Single.fromCallable(() -> reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName))
-                .doOnSuccess(reservationEntity -> validateReservationExists(reservationEntity))
-                .map(reservationEntity -> objectMapper.convertValue(reservationEntity, ReservationDTO.class));
+        return Single.fromCallable(() -> {
+            ReservationEntity reservationEntity = reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName);
+            validateReservationExists(reservationEntity);
+            return objectMapper.convertValue(reservationEntity, ReservationDTO.class);
+        });
     }
 
     public Observable <ReservationDTO> updateReservation(String confirmationNumber, String firstName, String lastName, ReservationEntity updatedReservation) {
