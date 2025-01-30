@@ -18,6 +18,7 @@ import com.dentsu.bootcamp.repository.ReservationRepository;
 import com.dentsu.bootcamp.repository.VehicleRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -180,9 +181,9 @@ public class ReservationService {
                 .map(reservationEntity -> objectMapper.convertValue(reservationEntity, ReservationDTO.class));
     }
 
-    public Observable<ReservationDTO> getReservation(String confirmationNumber, String firstName, String lastName){
-        return Observable.fromCallable(() -> reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName))
-                .doOnNext(reservationEntity -> validateReservationExists(reservationEntity))
+    public Single<ReservationDTO> getReservation(String confirmationNumber, String firstName, String lastName){
+        return Single.fromCallable(() -> reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName))
+                .doOnSuccess(reservationEntity -> validateReservationExists(reservationEntity))
                 .map(reservationEntity -> objectMapper.convertValue(reservationEntity, ReservationDTO.class));
     }
 

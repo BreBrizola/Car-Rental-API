@@ -1,6 +1,7 @@
 package com.dentsu.bootcamp.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
+@JsonSerialize(as = ReservationDTO.class)
 public class ReservationDTO implements Serializable {
     @JsonProperty("id") private Long id;
 

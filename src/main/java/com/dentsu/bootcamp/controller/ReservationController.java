@@ -9,6 +9,7 @@ import com.dentsu.bootcamp.model.ReservationEntity;
 import com.dentsu.bootcamp.model.VehicleEntity;
 import com.dentsu.bootcamp.service.ReservationService;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
@@ -63,9 +64,9 @@ public class ReservationController {
 
     @Operation(summary = "Retrieve information from a specific reservation", description = "Pass the confirmation number, first and last name.")
     @GetMapping("/retrieve")
-    public Observable<ReservationDTO> getReservation(@Parameter(description = "The unique confirmation number of the reservation.") @RequestParam String confirmationNumber,
-                                                    @Parameter(description = "The first name of the customer associated with the reservation.")@RequestParam String firstName,
-                                                    @Parameter(description = "The last name of the customer associated with the reservation.")@RequestParam String lastName) {
+    public Single<ReservationDTO> getReservation(@Parameter(description = "The unique confirmation number of the reservation.") @RequestParam String confirmationNumber,
+                                                 @Parameter(description = "The first name of the customer associated with the reservation.")@RequestParam String firstName,
+                                                 @Parameter(description = "The last name of the customer associated with the reservation.")@RequestParam String lastName) {
         return reservationService.getReservation(confirmationNumber, firstName, lastName);
     }
 
