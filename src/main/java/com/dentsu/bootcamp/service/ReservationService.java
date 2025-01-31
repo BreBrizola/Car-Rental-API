@@ -8,7 +8,6 @@ import com.dentsu.bootcamp.dto.VehicleDTO;
 import com.dentsu.bootcamp.exception.LocationNotFoundException;
 import com.dentsu.bootcamp.exception.ReservationNotFoundException;
 import com.dentsu.bootcamp.exception.VehicleNotFoundException;
-import com.dentsu.bootcamp.model.AdditionalProductEntity;
 import com.dentsu.bootcamp.model.ReservationEntity;
 import com.dentsu.bootcamp.model.VehicleEntity;
 import com.dentsu.bootcamp.repository.AdditionalProductRepository;
@@ -22,6 +21,8 @@ import io.reactivex.rxjava3.core.Single;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -29,6 +30,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -133,11 +135,11 @@ public class ReservationService {
                 .flatMap(savedReservation -> Observable.fromCallable(() -> {
                     emailService.sendMail(
                             savedReservation.getEmail(),
-                            RESERVATION_UPDATED,
+                            RESERVATION_CONFIRMED,
                             savedReservation.getConfirmationNumber(),
                             savedReservation.getFirstName(),
                             savedReservation.getLastName(),
-                            RESERVATION_UPDATED_STATUS
+                            RESERVATION_CREATED_STATUS
                     );
                     return savedReservation;
                 }))
@@ -189,6 +191,28 @@ public class ReservationService {
         });
     }
 
+    public List<ReservationEntity> findByPickupDate(LocalDateTime checkInTime){
+        LocalDate checkInDate = checkInTime.toLocalDate();
+
+        List<ReservationEntity> reservations = reservationRepository.findByPickupDate(checkInDate);
+
+        return reservations.stream()
+                .filter(reservation -> {
+                    try {
+                        LocalTime pickupLocalTime = LocalTime.parse(reservation.getPickupTime());
+                        LocalDateTime pickupDateTime = LocalDateTime.of(reservation.getPickupDate(), pickupLocalTime);
+
+                        return pickupDateTime.isAfter(checkInTime.minusMinutes(1)) &&
+                                pickupDateTime.isBefore(checkInTime.plusMinutes(1));
+                    } catch (Exception e) {
+                        System.err.println("Error with pickup time: " + e.getMessage());
+                        return false;
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+
+
     public Observable <ReservationDTO> updateReservation(String confirmationNumber, String firstName, String lastName, ReservationEntity updatedReservation) {
         return Observable.fromCallable(() -> reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName))
                 .doOnNext(this::validateReservationExists)
@@ -235,7 +259,6 @@ public class ReservationService {
                 }))
                 .map(savedReservation -> objectMapper.convertValue(savedReservation, ReservationDTO.class));
     }
-//Nao coloquei a opção de mudar o loyaltyNumber da reservation porque nao faria muito sentido dar essa opção ao usuario
 
     public Observable<Boolean> cancelReservation(String confirmationNumber, String firstName, String lastName){
         return Observable.fromCallable(()-> reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName))

@@ -1,5 +1,6 @@
 package com.dentsu.bootcamp.service;
 
+import com.dentsu.bootcamp.model.ReservationEntity;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.MimeMessageHelper;
