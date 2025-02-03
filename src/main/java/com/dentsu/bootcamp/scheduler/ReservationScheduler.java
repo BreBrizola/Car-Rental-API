@@ -23,7 +23,7 @@ public class ReservationScheduler {
         this.emailService = emailService;
     }
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 40000)
     public void checkReservations(){
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime checkInTime = now.plus(24, ChronoUnit.HOURS);
