@@ -196,14 +196,15 @@ public class ReservationService {
 
         List<ReservationEntity> reservations = reservationRepository.findByPickupDate(checkInDate);
 
+        LocalDateTime checkInStart = checkInTime.minusHours(24);
+
         return reservations.stream()
                 .filter(reservation -> {
                     try {
                         LocalTime pickupLocalTime = LocalTime.parse(reservation.getPickupTime());
                         LocalDateTime pickupDateTime = LocalDateTime.of(reservation.getPickupDate(), pickupLocalTime);
 
-                        return pickupDateTime.isAfter(checkInTime.minusMinutes(1)) &&
-                                pickupDateTime.isBefore(checkInTime.plusMinutes(1));
+                        return pickupDateTime.isAfter(checkInStart) && pickupDateTime.isBefore(checkInTime);
                     } catch (Exception e) {
                         System.err.println("Error with pickup time: " + e.getMessage());
                         return false;
