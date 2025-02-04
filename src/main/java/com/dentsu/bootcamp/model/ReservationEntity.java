@@ -55,4 +55,5 @@ public class ReservationEntity implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "additional_product_id")
     )
     private List<AdditionalProductEntity> additionalProducts;
+    private boolean checkInEmailSent;
 }

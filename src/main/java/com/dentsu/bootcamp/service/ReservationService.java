@@ -191,13 +191,14 @@ public class ReservationService {
         });
     }
 
-    public List<ReservationEntity> findByPickupDate(LocalDateTime checkInTime){
-        LocalDate checkInDate = checkInTime.toLocalDate();
+    public List<ReservationEntity> findByPickupDate(LocalDate checkInDate){
+        LocalDateTime now = LocalDateTime.now();
+        String checkinTime = now.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")); //transforma o horario de agora em String
 
-        List<ReservationEntity> reservations = reservationRepository.findByPickupDate(checkInDate);
+        List<ReservationEntity> reservations = reservationRepository.findByPickupDateAndPickupTime(checkInDate, checkinTime);
+        return reservations;
 
-        LocalDateTime checkInStart = checkInTime.minusHours(24);
-
+        /*
         return reservations.stream()
                 .filter(reservation -> {
                     try {
@@ -211,6 +212,8 @@ public class ReservationService {
                     }
                 })
                 .collect(Collectors.toList());
+
+         */
     }
 
 

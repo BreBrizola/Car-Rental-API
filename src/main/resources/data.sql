@@ -82,6 +82,7 @@ CREATE TABLE reservation (
                              return_date DATE,
                              pickup_time VARCHAR(255),
                              return_time VARCHAR(255),
+                             check_in_email_sent BOOLEAN,
                              FOREIGN KEY (pickup_location_id) REFERENCES location(id),
                              FOREIGN KEY (return_location_id) REFERENCES location(id),
                              FOREIGN KEY (vehicle_id) REFERENCES vehicle(id),
