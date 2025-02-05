@@ -1,9 +1,7 @@
 package com.dentsu.bootcamp.service;
 
 import com.dentsu.bootcamp.dto.AdditionalProductDTO;
-import com.dentsu.bootcamp.dto.LocationDTO;
 import com.dentsu.bootcamp.model.AdditionalProductEntity;
-import com.dentsu.bootcamp.model.LocationEntity;
 import com.dentsu.bootcamp.repository.AdditionalProductRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.reactivex.rxjava3.core.Observable;

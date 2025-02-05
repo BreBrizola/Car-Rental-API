@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Component
@@ -27,11 +26,11 @@ public class ReservationScheduler {
         this.reservationRepository = reservationRepository;
     }
 
-    @Scheduled(fixedRate = 40000)
+    @Scheduled(cron = "0 0/30 * * * ?")
     public void checkReservations(){
-        LocalDateTime now = LocalDateTime.now(); //hoje
-        LocalDateTime checkInDateTime = now.plusDays(1); //hoje + 1 dia
-        LocalDate checkInDate= checkInDateTime.toLocalDate(); //passando pra local date
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime checkInDateTime = now.plusDays(1);
+        LocalDate checkInDate= checkInDateTime.toLocalDate();
 
         List<ReservationEntity> reservations = reservationService.findByPickupDate(checkInDate);
 
@@ -42,5 +41,5 @@ public class ReservationScheduler {
                 reservationRepository.save(reservation);
             }
         }
-    } //Adicionar boolean pra condição de parada
+    }
 }

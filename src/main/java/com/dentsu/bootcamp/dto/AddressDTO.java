@@ -1,7 +1,6 @@
 package com.dentsu.bootcamp.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
 import lombok.Data;
 
 import java.io.Serializable;

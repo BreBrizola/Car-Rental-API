@@ -1,8 +1,5 @@
 package com.dentsu.bootcamp.dto;
 
-import com.dentsu.bootcamp.model.AddressEntity;
-import com.dentsu.bootcamp.model.DriversLicenseEntity;
-import com.dentsu.bootcamp.model.LoginEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

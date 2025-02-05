@@ -30,7 +30,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -85,7 +84,6 @@ public class ReservationService {
                     return Observable.just(session);
         });
     }
-    //pickupTime, pickupDate, pickupLocation, returnTime, returnDate e returnLocation
 
     public Observable<Session> selectCar(VehicleDTO vehicle){
         return Observable.fromCallable(() -> {
@@ -148,7 +146,6 @@ public class ReservationService {
                     return session;
                 });
     }
-    //firstName, lastName, email, phone, confirmationNumber e salvar
 
     public Observable<ReservationDTO> createReservation(ReservationEntity reservation) {
         return Observable.zip(
@@ -193,29 +190,11 @@ public class ReservationService {
 
     public List<ReservationEntity> findByPickupDate(LocalDate checkInDate){
         LocalDateTime now = LocalDateTime.now();
-        String checkinTime = now.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")); //transforma o horario de agora em String
+        String checkinTime = now.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"));
 
         List<ReservationEntity> reservations = reservationRepository.findByPickupDateAndPickupTime(checkInDate, checkinTime);
         return reservations;
-
-        /*
-        return reservations.stream()
-                .filter(reservation -> {
-                    try {
-                        LocalTime pickupLocalTime = LocalTime.parse(reservation.getPickupTime());
-                        LocalDateTime pickupDateTime = LocalDateTime.of(reservation.getPickupDate(), pickupLocalTime);
-
-                        return pickupDateTime.isAfter(checkInStart) && pickupDateTime.isBefore(checkInTime);
-                    } catch (Exception e) {
-                        System.err.println("Error with pickup time: " + e.getMessage());
-                        return false;
-                    }
-                })
-                .collect(Collectors.toList());
-
-         */
     }
-
 
     public Observable <ReservationDTO> updateReservation(String confirmationNumber, String firstName, String lastName, ReservationEntity updatedReservation) {
         return Observable.fromCallable(() -> reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName))
