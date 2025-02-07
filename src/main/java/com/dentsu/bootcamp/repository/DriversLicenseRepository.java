@@ -8,6 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface DriversLicenseRepository extends JpaRepository<DriversLicenseEntity, Long> {
-    public Optional<DriversLicenseEntity> findByLicenseNumberAndCountryCodeAndCountrySubdivision(String licenseNumber, String countryCode,
+    Optional<DriversLicenseEntity> findByLicenseNumberAndCountryCodeAndCountrySubdivision(String licenseNumber, String countryCode,
                                                                                                  String countrySubdivision);
 }

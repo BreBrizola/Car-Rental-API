@@ -28,7 +28,9 @@ public class LocationController {
 
     private String apiKey;
 
-    public LocationController(LocationService locationService, WeatherRetroFitClient weatherRetroFitClient, @Value("${apiKeys.weatherApiKey}") String apiKey){
+    public LocationController(LocationService locationService,
+                              WeatherRetroFitClient weatherRetroFitClient,
+                              @Value("${apiKeys.weatherApiKey}") String apiKey) {
         this.locationService = locationService;
         this.weatherRetroFitClient = weatherRetroFitClient;
         this.apiKey = apiKey;
@@ -37,7 +39,7 @@ public class LocationController {
 
     @Operation(summary = "Retrieve all the locations")
     @GetMapping("/listAll")
-    public Observable<List<LocationDTO>> getAllLocations(){
+    public Observable<List<LocationDTO>> getAllLocations() {
         return locationService.getAllLocations();
     }
 

@@ -31,7 +31,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public void login(@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response){
+    public void login(@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) {
         Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.username(), loginRequest.password());
         Authentication authenticationResponse = authenticationManager.authenticate(authenticationRequest);
 
@@ -44,9 +44,9 @@ public class LoginController {
     }
 
     @PostMapping("/logout")
-        public String logout(HttpServletRequest request, HttpServletResponse response){
+        public String logout(HttpServletRequest request, HttpServletResponse response) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         this.logoutHandler.logout(request, response, authentication);
         return "logout sucessful";
-    } //Da pra fazer passando authentication como parametro tambem
+    }
 }

@@ -36,7 +36,9 @@ public class ReservationScheduler {
 
         for (ReservationEntity reservation : reservations) {
             if(!reservation.isCheckInEmailSent()){
-                emailService.sendMail(reservation.getEmail(), CHECKIN_EMAIL_TITLE, reservation.getConfirmationNumber(), reservation.getFirstName(), reservation. getLastName(), CHECKIN_EMAIL_STATUS);
+                emailService.sendMail(reservation.getEmail(), CHECKIN_EMAIL_TITLE, reservation.getConfirmationNumber(),
+                reservation.getFirstName(), reservation. getLastName(), CHECKIN_EMAIL_STATUS);
+
                 reservation.setCheckInEmailSent(true);
                 reservationRepository.save(reservation);
             }

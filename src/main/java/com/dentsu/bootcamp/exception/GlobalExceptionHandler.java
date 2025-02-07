@@ -14,7 +14,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MissingNameException.class)
-    public ResponseEntity<Object> handleMissingNameException(MissingNameException ex, WebRequest request){
+    public ResponseEntity<Object> handleMissingNameException(MissingNameException ex, WebRequest request) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("error", "Missing Property");
@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MissingEmailException.class)
-    public ResponseEntity<Object> handleMissingEmailException(MissingEmailException ex, WebRequest request){
+    public ResponseEntity<Object> handleMissingEmailException(MissingEmailException ex, WebRequest request) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("error", "Missing Property");
@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MissingPhoneException.class)
-    public ResponseEntity<Object> handleMissingPhoneException(MissingPhoneException ex, WebRequest request){
+    public ResponseEntity<Object> handleMissingPhoneException(MissingPhoneException ex, WebRequest request) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("error", "Missing Property");
@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ReservationNotFoundException.class)
-    public ResponseEntity<Object> handleReservationNotFound(ReservationNotFoundException ex, WebRequest request){
+    public ResponseEntity<Object> handleReservationNotFound(ReservationNotFoundException ex, WebRequest request) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("error", "Object not found");

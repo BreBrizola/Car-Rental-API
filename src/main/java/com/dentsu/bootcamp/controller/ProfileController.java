@@ -36,22 +36,22 @@ public class ProfileController {
     }
 
     @PostMapping("/createProfile")
-    public ResponseEntity<String> submitPersonalInformation(@RequestBody @Valid ProfileEntity profileEntity){
+    public ResponseEntity<String> submitPersonalInformation(@RequestBody @Valid ProfileEntity profileEntity) {
         return profileService.submitPersonalInformation(profileEntity);
     }
 
     @GetMapping("/{loyaltyNumber}")
-    public ProfileDTO getProfile(@PathVariable String loyaltyNumber){
+    public ProfileDTO getProfile(@PathVariable String loyaltyNumber) {
         return profileService.getProfile(loyaltyNumber);
     }
 
     @PutMapping("/editProfile")
-    public ProfileDTO editProfile(@RequestParam String loyaltyNumber, @RequestBody ProfileEntity updatedProfile){
+    public ProfileDTO editProfile(@RequestParam String loyaltyNumber, @RequestBody ProfileEntity updatedProfile) {
         return profileService.editPersonalInformation(loyaltyNumber, updatedProfile);
     }
 
     @GetMapping("/StatesAndProvinces/{country}")
-    public List<String> getStatesAndProvinces(@PathVariable String country){
+    public List<String> getStatesAndProvinces(@PathVariable String country) {
         return profileService.getStatesAndProvinces(country);
     }
 }

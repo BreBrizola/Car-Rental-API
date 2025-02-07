@@ -33,7 +33,6 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-
     @Operation(summary = "Create a new reservation", description = "Submit the required details including first and last name, email, phone number, pickup and return dates, pickup and return locations, and vehicle information. Additional products can be included optionally.")
     @PostMapping("/create")
     public Observable<ReservationDTO> createReservation(@RequestBody @Valid ReservationEntity reservation) {
@@ -46,17 +45,17 @@ public class ReservationController {
     }
 
     @PostMapping("/selectCar")
-    public Observable<Session> selectCar(@RequestBody VehicleDTO vehicle){
+    public Observable<Session> selectCar(@RequestBody VehicleDTO vehicle) {
         return reservationService.selectCar(vehicle);
     }
 
     @PostMapping("/extras")
-    public Observable<Session> extras(@RequestBody List<AdditionalProductDTO> additionalProducts){
+    public Observable<Session> extras(@RequestBody List<AdditionalProductDTO> additionalProducts) {
         return reservationService.extras(additionalProducts);
     }
 
     @PostMapping("/commit")
-    public Observable<Session> commit(@RequestBody ReservationDTO reservation){
+    public Observable<Session> commit(@RequestBody ReservationDTO reservation) {
         return reservationService.commit(reservation);
     }
 

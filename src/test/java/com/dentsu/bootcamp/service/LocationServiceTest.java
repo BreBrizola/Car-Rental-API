@@ -4,7 +4,6 @@ import com.dentsu.bootcamp.exception.LocationNotFoundException;
 import com.dentsu.bootcamp.model.LocationEntity;
 import com.dentsu.bootcamp.model.VehicleEntity;
 import com.dentsu.bootcamp.repository.LocationRepository;
-import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +30,7 @@ class LocationServiceTest {
     private LocationService locationService;
 
     @Test
-    public void givenLocationId_whenListVehicles_thenListAllVehicles(){
+    public void givenLocationId_whenListVehicles_thenListAllVehicles() {
         LocationEntity locationTest = new LocationEntity();
         locationTest.setId(3L);
 
@@ -57,7 +56,7 @@ class LocationServiceTest {
     }
 
     @Test
-    public void givenGetLocationByName_whenLocationDontExist_thenThrowException(){
+    public void givenGetLocationByName_whenLocationDontExist_thenThrowException() {
         String locationName = "non Existing";
 
         when(locationRepository.findByName(locationName)).thenReturn(Optional.empty());
@@ -67,7 +66,7 @@ class LocationServiceTest {
     }
 
     @Test
-    public void givenGetLocationById_whenLocationDontExist_thenThrowException(){
+    public void givenGetLocationById_whenLocationDontExist_thenThrowException() {
         Long locationId = 1000L;
 
         when(locationRepository.findById(locationId)).thenReturn(Optional.empty());

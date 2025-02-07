@@ -22,7 +22,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     @SessionScope
-    public Session getSession(){
+    public Session getSession() {
         return new Session();
     }
 }

@@ -23,5 +23,5 @@ public class LocationEntity implements Serializable{
     private Long afterHoursFeed;
 
     @OneToMany(mappedBy = "location")
-    private List<VehicleEntity> vehicleList; //satisfaz a regra 5
+    private List<VehicleEntity> vehicleList;
 }

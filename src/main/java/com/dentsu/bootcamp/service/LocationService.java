@@ -28,9 +28,10 @@ public class LocationService {
 
     private String apiKey;
 
-    public LocationService(LocationRepository locationRepository, WeatherRetroFitClient weatherRetroFitClient, ObjectMapper objectMapper, @Value("${apiKeys.weatherApiKey}") String apiKey){
+    public LocationService(LocationRepository locationRepository, WeatherRetroFitClient weatherRetroFitClient,
+                           ObjectMapper objectMapper, @Value("${apiKeys.weatherApiKey}") String apiKey) {
         this.locationRepository = locationRepository;
-        this.weatherRetroFitClient = weatherRetroFitClient; //
+        this.weatherRetroFitClient = weatherRetroFitClient;
         this.objectMapper = objectMapper;
         this.apiKey = apiKey;
     }
@@ -40,7 +41,7 @@ public class LocationService {
                 .map(location -> convertToDTO(location));
     }
 
-    public List<LocationDTO> convertToDTO(List<LocationEntity> list){
+    public List<LocationDTO> convertToDTO(List<LocationEntity> list) {
         return list.stream()
                 .map(location -> objectMapper.convertValue(location, LocationDTO.class))
                 .toList();
@@ -51,22 +52,21 @@ public class LocationService {
                 .map(location -> objectMapper.convertValue(location, LocationDTO.class));
     }
 
-    //@Cacheable("locationsByName")
-    public Observable<LocationDTO> getLocationByName(String name){
+    public Observable<LocationDTO> getLocationByName(String name) {
         return Observable.fromCallable(() -> locationRepository.findByName(name))
                 .map(location -> objectMapper.convertValue(location, LocationDTO.class));
     }
 
-    public Observable<WeatherResponse> getLocationWeather(LocationEntity locationEntity){
+    public Observable<WeatherResponse> getLocationWeather(LocationEntity locationEntity) {
         String address = locationEntity.getAddress();
         Observable<WeatherResponse> weatherResponse = weatherRetroFitClient.getCurrentWeather(apiKey, address, "no");
         return weatherResponse;
     }
 
-    public Observable<List<VehicleEntity>> listVehicles(Long id){
+    public Observable<List<VehicleEntity>> listVehicles(Long id) {
         return Observable.fromCallable(() -> locationRepository.findById(id))
                 .flatMap(locationOptional -> locationOptional
                 .map(location -> Observable.just(location.getVehicleList()))
                 .orElse(Observable.error(new LocationNotFoundException("Location not found"))));
                 }
-    }//Não deu pra usar location.getVehicleList direto por ele ser optinal quando é encontrado pelo repository
+    }

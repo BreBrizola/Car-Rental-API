@@ -16,7 +16,7 @@ public class VehicleService {
 
     private final ObjectMapper objectMapper;
 
-    public VehicleService(VehicleRepository vehicleRepository, ObjectMapper objectMapper){
+    public VehicleService(VehicleRepository vehicleRepository, ObjectMapper objectMapper) {
         this.vehicleRepository = vehicleRepository;
         this.objectMapper = objectMapper;
     }
@@ -31,7 +31,7 @@ public class VehicleService {
                 .map(vehicle -> objectMapper.convertValue(vehicle, VehicleDTO.class));
     }
 
-    public List<VehicleDTO> convertToDTO(List<VehicleEntity> list){
+    public List<VehicleDTO> convertToDTO(List<VehicleEntity> list) {
         return list.stream()
                 .map(vehicle -> objectMapper.convertValue(vehicle, VehicleDTO.class))
                 .toList();

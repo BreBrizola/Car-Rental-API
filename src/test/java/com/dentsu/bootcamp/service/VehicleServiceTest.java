@@ -23,7 +23,7 @@ class VehicleServiceTest {
     private VehicleService vehicleService;
 
     @Test
-    public void givenGetVehicleById_whenVehicleDontExist_thenThrowException(){
+    public void givenGetVehicleById_whenVehicleDontExist_thenThrowException() {
         Long vehicleId = 1000L;
 
         when(vehicleRepository.findById(vehicleId)).thenReturn(Optional.empty());

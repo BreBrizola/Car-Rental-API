@@ -12,5 +12,4 @@ public class LocationDTO implements Serializable {
     @JsonProperty("address") private String address;
     @JsonProperty("openingHours") private String openingHours;
     @JsonProperty("afterHoursFeed") private Long afterHoursFee;
-    //@JsonProperty("weather") private WeatherResponse weather;
 }

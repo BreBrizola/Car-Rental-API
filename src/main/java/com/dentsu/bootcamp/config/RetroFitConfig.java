@@ -14,7 +14,7 @@ public class RetroFitConfig {
     private static final String API_URL = "http://api.weatherapi.com/v1/";
 
     @Bean
-    public Retrofit retroFitWeather (){
+    public Retrofit retroFitWeather() {
         return new Retrofit.Builder()
                 .client(new OkHttpClient())
                 .addCallAdapterFactory(RxJava3CallAdapterFactory.createSynchronous())
@@ -24,7 +24,7 @@ public class RetroFitConfig {
     }
 
     @Bean
-    public WeatherRetroFitClient weatherRetroFitClient(){
+    public WeatherRetroFitClient weatherRetroFitClient() {
         return retroFitWeather().create(WeatherRetroFitClient.class);
     }
 }

@@ -31,7 +31,7 @@ public class AdditionalProductService {
                 .map(products -> convertToDTO(products));
     }
 
-    public List<AdditionalProductDTO> convertToDTO(List<AdditionalProductEntity> list){
+    public List<AdditionalProductDTO> convertToDTO(List<AdditionalProductEntity> list) {
         return list.stream()
                 .map(product -> objectMapper.convertValue(product, AdditionalProductDTO.class))
                 .toList();

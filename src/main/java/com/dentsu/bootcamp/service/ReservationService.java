@@ -58,7 +58,7 @@ public class ReservationService {
     private Session session;
 
     public ReservationService(ReservationRepository reservationRepository, LocationRepository locationRepository, VehicleRepository vehicleRepository,
-                              ObjectMapper objectMapper, AdditionalProductRepository additionalProductRepository, EmailService emailService, ProfileRepository profileRepository, Session session){
+                              ObjectMapper objectMapper, AdditionalProductRepository additionalProductRepository, EmailService emailService, ProfileRepository profileRepository, Session session) {
         this.reservationRepository = reservationRepository;
         this.locationRepository = locationRepository;
         this.vehicleRepository = vehicleRepository;
@@ -69,7 +69,7 @@ public class ReservationService {
         this.session = session;
     }
 
-    public Observable<Session> initiateReservation(ReservationEntity reservation){
+    public Observable<Session> initiateReservation(ReservationEntity reservation) {
         return Observable.zip(
                 Observable.fromCallable(() -> locationRepository.findById(reservation.getPickupLocation().getId())
                         .orElseThrow(() -> new LocationNotFoundException("Pickup location not found"))),
@@ -85,7 +85,7 @@ public class ReservationService {
         });
     }
 
-    public Observable<Session> selectCar(VehicleDTO vehicle){
+    public Observable<Session> selectCar(VehicleDTO vehicle) {
         return Observable.fromCallable(() -> {
             VehicleEntity foundVehicle = vehicleRepository.findById(vehicle.getId())
                     .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"));
@@ -99,7 +99,7 @@ public class ReservationService {
         });
     }
 
-    public Observable<Session> extras(List<AdditionalProductDTO> additionalProducts){
+    public Observable<Session> extras(List<AdditionalProductDTO> additionalProducts) {
         return Observable.fromCallable(() -> {
             ReservationDTO reservation = session.getReservation();
             reservation.setAdditionalProducts(additionalProducts);
@@ -113,7 +113,7 @@ public class ReservationService {
         );
     }
 
-    public Observable<Session> commit(ReservationDTO reservation){
+    public Observable<Session> commit(ReservationDTO reservation) {
         return Observable.fromCallable(() ->
                         profileRepository.findByLoyaltyNumber(reservation.getProfile().getLoyaltyNumber())
                                 .orElseThrow(() -> new RuntimeException("Invalid loyalty number"))
@@ -180,7 +180,7 @@ public class ReservationService {
                 .map(reservationEntity -> objectMapper.convertValue(reservationEntity, ReservationDTO.class));
     }
 
-    public Single<ReservationDTO> getReservation(String confirmationNumber, String firstName, String lastName){
+    public Single<ReservationDTO> getReservation(String confirmationNumber, String firstName, String lastName) {
         return Single.fromCallable(() -> {
             ReservationEntity reservationEntity = reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName);
             validateReservationExists(reservationEntity);
@@ -188,7 +188,7 @@ public class ReservationService {
         });
     }
 
-    public List<ReservationEntity> findByPickupDate(LocalDate checkInDate){
+    public List<ReservationEntity> findByPickupDate(LocalDate checkInDate) {
         LocalDateTime now = LocalDateTime.now();
         String checkinTime = now.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"));
 
@@ -243,7 +243,7 @@ public class ReservationService {
                 .map(savedReservation -> objectMapper.convertValue(savedReservation, ReservationDTO.class));
     }
 
-    public Observable<Boolean> cancelReservation(String confirmationNumber, String firstName, String lastName){
+    public Observable<Boolean> cancelReservation(String confirmationNumber, String firstName, String lastName) {
         return Observable.fromCallable(()-> reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName))
                 .doOnNext(reservationEntity -> validateReservationExists(reservationEntity))
                 .flatMap(existingReservation -> {

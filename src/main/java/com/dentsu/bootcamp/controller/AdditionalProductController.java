@@ -18,7 +18,7 @@ public class AdditionalProductController {
 
     private final AdditionalProductService additionalProductService;
 
-    public AdditionalProductController (AdditionalProductService additionalProductService){
+    public AdditionalProductController (AdditionalProductService additionalProductService) {
         this.additionalProductService = additionalProductService;
     }
 
@@ -30,7 +30,8 @@ public class AdditionalProductController {
 
     @Operation(summary = "Retrieve a specific product, searched by Id", description = "Pass the product id (number).")
     @GetMapping("/{id}")
-    public Observable<AdditionalProductDTO> getAdditionalProductById(@Parameter(description = "The unique identifier of the product.")@PathVariable(value = "id") Long id) {
+    public Observable<AdditionalProductDTO> getAdditionalProductById(@Parameter(description = "The unique identifier of the product.")
+                                                                     @PathVariable(value = "id") Long id) {
         return additionalProductService.getAdditionProducts(id);
     }
 }

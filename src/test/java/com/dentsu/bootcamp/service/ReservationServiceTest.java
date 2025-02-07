@@ -49,9 +49,6 @@ class ReservationServiceTest {
     @Mock
     private EmailService emailService;
 
-    //@Mock
-    //private LocationService locationService;
-
     @InjectMocks
     private ReservationService reservationService;
 
@@ -154,7 +151,7 @@ class ReservationServiceTest {
     }
 
     @Test
-    public void givenCalculateTotalPrice_WhenTimeIsOffOpeningHours_thenReturnPriceWithFeed(){
+    public void givenCalculateTotalPrice_WhenTimeIsOffOpeningHours_thenReturnPriceWithFeed() {
         ReservationEntity reservation = new ReservationEntity();
         reservation.setPickupDate(LocalDate.now());
         reservation.setReturnDate(LocalDate.now().plusDays(3));
@@ -283,7 +280,4 @@ class ReservationServiceTest {
         assertThrows(ReservationNotFoundException.class, () ->
                 reservationService.getReservation("000000", "Name", "Last Name").blockingFirst());
     }
-
-
-
 }

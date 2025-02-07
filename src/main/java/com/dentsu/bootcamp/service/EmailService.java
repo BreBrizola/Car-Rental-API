@@ -49,7 +49,7 @@ public class EmailService {
         }
     }
 
-    public void sendCancellingEmail(String to, String subject,String reservationNumber, String firstName){
+    public void sendCancellingEmail(String to, String subject,String reservationNumber, String firstName) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
