@@ -26,7 +26,7 @@ public class ProfileEntity implements Serializable {
     private AddressEntity address;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "driversLicense_id")
+    @JoinColumn(name = "drivers_license_id")
     private DriversLicenseEntity driversLicense;
 
     @OneToOne(cascade = CascadeType.ALL)

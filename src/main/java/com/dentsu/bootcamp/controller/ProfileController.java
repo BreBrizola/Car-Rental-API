@@ -3,6 +3,7 @@ package com.dentsu.bootcamp.controller;
 import com.dentsu.bootcamp.dto.ProfileDTO;
 import com.dentsu.bootcamp.model.ProfileEntity;
 import com.dentsu.bootcamp.service.ProfileService;
+import io.reactivex.rxjava3.core.Single;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +27,7 @@ public class ProfileController {
     }
 
     @GetMapping("/profileSearch")
-    public ResponseEntity<String> searchUserProfile(
+    public Single<ProfileDTO> searchUserProfile(
             @RequestParam String driversLicenseNumber,
             @RequestParam String lastName,
             @RequestParam String issuingCountry,

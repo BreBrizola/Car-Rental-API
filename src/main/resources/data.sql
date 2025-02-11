@@ -28,21 +28,21 @@ CREATE TABLE login (
                        password VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE Address (
+CREATE TABLE address (
                          id BIGINT AUTO_INCREMENT PRIMARY KEY,
                          city VARCHAR(255),
                          country VARCHAR(255),
-                         COUNTRY_SUBDIVISION VARCHAR(255),
+                         country_subdivision VARCHAR(255),
                          postal VARCHAR(255),
-                         streetAddresses VARCHAR(255)
+                         street_addresses VARCHAR(255)
 );
 
-CREATE TABLE DriversLicense (
+CREATE TABLE drivers_license (
                                 id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                countryCode VARCHAR(255),
-                                DRIVERS_LICENSE_STATE VARCHAR(255),
-                                DRIVERS_LICENSE_EXPIRY DATE,
-                                DRIVERS_LICENSE_NUMBER VARCHAR(255)
+                                country_code VARCHAR(255),
+                                drivers_license_state VARCHAR(255),
+                                drivers_license_expiry DATE,
+                                drivers_license_number VARCHAR(255)
 );
 
 CREATE TABLE profile (
@@ -52,18 +52,12 @@ CREATE TABLE profile (
                          email VARCHAR(255) NOT NULL,
                          phone VARCHAR(255) NOT NULL,
                          date_of_birth DATE,
-                         city VARCHAR(255),
-                         country VARCHAR(255),
-                         country_subdivision VARCHAR(255),
-                         postal VARCHAR(255),
-                         street_addresses VARCHAR(255),
-                         country_code VARCHAR(255),
-                         country_subdivision_code VARCHAR(255),
-                         drivers_license_number VARCHAR(255),
-                         drivers_license_state VARCHAR(255),
-                         drivers_license_expiry DATE,
                          login_id BIGINT,
-                         FOREIGN KEY (login_id) REFERENCES login(id)
+                         address_id BIGINT,
+                         drivers_license_id BIGINT,
+                         FOREIGN KEY (login_id) REFERENCES login(id),
+                         FOREIGN KEY (address_id) REFERENCES address(id),
+                         FOREIGN KEY (drivers_license_id) REFERENCES drivers_license(id)
 );
 
 CREATE TABLE reservation (

@@ -11,20 +11,21 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
-@Entity(name = "driversLicense")
+@Entity(name = "drivers_license")
 public class DriversLicenseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "country_code")
     private String countryCode;
 
-    @Column(name = "DRIVERS_LICENSE_STATE")
+    @Column(name = "drivers_license_state")
     private String countrySubdivision;
 
-    @Column(name = "DRIVERS_LICENSE_EXPIRY")
+    @Column(name = "drivers_license_expiry")
     private LocalDate licenseExpirationDate;
 
-    @Column(name = "DRIVERS_LICENSE_NUMBER")
+    @Column(name = "drivers_license_number")
     private String licenseNumber;
 }

@@ -19,7 +19,7 @@ public class AddressEntity implements Serializable {
     private String city;
     private String country;
 
-    @Column(name = "COUNTRY_SUBDIVISION")
+    @Column(name = "country_subdivision")
     private String countrySubdivisionCode;
     private String postal;
     private String streetAddresses;

@@ -10,7 +10,7 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
-@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 1200)
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 1200, redisNamespace = "spring:session:reservation")
 @Configuration
 @EnableCaching
 public class RedisConfig {

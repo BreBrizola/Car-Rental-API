@@ -5,6 +5,8 @@ import com.dentsu.bootcamp.model.ProfileEntity;
 import com.dentsu.bootcamp.repository.DriversLicenseRepository;
 import com.dentsu.bootcamp.repository.ProfileRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -12,7 +14,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,18 +33,20 @@ public class ProfileService {
         this.driversLicenseRepository = driversLicenseRepository;
     }
 
-    public ResponseEntity<String> userProfileSearch(String driversLicenseNumber, String lastName, String issuingCountry, String issuingAuthority) {
-        Optional<DriversLicenseEntity> driversLicense = driversLicenseRepository.findByLicenseNumberAndCountryCodeAndCountrySubdivision(
-                driversLicenseNumber, issuingCountry, issuingAuthority
-        );
+    public Single<ProfileDTO> userProfileSearch(String driversLicenseNumber, String lastName, String issuingCountry, String issuingAuthority) {
+        return Single.fromCallable(() -> {
+            Optional<DriversLicenseEntity> driversLicense = driversLicenseRepository.findByLicenseNumberAndCountryCodeAndCountrySubdivision(
+                    driversLicenseNumber, issuingCountry, issuingAuthority
+            );
 
-        Optional<ProfileEntity> existingProfile = driversLicense.flatMap(dl -> profileRepository.findByDriversLicenseAndLastName(dl, lastName));
+            Optional<ProfileEntity> existingProfile = driversLicense.flatMap(dl -> profileRepository.findByDriversLicenseAndLastName(dl, lastName));
 
-        if (existingProfile.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("There is already an account with this driver's license, please login");
-        } else
-            return ResponseEntity.ok("Account alright to continue the enroll process");
+            return existingProfile
+                    .map(profile -> objectMapper.convertValue(profile, ProfileDTO.class))
+                    .orElse(null);
+        });
     }
+
 
     public ProfileDTO getProfile(String loyaltyNumber) {
         Optional<ProfileEntity> profile = profileRepository.findByLoyaltyNumber(loyaltyNumber);
