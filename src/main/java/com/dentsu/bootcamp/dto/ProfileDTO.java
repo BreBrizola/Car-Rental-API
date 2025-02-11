@@ -44,4 +44,7 @@ public class ProfileDTO implements Serializable {
         @JsonProperty("login")
         @NotNull(message = "Login credentials are required.")
         private LoginDTO login;
+
+        @JsonProperty("found")
+        private boolean found = false;
 }

@@ -5,6 +5,8 @@ import com.dentsu.bootcamp.model.ProfileEntity;
 import com.dentsu.bootcamp.repository.DriversLicenseRepository;
 import com.dentsu.bootcamp.repository.ProfileRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.reactivex.rxjava3.annotations.Nullable;
+import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import org.springframework.http.HttpStatus;
@@ -33,17 +35,19 @@ public class ProfileService {
         this.driversLicenseRepository = driversLicenseRepository;
     }
 
-    public Single<ProfileDTO> userProfileSearch(String driversLicenseNumber, String lastName, String issuingCountry, String issuingAuthority) {
-        return Single.fromCallable(() -> {
+    public Maybe<ProfileDTO> userProfileSearch(String driversLicenseNumber, String lastName, String issuingCountry, String issuingAuthority) {
+        return Maybe.fromCallable(() -> {
             Optional<DriversLicenseEntity> driversLicense = driversLicenseRepository.findByLicenseNumberAndCountryCodeAndCountrySubdivision(
                     driversLicenseNumber, issuingCountry, issuingAuthority
             );
 
             Optional<ProfileEntity> existingProfile = driversLicense.flatMap(dl -> profileRepository.findByDriversLicenseAndLastName(dl, lastName));
 
-            return existingProfile
-                    .map(profile -> objectMapper.convertValue(profile, ProfileDTO.class))
-                    .orElse(null);
+            return existingProfile.map(profile -> {
+                ProfileDTO profileDTO = objectMapper.convertValue(profile, ProfileDTO.class);
+                profileDTO.setFound(true);
+                return profileDTO;
+            }).orElse(new ProfileDTO());
         });
     }
 
