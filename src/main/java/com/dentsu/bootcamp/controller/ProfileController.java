@@ -48,7 +48,7 @@ public class ProfileController {
     }
 
     @PutMapping("/editProfile")
-    public ProfileDTO editProfile(@RequestParam String loyaltyNumber, @RequestBody ProfileEntity updatedProfile) {
+    public Single<ProfileDTO> editProfile(@RequestParam String loyaltyNumber, @RequestBody ProfileDTO updatedProfile) {
         return profileService.editPersonalInformation(loyaltyNumber, updatedProfile);
     }
 

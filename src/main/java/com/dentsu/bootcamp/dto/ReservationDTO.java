@@ -14,7 +14,7 @@ import java.util.List;
 public class ReservationDTO implements Serializable {
     @JsonProperty("id") private Long id;
 
-    @JsonProperty("confirmationNumber") @NotBlank(message = "Loyalty number is required")
+    @JsonProperty("confirmationNumber")
     private String confirmationNumber;
 
     @JsonProperty("firstName") @NotBlank(message = "First name is required")

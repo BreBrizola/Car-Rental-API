@@ -8,6 +8,7 @@ import com.dentsu.bootcamp.dto.VehicleDTO;
 import com.dentsu.bootcamp.exception.LocationNotFoundException;
 import com.dentsu.bootcamp.exception.ReservationNotFoundException;
 import com.dentsu.bootcamp.exception.VehicleNotFoundException;
+import com.dentsu.bootcamp.model.AdditionalProductEntity;
 import com.dentsu.bootcamp.model.ReservationEntity;
 import com.dentsu.bootcamp.model.VehicleEntity;
 import com.dentsu.bootcamp.repository.AdditionalProductRepository;
@@ -15,6 +16,7 @@ import com.dentsu.bootcamp.repository.LocationRepository;
 import com.dentsu.bootcamp.repository.ProfileRepository;
 import com.dentsu.bootcamp.repository.ReservationRepository;
 import com.dentsu.bootcamp.repository.VehicleRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
@@ -27,8 +29,10 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -196,40 +200,63 @@ public class ReservationService {
         return reservations;
     }
 
-    public Observable <ReservationDTO> updateReservation(String confirmationNumber, String firstName, String lastName, ReservationEntity updatedReservation) {
-        return Observable.fromCallable(() -> reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName))
-                .doOnNext(this::validateReservationExists)
-                .flatMap(existingReservation -> Observable.zip(
-                        Observable.fromCallable(() -> locationRepository.findById(updatedReservation.getPickupLocation().getId())
-                                .orElseThrow(() -> new LocationNotFoundException("Pickup location not found"))),
-                        Observable.fromCallable(() -> locationRepository.findById(updatedReservation.getReturnLocation().getId())
-                                .orElseThrow(() -> new LocationNotFoundException("Return location not found"))),
-                        Observable.fromCallable(() -> vehicleRepository.findById(updatedReservation.getVehicle().getId())
-                                .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"))),
-                        (pickupLocation, returnLocation, vehicle) -> {
-                            existingReservation.setFirstName(updatedReservation.getFirstName());
-                            existingReservation.setLastName(updatedReservation.getLastName());
-                            existingReservation.setEmail(updatedReservation.getEmail());
-                            existingReservation.setPhone(updatedReservation.getPhone());
-                            existingReservation.setPickupLocation(pickupLocation);
-                            existingReservation.setPickupDate(updatedReservation.getPickupDate());
-                            existingReservation.setReturnLocation(returnLocation);
-                            existingReservation.setReturnDate(updatedReservation.getReturnDate());
-                            existingReservation.setVehicle(vehicle);
-                            existingReservation.setAdditionalProducts(updatedReservation.getAdditionalProducts());
-                            existingReservation.setPickupTime(updatedReservation.getPickupTime());
-                            existingReservation.setReturnTime(updatedReservation.getReturnTime());
+    public Single <ReservationDTO> updateReservation(String confirmationNumber, String firstName, String lastName, ReservationDTO updatedReservation) {
+        return Single.fromCallable(() -> reservationRepository.findByConfirmationNumberAndFirstNameAndLastName(confirmationNumber, firstName, lastName))
+                .doOnSuccess(this::validateReservationExists)
+                .flatMap(existingReservation ->
+                        Single.zip(
+                                Single.fromCallable(() ->
+                                        updatedReservation.getPickupLocation() != null
+                                                ? locationRepository.findById(updatedReservation.getPickupLocation().getId())
+                                                .orElseThrow(() -> new LocationNotFoundException("Pickup location not found"))
+                                                : existingReservation.getPickupLocation()
+                                ),
+                                Single.fromCallable(() ->
+                                        updatedReservation.getReturnLocation() != null
+                                                ? locationRepository.findById(updatedReservation.getReturnLocation().getId())
+                                                .orElseThrow(() -> new LocationNotFoundException("Return location not found"))
+                                                : existingReservation.getReturnLocation()
+                                ),
+                                Single.fromCallable(() ->
+                                        updatedReservation.getVehicle() != null
+                                                ? vehicleRepository.findById(updatedReservation.getVehicle().getId())
+                                                .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"))
+                                                : existingReservation.getVehicle()
+                                ),
+                                Single.fromCallable(() ->
+                                        updatedReservation.getProfile() != null
+                                                ? profileRepository.findByLoyaltyNumber(updatedReservation.getProfile().getLoyaltyNumber())
+                                                .orElseThrow(() -> new RuntimeException("Profile not found"))
+                                                : existingReservation.getProfile()
+                                ),
+                                (pickupLocation, returnLocation, vehicle, profile) -> {
+                                    existingReservation.setFirstName(updatedReservation.getFirstName());
+                                    existingReservation.setLastName(updatedReservation.getLastName());
+                                    existingReservation.setEmail(updatedReservation.getEmail());
+                                    existingReservation.setPhone(updatedReservation.getPhone());
+                                    existingReservation.setPickupLocation(pickupLocation);
+                                    existingReservation.setPickupDate(updatedReservation.getPickupDate());
+                                    existingReservation.setReturnLocation(returnLocation);
+                                    existingReservation.setReturnDate(updatedReservation.getReturnDate());
+                                    existingReservation.setVehicle(vehicle);
+                                    existingReservation.setPickupTime(updatedReservation.getPickupTime());
+                                    existingReservation.setReturnTime(updatedReservation.getReturnTime());
+                                    existingReservation.setProfile(profile);
 
-                            return existingReservation;
-                        }))
+                                    return existingReservation;
+                                }
+                        )
+
+                )
                 .flatMap(reservation -> calculateTotalPrice(objectMapper.convertValue(reservation, ReservationDTO.class))
+                        .singleOrError()
                         .map(price -> {
                             reservation.setTotalPrice(price);
                             return reservation;
                         })
                 )
-                .flatMap(reservation -> Observable.fromCallable(() -> reservationRepository.save(reservation)))
-                .flatMap(savedReservation -> Observable.fromCallable(() -> {
+                .flatMap(reservation -> Single.fromCallable(() -> reservationRepository.save(reservation)))
+                .flatMap(savedReservation -> {
                     emailService.sendMail(
                             savedReservation.getEmail(),
                             RESERVATION_UPDATED,
@@ -238,9 +265,8 @@ public class ReservationService {
                             savedReservation.getLastName(),
                             RESERVATION_UPDATED_STATUS
                     );
-                    return savedReservation;
-                }))
-                .map(savedReservation -> objectMapper.convertValue(savedReservation, ReservationDTO.class));
+                    return Single.just(objectMapper.convertValue(savedReservation, ReservationDTO.class));
+                });
     }
 
     public Observable<Boolean> cancelReservation(String confirmationNumber, String firstName, String lastName) {

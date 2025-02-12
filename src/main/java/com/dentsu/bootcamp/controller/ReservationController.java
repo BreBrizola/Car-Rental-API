@@ -69,10 +69,10 @@ public class ReservationController {
 
     @Operation(summary = "Update the information from a specific reservation", description = "Pass the confirmation number, first and last name.")
     @PutMapping("/update/{confirmationNumber}")
-    public Observable <ReservationDTO> updateReservation(@Parameter(description = "The unique confirmation number of the reservation.") @PathVariable String confirmationNumber,
+    public Single<ReservationDTO> updateReservation(@Parameter(description = "The unique confirmation number of the reservation.") @PathVariable String confirmationNumber,
                                                @Parameter(description = "The first name of the customer associated with the reservation.") @RequestParam String firstName,
                                                @Parameter(description = "The last name of the customer associated with the reservation.")@RequestParam String lastName,
-                                               @RequestBody @Valid ReservationEntity updatedReservation) {
+                                               @RequestBody @Valid ReservationDTO updatedReservation) {
         return reservationService.updateReservation(confirmationNumber, firstName, lastName, updatedReservation);
     }
 

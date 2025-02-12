@@ -1,24 +1,23 @@
 package com.dentsu.bootcamp.service;
 import com.dentsu.bootcamp.dto.ProfileDTO;
+import com.dentsu.bootcamp.model.AddressEntity;
 import com.dentsu.bootcamp.model.DriversLicenseEntity;
+import com.dentsu.bootcamp.model.LoginEntity;
 import com.dentsu.bootcamp.model.ProfileEntity;
 import com.dentsu.bootcamp.repository.DriversLicenseRepository;
 import com.dentsu.bootcamp.repository.ProfileRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.reactivex.rxjava3.annotations.Nullable;
 import io.reactivex.rxjava3.core.Maybe;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -51,7 +50,6 @@ public class ProfileService {
         });
     }
 
-
     public ProfileDTO getProfile(String loyaltyNumber) {
         Optional<ProfileEntity> profile = profileRepository.findByLoyaltyNumber(loyaltyNumber);
 
@@ -82,21 +80,28 @@ public class ProfileService {
         }
     }
 
-    public ProfileDTO editPersonalInformation(String loyaltyNumber, ProfileEntity updatedProfile) {
-        Optional<ProfileEntity> existingProfileOpt = profileRepository.findByLoyaltyNumber(loyaltyNumber);
+    public Single<ProfileDTO> editPersonalInformation(String loyaltyNumber, ProfileDTO updatedProfile) {
+        return Single.fromCallable(() ->
+                profileRepository.findByLoyaltyNumber(loyaltyNumber)
+                        .map(existingProfile -> {
+                            existingProfile.setPhone(updatedProfile.getPhone());
 
-        ProfileEntity existingProfile = existingProfileOpt.orElseThrow(() -> new RuntimeException("Profile not found with loyalty number: " + loyaltyNumber)
+                            AddressEntity addressEntity = objectMapper.convertValue(updatedProfile.getAddress(), AddressEntity.class);
+                            existingProfile.setAddress(addressEntity);
+
+                            LocalDate updatedExpirationDate = updatedProfile.getDriversLicense().getLicenseExpirationDate();
+
+                            if (updatedExpirationDate.isBefore(LocalDate.now())) {
+                                throw new IllegalArgumentException("Driver license expiration date cannot be in the past");
+                            }
+
+                            existingProfile.getDriversLicense().setLicenseExpirationDate(updatedExpirationDate);
+
+                            profileRepository.save(existingProfile);
+                            return objectMapper.convertValue(existingProfile, ProfileDTO.class);
+                        })
+                        .orElseThrow(() -> new RuntimeException("Profile not found with loyalty number: " + loyaltyNumber))
         );
-
-    existingProfile.setEmail(updatedProfile.getEmail());
-    existingProfile.setPhone(updatedProfile.getPhone());
-    existingProfile.setAddress(updatedProfile.getAddress());
-    existingProfile.setDriversLicense(updatedProfile.getDriversLicense());
-    existingProfile.setLogin(updatedProfile.getLogin());
-
-    profileRepository.save(existingProfile);
-
-    return objectMapper.convertValue(existingProfile, ProfileDTO.class);
 }
 
     public List<String> getStatesAndProvinces(String country) {
