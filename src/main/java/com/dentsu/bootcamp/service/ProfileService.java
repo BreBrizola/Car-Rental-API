@@ -2,7 +2,6 @@ package com.dentsu.bootcamp.service;
 import com.dentsu.bootcamp.dto.ProfileDTO;
 import com.dentsu.bootcamp.model.AddressEntity;
 import com.dentsu.bootcamp.model.DriversLicenseEntity;
-import com.dentsu.bootcamp.model.LoginEntity;
 import com.dentsu.bootcamp.model.ProfileEntity;
 import com.dentsu.bootcamp.repository.DriversLicenseRepository;
 import com.dentsu.bootcamp.repository.ProfileRepository;
@@ -14,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,28 +54,23 @@ public class ProfileService {
         return objectMapper.convertValue(profile, ProfileDTO.class);
     }
 
-    public ResponseEntity<String> submitPersonalInformation(ProfileEntity profileEntity) {
-        try {
-            if (!isLegalAge(profileEntity.getDateOfBirth(), profileEntity.getAddress().getCountry())) {
+    public Single<ProfileDTO> submitPersonalInformation(ProfileDTO profile) {
+        return Single.fromCallable(() -> {
+            if (!isLegalAge(profile.getDateOfBirth(), profile.getAddress().getCountry())) {
                 throw new IllegalArgumentException("User must be at Legal Age");
             }
-            if (!isValidEmail(profileEntity.getEmail())) {
+            if (!isValidEmail(profile.getEmail())) {
                 throw new IllegalArgumentException("Provided email is invalid, please try again");
             }
-            if (!isDriversLicenseValid(profileEntity.getDriversLicense().getLicenseExpirationDate())) {
+            if (!isDriversLicenseValid(profile.getDriversLicense().getLicenseExpirationDate())) {
                 throw new IllegalArgumentException("Driver's License is expired.");
             }
 
-            profileEntity.setLoyaltyNumber(generateLoyaltyNumber());
-            profileRepository.save(profileEntity);
+            profile.setLoyaltyNumber(generateLoyaltyNumber());
+            profileRepository.save(objectMapper.convertValue(profile, ProfileEntity.class));
 
-            String confirmationMessage = "Enrollment successful! Your loyalty number is " + profileEntity.getLoyaltyNumber();
-
-            return ResponseEntity.ok(confirmationMessage);
-
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+            return profile;
+        });
     }
 
     public Single<ProfileDTO> editPersonalInformation(String loyaltyNumber, ProfileDTO updatedProfile) {

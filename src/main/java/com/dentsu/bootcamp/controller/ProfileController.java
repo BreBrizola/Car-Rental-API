@@ -1,7 +1,6 @@
 package com.dentsu.bootcamp.controller;
 
 import com.dentsu.bootcamp.dto.ProfileDTO;
-import com.dentsu.bootcamp.model.ProfileEntity;
 import com.dentsu.bootcamp.service.ProfileService;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
@@ -38,8 +37,8 @@ public class ProfileController {
     }
 
     @PostMapping("/createProfile")
-    public ResponseEntity<String> submitPersonalInformation(@RequestBody @Valid ProfileEntity profileEntity) {
-        return profileService.submitPersonalInformation(profileEntity);
+    public Single<ProfileDTO> submitPersonalInformation(@RequestBody @Valid ProfileDTO profile) {
+        return profileService.submitPersonalInformation(profile);
     }
 
     @GetMapping("/{loyaltyNumber}")
