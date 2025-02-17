@@ -9,7 +9,7 @@ import jakarta.persistence.ManyToOne;
 
 import java.io.Serializable;
 
-@Entity
+@Entity (name = "vehicle_terms")
 public class VehicleTermsEntity implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -45,6 +45,13 @@ CREATE TABLE drivers_license (
                                 drivers_license_number VARCHAR(255)
 );
 
+CREATE TABLE terms (
+                       id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                       code VARCHAR(255),
+                       description TEXT,
+                       active BOOLEAN
+);
+
 CREATE TABLE profile (
                          loyalty_number VARCHAR(255) PRIMARY KEY,
                          first_name VARCHAR(255) NOT NULL,
@@ -83,6 +90,22 @@ CREATE TABLE reservation (
                              FOREIGN KEY (loyalty_number) REFERENCES profile(loyalty_number)
 );
 
+CREATE TABLE vehicle_terms (
+                               id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                               vehicle_id BIGINT NOT NULL,
+                               terms_id BIGINT NOT NULL,
+                               FOREIGN KEY (vehicle_id) REFERENCES vehicle(id),
+                               FOREIGN KEY (terms_id) REFERENCES terms(id)
+);
+
+CREATE TABLE location_terms (
+                                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                location_id BIGINT NOT NULL,
+                                terms_id BIGINT NOT NULL,
+                                FOREIGN KEY (location_id) REFERENCES location(id),
+                                FOREIGN KEY (terms_id) REFERENCES terms(id)
+);
+
 --Inserts
 INSERT INTO location (name, address, opening_hours, after_hours_fee)
 VALUES
@@ -118,6 +141,16 @@ VALUES
     ('Volkswagen Tiguan', 195, 7),
     ('Mercedes-Benz C-Class', 320, 8),
     ('Fiat Mobi', 105, 8);
+
+INSERT INTO terms (code, description, active) VALUES
+                                          ('TERM01', 'Seguro básico incluso', TRUE),
+                                          ('TERM02', 'Politicas de devolução', TRUE);
+
+INSERT INTO vehicle_terms (vehicle_id, terms_id) VALUES
+                                                     (1, 1);
+
+INSERT INTO location_terms (location_id, terms_id) VALUES
+                                                       (1, 2);
 
 INSERT INTO additional_product (name, price, vehicle_id)
 VALUES
