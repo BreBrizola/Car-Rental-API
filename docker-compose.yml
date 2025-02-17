@@ -1,0 +1,27 @@
+services:
+  app:
+    build: .
+    container_name: spring-boot-app
+    ports:
+      - "8090:8090"
+    depends_on:
+      - redis
+    environment:
+      SPRING_REDIS_HOST: redis    # Redis service name from Docker Compose
+      SPRING_REDIS_PORT: 6380     # Port exposed by Docker for Redis
+      SPRING_PROFILES_ACTIVE: local,docker
+    networks:
+      - car-rental-api-network
+
+  redis:
+    image: redis:7
+    container_name: redis
+    restart: always
+    ports:
+      - "6380:6379"  # Exposing Redis container's port 6379 to port 6380 on the host machine
+    networks:
+      - car-rental-api-network
+
+networks:
+  car-rental-api-network:
+    driver: bridge
