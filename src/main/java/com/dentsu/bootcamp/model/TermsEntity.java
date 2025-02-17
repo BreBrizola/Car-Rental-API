@@ -11,20 +11,19 @@ import java.io.Serializable;
 import java.util.List;
 
 @Data
-@Entity (name = "location")
-public class LocationEntity implements Serializable{
-
+@Entity (name = "terms")
+public class TermsEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String address;
-    private String openingHours;
-    private Long afterHoursFeed;
 
-    @OneToMany(mappedBy = "location")
-    private List<VehicleEntity> vehicleList;
+    private String description;
+    private String code;
+    private boolean active;
 
-    @OneToMany(mappedBy = "location")
+    @OneToMany(mappedBy = "terms")
+    private List<VehicleTermsEntity> vehicleTerms;
+
+    @OneToMany(mappedBy = "terms")
     private List<LocationTermsEntity> locationTerms;
 }

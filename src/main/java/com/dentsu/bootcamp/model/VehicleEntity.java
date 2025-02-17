@@ -30,4 +30,7 @@ public class VehicleEntity implements Serializable {
 
     @OneToMany(mappedBy = "vehicle")
     private List<AdditionalProductEntity> additionalProducts;
+
+    @OneToMany(mappedBy = "vehicle")
+    private List<VehicleTermsEntity> vehicleTerms;
 }
