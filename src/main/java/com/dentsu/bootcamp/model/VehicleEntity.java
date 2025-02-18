@@ -1,6 +1,7 @@
 package com.dentsu.bootcamp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,5 +33,6 @@ public class VehicleEntity implements Serializable {
     private List<AdditionalProductEntity> additionalProducts;
 
     @OneToMany(mappedBy = "vehicle")
+    @JsonManagedReference
     private List<VehicleTermsEntity> vehicleTerms;
 }

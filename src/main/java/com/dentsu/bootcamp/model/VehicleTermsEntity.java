@@ -1,5 +1,6 @@
 package com.dentsu.bootcamp.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,6 +20,7 @@ public class VehicleTermsEntity implements Serializable{
 
     @ManyToOne
     @JoinColumn(name = "vehicle_id")
+    @JsonBackReference
     private VehicleEntity vehicle;
 
     @ManyToOne

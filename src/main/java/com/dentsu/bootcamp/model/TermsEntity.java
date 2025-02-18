@@ -1,5 +1,6 @@
 package com.dentsu.bootcamp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,8 +23,10 @@ public class TermsEntity implements Serializable {
     private boolean active;
 
     @OneToMany(mappedBy = "terms")
+    @JsonIgnore
     private List<VehicleTermsEntity> vehicleTerms;
 
     @OneToMany(mappedBy = "terms")
+    @JsonIgnore
     private List<LocationTermsEntity> locationTerms;
 }

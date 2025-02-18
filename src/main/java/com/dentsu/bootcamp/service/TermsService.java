@@ -24,9 +24,11 @@ public class TermsService {
     private VehicleRepository vehicleRepository;
     private TermsRepository termsRepository;
 
-    public TermsService (VehicleTermsRepository vehicleTermsRepository, ObjectMapper objectMapper){
+    public TermsService (VehicleTermsRepository vehicleTermsRepository, ObjectMapper objectMapper, VehicleRepository vehicleRepository, TermsRepository termsRepository){
         this.vehicleTermsRepository = vehicleTermsRepository;
         this.objectMapper = objectMapper;
+        this.vehicleRepository = vehicleRepository;
+        this.termsRepository = termsRepository;
     }
 
     public Single<List<TermsDTO>> getVehicleTerms(VehicleDTO vehicle){
