@@ -143,15 +143,13 @@ VALUES
     ('Fiat Mobi', 105, 8);
 
 INSERT INTO terms (code, description, active) VALUES
-                                          ('TERM001', 'Seguro básico incluso', TRUE),
-                                          ('TERM002', 'Quilometragem ilimitada', TRUE);
+                                          ('TERM01', 'Seguro basico incluso', TRUE),
+                                          ('TERM02', 'Politicas de devolução', TRUE);
 
 INSERT INTO vehicle_terms (vehicle_id, terms_id) VALUES
-                                                     (1, 1),
-                                                     (1, 2);
+                                                     (1, 1);
 
 INSERT INTO location_terms (location_id, terms_id) VALUES
-                                                       (1, 1),
                                                        (1, 2);
 
 INSERT INTO additional_product (name, price, vehicle_id)
