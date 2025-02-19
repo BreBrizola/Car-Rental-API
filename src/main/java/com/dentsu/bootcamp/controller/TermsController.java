@@ -1,5 +1,6 @@
 package com.dentsu.bootcamp.controller;
 
+import com.dentsu.bootcamp.dto.LocationDTO;
 import com.dentsu.bootcamp.dto.TermsDTO;
 import com.dentsu.bootcamp.dto.VehicleDTO;
 
@@ -28,8 +29,18 @@ public class TermsController {
         return termsService.getVehicleTerms(vehicle);
     }
 
-    @PostMapping("/{vehicleId}/add_terms")
+    @GetMapping("/location")
+    public Single<List<TermsDTO>> getLocationTerms(@RequestBody LocationDTO location){
+        return termsService.getLocationTerms(location);
+    }
+
+    @PostMapping("/{vehicleId}/add_vehicle_terms")
     public Single<VehicleDTO> addTermsToVehicle(@PathVariable Long vehicleId, @RequestBody List<Long> termsId){
         return termsService.addTermsToVehicle(vehicleId,termsId);
+    }
+
+    @PostMapping("/{locationId}/add_location_terms")
+    public Single<LocationDTO> addTermsToLocation(@PathVariable Long locationId, @RequestBody List<Long> termsId){
+        return termsService.addTermsToLocation(locationId,termsId);
     }
 }

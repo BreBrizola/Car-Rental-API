@@ -1,11 +1,13 @@
 package com.dentsu.bootcamp.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.List;
@@ -26,5 +28,7 @@ public class LocationEntity implements Serializable{
     private List<VehicleEntity> vehicleList;
 
     @OneToMany(mappedBy = "location")
+    @JsonManagedReference
+    @ToString.Exclude
     private List<LocationTermsEntity> locationTerms;
 }

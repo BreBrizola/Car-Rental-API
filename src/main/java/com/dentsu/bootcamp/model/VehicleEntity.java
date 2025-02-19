@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.List;
@@ -34,5 +35,6 @@ public class VehicleEntity implements Serializable {
 
     @OneToMany(mappedBy = "vehicle")
     @JsonManagedReference
+    @ToString.Exclude
     private List<VehicleTermsEntity> vehicleTerms;
 }
