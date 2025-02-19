@@ -41,17 +41,17 @@ public class TermsService {
         this.locationTermsRepository = locationTermsRepository;
     }
 
-    public Single<List<TermsDTO>> getVehicleTerms(VehicleDTO vehicle){
+    public Single<List<TermsDTO>> getVehicleTerms(Long vehicleId){
         return Single.fromCallable(() ->
-                vehicleTermsRepository.findByVehicle(objectMapper.convertValue(vehicle, VehicleEntity.class)).stream()
+                vehicleTermsRepository.findByVehicleId(vehicleId).stream()
                         .map(vehicleTerms -> objectMapper.convertValue(vehicleTerms.getTerms(), TermsDTO.class))
                         .collect(Collectors.toList())
         );
     }
 
-    public Single<List<TermsDTO>> getLocationTerms(LocationDTO location){
+    public Single<List<TermsDTO>> getLocationTerms(Long locationId){
         return Single.fromCallable(() ->
-                locationTermsRepository.findByLocation(objectMapper.convertValue(location, LocationEntity.class)).stream()
+                locationTermsRepository.findByLocationId(locationId).stream()
                         .map(locationTerms -> objectMapper.convertValue(locationTerms.getTerms(), TermsDTO.class))
                         .collect(Collectors.toList())
         );

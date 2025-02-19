@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class LocationTermsDTO implements Serializable {
     @JsonProperty("id")private Long id;
 
-    @JsonProperty("location")private LocationEntity location;
+    @JsonProperty("location")private LocationDTO location;
 
-    @JsonProperty("terms")private TermsEntity terms;
+    @JsonProperty("terms")private TermsDTO terms;
 }

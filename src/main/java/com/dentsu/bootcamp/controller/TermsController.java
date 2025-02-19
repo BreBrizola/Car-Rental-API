@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -25,13 +26,13 @@ public class TermsController {
     }
 
     @GetMapping("/vehicle")
-    public Single<List<TermsDTO>> getVehicleTerms(@RequestBody VehicleDTO vehicle){
-        return termsService.getVehicleTerms(vehicle);
+    public Single<List<TermsDTO>> getVehicleTerms(@RequestParam Long id){
+        return termsService.getVehicleTerms(id);
     }
 
     @GetMapping("/location")
-    public Single<List<TermsDTO>> getLocationTerms(@RequestBody LocationDTO location){
-        return termsService.getLocationTerms(location);
+    public Single<List<TermsDTO>> getLocationTerms(@RequestParam Long id){
+        return termsService.getLocationTerms(id);
     }
 
     @PostMapping("/{vehicleId}/add_vehicle_terms")
