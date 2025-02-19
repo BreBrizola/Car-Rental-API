@@ -25,3 +25,5 @@ replay_pid*
 
 # Custom
 .idea
+/.gradle
+/build/tmp
