@@ -33,27 +33,25 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @Operation(summary = "Create a new reservation", description = "Submit the required details including first and last name, email, phone number, pickup and return dates, pickup and return locations, and vehicle information. Additional products can be included optionally.")
-    @PostMapping("/create")
-    public Observable<ReservationDTO> createReservation(@RequestBody @Valid ReservationEntity reservation) {
-        return reservationService.createReservation(reservation);
-    }
-
+    @Operation(summary = "Initiates the car rental process", description = "Pass the pickupTime, pickupDate, pickupLocation, returnTime, returnDate and returnLocation.")
     @PostMapping("/iniciate")
     public Observable<Session> iniciateReservation(@RequestBody ReservationEntity reservation){
         return reservationService.initiateReservation(reservation);
     }
 
+    @Operation(summary = "Selects a vehicle for the reservation", description = "Pass the selected vehicle(id, model and price). No need to pass the terms.")
     @PostMapping("/selectCar")
     public Observable<Session> selectCar(@RequestBody VehicleDTO vehicle) {
         return reservationService.selectCar(vehicle);
     }
 
+    @Operation(summary = "Adds additional products to the reservation", description = "Pass the desired additional products, they are optional")
     @PostMapping("/extras")
     public Observable<Session> extras(@RequestBody List<AdditionalProductDTO> additionalProducts) {
         return reservationService.extras(additionalProducts);
     }
 
+    @Operation(summary = "Confirms the reservation", description = "Pass customer information (first name, last name, email, phone and profile)")
     @PostMapping("/commit")
     public Observable<Session> commit(@RequestBody ReservationDTO reservation) {
         return reservationService.commit(reservation);

@@ -1,6 +1,7 @@
 package com.dentsu.bootcamp.controller;
 
 import com.dentsu.bootcamp.dto.LoginRequest;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,6 +31,8 @@ public class LoginController {
         this.securityContextRepository = securityContextRepository;
     }
 
+    @Operation(summary = "Authenticate a user",
+            description = "Pass the username and password to authenticate the user. Default credentials: user = 'user', password = 'password'.")
     @PostMapping("/login")
     public void login(@RequestBody LoginRequest loginRequest, HttpServletRequest request, HttpServletResponse response) {
         Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.username(), loginRequest.password());
@@ -43,6 +46,8 @@ public class LoginController {
         }
     }
 
+    @Operation(summary = "Logout a user",
+            description = "Logs out the authenticated user and invalidates the session.")
     @PostMapping("/logout")
         public String logout(HttpServletRequest request, HttpServletResponse response) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
