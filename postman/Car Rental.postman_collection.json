@@ -1,0 +1,636 @@
+{
+	"info": {
+		"_postman_id": "276d2cd7-27a0-42fd-b252-94c2fbf9940f",
+		"name": "Car Rental",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38351808"
+	},
+	"item": [
+		{
+			"name": "Location",
+			"item": [
+				{
+					"name": "All Locations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/location/listAll",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"location",
+								"listAll"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Location Per ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/location/8",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"location",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cars Per Location",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/location/8/vehicles",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"location",
+								"8",
+								"vehicles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Location Per Name",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Vehicle",
+			"item": [
+				{
+					"name": "All Vehicles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/vehicles/ListAll",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"vehicles",
+								"ListAll"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Vehicle Per ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/vehicles/19",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"vehicles",
+								"19"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Additional Product",
+			"item": [
+				{
+					"name": "All products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/additional-products/ListAll",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"additional-products",
+								"ListAll"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Product Per ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/additional-products/20",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"additional-products",
+								"20"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reservation",
+			"item": [
+				{
+					"name": "Update Reservation",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Brenda\",\n  \"lastName\": \"Brizola\",\n  \"email\": \"BrendaBrizola@example.com\",\n  \"phone\": \"+55 11 95321-4624\",\n  \"pickupDate\": \"2024-12-10\",\n  \"returnDate\": \"2024-12-12\",\n  \"pickupTime\": \"15:00\",\n  \"returnTime\": \"15:00\",\n  \"pickupLocation\": { \"id\": 8 },\n  \"returnLocation\": { \"id\": 10},\n  \"vehicle\": { \"id\": 29},\n  \"additionalProducts\": [\n    {\n        \"id\": 15,\n        \"name\": \"Floor Mat Kit\",\n        \"price\": 500.0\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/reservation/update/8833110042?firstName=Brenda&lastName=Brizola",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"reservation",
+								"update",
+								"8833110042"
+							],
+							"query": [
+								{
+									"key": "firstName",
+									"value": "Brenda"
+								},
+								{
+									"key": "lastName",
+									"value": "Brizola"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Reservation",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8090/reservation/retrieve?confirmationNumber=1342729601&firstName=Brenda&lastName=Brizola",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"reservation",
+								"retrieve"
+							],
+							"query": [
+								{
+									"key": "confirmationNumber",
+									"value": "1342729601"
+								},
+								{
+									"key": "firstName",
+									"value": "Brenda"
+								},
+								{
+									"key": "lastName",
+									"value": "Brizola"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Reservation",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/reservation/cancel?confirmationNumber=8833110042&firstName=Brenda&lastName=Brizola",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"reservation",
+								"cancel"
+							],
+							"query": [
+								{
+									"key": "confirmationNumber",
+									"value": "8833110042"
+								},
+								{
+									"key": "firstName",
+									"value": "Brenda"
+								},
+								{
+									"key": "lastName",
+									"value": "Brizola"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Iniciate",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"pickupDate\": \"2024-12-10\",\n  \"returnDate\": \"2024-12-12\",\n  \"pickupTime\": \"15:00\",\n  \"returnTime\": \"15:00\",\n  \"pickupLocation\": { \"id\": 2 },\n  \"returnLocation\": { \"id\": 2}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/reservation/iniciate",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"reservation",
+								"iniciate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Select car",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\n{\n        \"id\": 1,\n        \"model\": \"Fiat Uno\",\n        \"price\": 120.0\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/reservation/selectCar",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"reservation",
+								"selectCar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Extras",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\n    [\n    {\n        \"id\": 2,\n        \"name\": \"Floor Mat Kit\",\n        \"price\": 500.0\n    }\n  ]\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/reservation/extras",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"reservation",
+								"extras"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Commit",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"username\",\n  \"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/login/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"login",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Enroll",
+			"item": [
+				{
+					"name": "Profile Search",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/enroll/profileSearch?driversLicenseNumber=ABC123&lastName=Doe&issuingCountry=USA&issuingAuthority=California\n",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"enroll",
+								"profileSearch"
+							],
+							"query": [
+								{
+									"key": "driversLicenseNumber",
+									"value": "ABC123"
+								},
+								{
+									"key": "lastName",
+									"value": "Doe"
+								},
+								{
+									"key": "issuingCountry",
+									"value": "USA"
+								},
+								{
+									"key": "issuingAuthority",
+									"value": "California\n"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Information",
+					"request": {
+						"method": "POST",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Search by loyalty number",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/enroll/f63a7d32-f590-40e5-94ef-0e18bb1a1420",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"enroll",
+								"f63a7d32-f590-40e5-94ef-0e18bb1a1420"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Information",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"testesttest@example.com\",\n  \"phone\": \"+11 98765 9812\",\n  \"address\": {\n    \"city\": \"Anytown\",\n    \"country\": \"USA\",\n    \"countrySubdivisionCode\": \"AL\",\n    \"postal\": \"12345\",\n    \"streetAddresses\": \"123 Main St\"\n  },\n  \"driversLicense\": {\n    \"countryCode\": \"USA\",\n    \"countrySubdivision\": \"CA\",\n    \"licenseExpirationDate\": \"2025-05-10\",\n    \"licenseNumber\": \"D123456789\"\n  },\n  \"login\": {\n    \"username\": \"john.doe\",\n    \"password\": \"password123\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/enroll/editProfile?loyaltyNumber=ae4928c6-7463-4a78-8fef-b5743ba9dff6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"enroll",
+								"editProfile"
+							],
+							"query": [
+								{
+									"key": "loyaltyNumber",
+									"value": "ae4928c6-7463-4a78-8fef-b5743ba9dff6"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get states and provinces",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Terms",
+			"item": [
+				{
+					"name": "Add vehicle terms",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[1]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/terms/1/add_vehicle_terms",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"terms",
+								"1",
+								"add_vehicle_terms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get terms vehicle",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Add location terms",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[2]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/terms/1/add_location_terms",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"terms",
+								"1",
+								"add_location_terms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get location terms",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Docs",
+			"item": [
+				{
+					"name": "Docs",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
