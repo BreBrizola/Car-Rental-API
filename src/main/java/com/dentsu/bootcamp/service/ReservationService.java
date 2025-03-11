@@ -114,13 +114,9 @@ public class ReservationService {
     }
 
     public Observable<Session> commit(ReservationDTO reservation) {
-        return Observable.fromCallable(() ->
-                        profileRepository.findByLoyaltyNumber(reservation.getProfile().getLoyaltyNumber())
-                                .orElseThrow(() -> new RuntimeException("Invalid loyalty number"))
-                ).flatMap(profile -> {
+        return Observable.fromCallable(() -> {
                     ReservationDTO existingReservation = session.getReservation();
 
-                    existingReservation.setProfile(objectMapper.convertValue(profile, ProfileDTO.class));
                     existingReservation.setFirstName(reservation.getFirstName());
                     existingReservation.setLastName(reservation.getLastName());
                     existingReservation.setEmail(reservation.getEmail());
@@ -128,7 +124,7 @@ public class ReservationService {
 
                     existingReservation.setConfirmationNumber(generateConfirmationNumber());
 
-                    return Observable.fromCallable(() -> reservationRepository.save(objectMapper.convertValue(existingReservation, ReservationEntity.class) ));
+                    return reservationRepository.save(objectMapper.convertValue(existingReservation, ReservationEntity.class));
                 })
                 .flatMap(savedReservation -> Observable.fromCallable(() -> {
                     emailService.sendMail(
