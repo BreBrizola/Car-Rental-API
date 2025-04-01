@@ -8,7 +8,6 @@ import com.dentsu.bootcamp.dto.VehicleDTO;
 import com.dentsu.bootcamp.exception.LocationNotFoundException;
 import com.dentsu.bootcamp.exception.ReservationNotFoundException;
 import com.dentsu.bootcamp.exception.VehicleNotFoundException;
-import com.dentsu.bootcamp.model.AdditionalProductEntity;
 import com.dentsu.bootcamp.model.ReservationEntity;
 import com.dentsu.bootcamp.model.VehicleEntity;
 import com.dentsu.bootcamp.repository.AdditionalProductRepository;
@@ -16,7 +15,6 @@ import com.dentsu.bootcamp.repository.LocationRepository;
 import com.dentsu.bootcamp.repository.ProfileRepository;
 import com.dentsu.bootcamp.repository.ReservationRepository;
 import com.dentsu.bootcamp.repository.VehicleRepository;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
@@ -29,10 +27,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -118,13 +114,9 @@ public class ReservationService {
     }
 
     public Observable<Session> commit(ReservationDTO reservation) {
-        return Observable.fromCallable(() ->
-                        profileRepository.findByLoyaltyNumber(reservation.getProfile().getLoyaltyNumber())
-                                .orElseThrow(() -> new RuntimeException("Invalid loyalty number"))
-                ).flatMap(profile -> {
+        return Observable.fromCallable(() -> {
                     ReservationDTO existingReservation = session.getReservation();
 
-                    existingReservation.setProfile(objectMapper.convertValue(profile, ProfileDTO.class));
                     existingReservation.setFirstName(reservation.getFirstName());
                     existingReservation.setLastName(reservation.getLastName());
                     existingReservation.setEmail(reservation.getEmail());
@@ -132,7 +124,7 @@ public class ReservationService {
 
                     existingReservation.setConfirmationNumber(generateConfirmationNumber());
 
-                    return Observable.fromCallable(() -> reservationRepository.save(objectMapper.convertValue(existingReservation, ReservationEntity.class) ));
+                    return reservationRepository.save(objectMapper.convertValue(existingReservation, ReservationEntity.class));
                 })
                 .flatMap(savedReservation -> Observable.fromCallable(() -> {
                     emailService.sendMail(
@@ -149,39 +141,6 @@ public class ReservationService {
                     session.setReservation(objectMapper.convertValue(savedReservation, ReservationDTO.class));
                     return session;
                 });
-    }
-
-    public Observable<ReservationDTO> createReservation(ReservationEntity reservation) {
-        return Observable.zip(
-                        Observable.fromCallable(() -> profileRepository.findByLoyaltyNumber(reservation.getProfile().getLoyaltyNumber())
-                                .orElseThrow(() -> new RuntimeException("Invalid loyalty number"))),
-                        Observable.fromCallable(() -> locationRepository.findById(reservation.getPickupLocation().getId())
-                                .orElseThrow(() -> new LocationNotFoundException("Pickup location not found"))),
-                        Observable.fromCallable(() -> locationRepository.findById(reservation.getReturnLocation().getId())
-                                .orElseThrow(() -> new LocationNotFoundException("Return location not found"))),
-                        Observable.fromCallable(() -> vehicleRepository.findById(reservation.getVehicle().getId())
-                                .orElseThrow(() -> new VehicleNotFoundException("Vehicle not found"))),
-                        (profile, pickupLocation, returnLocation, vehicle) -> {
-                            reservation.setPickupLocation(pickupLocation);
-                            reservation.setReturnLocation(returnLocation);
-                            reservation.setVehicle(vehicle);
-                            reservation.setProfile(profile);
-                            return reservation;
-                        })
-                .doOnNext(reservationEntity -> reservationEntity.setConfirmationNumber(generateConfirmationNumber()))
-                .flatMap(reservationEntity -> calculateTotalPrice(objectMapper.convertValue(reservationEntity, ReservationDTO.class))
-                .doOnNext(reservationEntity::setTotalPrice)
-                .map(totalPrice -> reservationEntity))
-                .flatMap(reservationEntity -> Observable.fromCallable(() -> reservationRepository.save(reservationEntity)))
-                .flatMap(reservationEntity -> {
-                    emailService.sendMail(
-                            reservationEntity.getEmail(),
-                            RESERVATION_CONFIRMED, reservationEntity.getConfirmationNumber(),
-                            reservationEntity.getFirstName(), reservationEntity.getLastName(), RESERVATION_CREATED_STATUS);
-
-                    return Observable.just(reservationEntity);
-                })
-                .map(reservationEntity -> objectMapper.convertValue(reservationEntity, ReservationDTO.class));
     }
 
     public Single<ReservationDTO> getReservation(String confirmationNumber, String firstName, String lastName) {

@@ -69,7 +69,7 @@ CREATE TABLE profile (
 
 CREATE TABLE reservation (
                              id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                             loyalty_number VARCHAR(255) NOT NULL,
+                             loyalty_number VARCHAR(255),
                              first_name VARCHAR(255) NOT NULL,
                              last_name VARCHAR(255) NOT NULL,
                              email VARCHAR(255) NOT NULL,

@@ -3,6 +3,7 @@ package com.dentsu.bootcamp.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -17,16 +18,24 @@ public class ReservationDTO implements Serializable {
     @JsonProperty("confirmationNumber")
     private String confirmationNumber;
 
-    @JsonProperty("firstName") @NotBlank(message = "First name is required")
+    @JsonProperty("firstName")
+    @NotBlank(message = "First name is required")
+    @Size(min = 1, max = 30)
     private String firstName;
 
-    @JsonProperty("lastName") @NotBlank(message = "Last name is required")
+    @JsonProperty("lastName")
+    @NotBlank(message = "Last name is required")
+    @Size(min = 1, max = 80)
     private String lastName;
 
-    @JsonProperty("email") @NotBlank(message = "Email is required")
+    @JsonProperty("email")
+    @NotBlank(message = "Email is required")
+    @Size(min = 1, max = 100)
     private String email;
 
-    @JsonProperty("phone") @NotBlank(message = "Phone number is required")
+    @JsonProperty("phone")
+    @NotBlank(message = "Phone number is required")
+    @Size(min = 20, max = 20)
     private String phone;
 
     @JsonProperty("totalPrice")
