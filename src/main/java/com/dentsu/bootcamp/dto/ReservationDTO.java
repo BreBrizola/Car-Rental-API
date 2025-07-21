@@ -35,7 +35,7 @@ public class ReservationDTO implements Serializable {
 
     @JsonProperty("phone")
     @NotBlank(message = "Phone number is required")
-    @Size(min = 20, max = 20)
+    @Size(min = 8, max = 20)
     private String phone;
 
     @JsonProperty("totalPrice")

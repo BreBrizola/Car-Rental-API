@@ -31,12 +31,11 @@ public class ProfileDTO implements Serializable {
 
         @JsonProperty("phone")
         @NotEmpty(message = "Phone is required.")
-        @Size(min = 20, max = 20)
+        @Size(min = 8, max = 20)
         private String phone;
 
         @JsonProperty("dateOfBirth")
         @NotNull(message = "Date of birth is required.")
-        @Size(min = 8, max = 10)
         private LocalDate dateOfBirth;
 
         @JsonProperty("address")

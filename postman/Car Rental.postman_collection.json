@@ -35,7 +35,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8090/location/8",
+							"raw": "http://localhost:8090/location/id/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -43,7 +43,8 @@
 							"port": "8090",
 							"path": [
 								"location",
-								"8"
+								"id",
+								"1"
 							]
 						}
 					},
@@ -55,7 +56,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8090/location/8/vehicles",
+							"raw": "http://localhost:8090/location/2/vehicles",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -63,7 +64,7 @@
 							"port": "8090",
 							"path": [
 								"location",
-								"8",
+								"2",
 								"vehicles"
 							]
 						}
@@ -74,7 +75,20 @@
 					"name": "Location Per Name",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/location/name/ZoomCar Rentals",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"location",
+								"name",
+								"ZoomCar Rentals"
+							]
+						}
 					},
 					"response": []
 				}
@@ -109,7 +123,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8090/vehicles/19",
+							"raw": "http://localhost:8090/vehicles/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -117,7 +131,7 @@
 							"port": "8090",
 							"path": [
 								"vehicles",
-								"19"
+								"1"
 							]
 						}
 					},
@@ -154,7 +168,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8090/additional-products/20",
+							"raw": "http://localhost:8090/additional-products/2",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -162,7 +176,7 @@
 							"port": "8090",
 							"path": [
 								"additional-products",
-								"20"
+								"2"
 							]
 						}
 					},
@@ -174,127 +188,13 @@
 			"name": "Reservation",
 			"item": [
 				{
-					"name": "Update Reservation",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"firstName\": \"Brenda\",\n  \"lastName\": \"Brizola\",\n  \"email\": \"BrendaBrizola@example.com\",\n  \"phone\": \"+55 11 95321-4624\",\n  \"pickupDate\": \"2024-12-10\",\n  \"returnDate\": \"2024-12-12\",\n  \"pickupTime\": \"15:00\",\n  \"returnTime\": \"15:00\",\n  \"pickupLocation\": { \"id\": 8 },\n  \"returnLocation\": { \"id\": 10},\n  \"vehicle\": { \"id\": 29},\n  \"additionalProducts\": [\n    {\n        \"id\": 15,\n        \"name\": \"Floor Mat Kit\",\n        \"price\": 500.0\n    }\n  ]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:8090/reservation/update/8833110042?firstName=Brenda&lastName=Brizola",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8090",
-							"path": [
-								"reservation",
-								"update",
-								"8833110042"
-							],
-							"query": [
-								{
-									"key": "firstName",
-									"value": "Brenda"
-								},
-								{
-									"key": "lastName",
-									"value": "Brizola"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Retrieve Reservation",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:8090/reservation/retrieve?confirmationNumber=1342729601&firstName=Brenda&lastName=Brizola",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8090",
-							"path": [
-								"reservation",
-								"retrieve"
-							],
-							"query": [
-								{
-									"key": "confirmationNumber",
-									"value": "1342729601"
-								},
-								{
-									"key": "firstName",
-									"value": "Brenda"
-								},
-								{
-									"key": "lastName",
-									"value": "Brizola"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Cancel Reservation",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:8090/reservation/cancel?confirmationNumber=8833110042&firstName=Brenda&lastName=Brizola",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8090",
-							"path": [
-								"reservation",
-								"cancel"
-							],
-							"query": [
-								{
-									"key": "confirmationNumber",
-									"value": "8833110042"
-								},
-								{
-									"key": "firstName",
-									"value": "Brenda"
-								},
-								{
-									"key": "lastName",
-									"value": "Brizola"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Iniciate",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"pickupDate\": \"2024-12-10\",\n  \"returnDate\": \"2024-12-12\",\n  \"pickupTime\": \"15:00\",\n  \"returnTime\": \"15:00\",\n  \"pickupLocation\": { \"id\": 2 },\n  \"returnLocation\": { \"id\": 2}\n}",
+							"raw": "{\n  \"pickupDate\": \"2025-07-22\",\n  \"returnDate\": \"2025-07-23\",\n  \"pickupTime\": \"10:10\",\n  \"returnTime\": \"16:30\",\n  \"pickupLocation\": { \"id\": 2 },\n  \"returnLocation\": { \"id\": 2 }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -377,8 +277,144 @@
 				{
 					"name": "Commit",
 					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Brenda\",\n  \"lastName\": \"Brizola\",\n  \"email\": \"aaaa@gmail.com\",\n  \"phone\": \"1234567890\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/reservation/commit",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"reservation",
+								"commit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Reservation",
+					"request": {
 						"method": "GET",
-						"header": []
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8090/reservation/retrieve?confirmationNumber=5575087210&firstName=Brenda&lastName=Brizola",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"reservation",
+								"retrieve"
+							],
+							"query": [
+								{
+									"key": "confirmationNumber",
+									"value": "5575087210"
+								},
+								{
+									"key": "firstName",
+									"value": "Brenda"
+								},
+								{
+									"key": "lastName",
+									"value": "Brizola"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Reservation",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Brenda\",\n  \"lastName\": \"Brizola\",\n  \"email\": \"aaaa@gmail.com\",\n  \"phone\": \"1234567891234567\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/reservation/update/5575087210?firstName=Brenda&lastName=Brizola",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"reservation",
+								"update",
+								"5575087210"
+							],
+							"query": [
+								{
+									"key": "firstName",
+									"value": "Brenda"
+								},
+								{
+									"key": "lastName",
+									"value": "Brizola"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Reservation",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/reservation/cancel?confirmationNumber=5575087210&firstName=Brenda&lastName=Brizola",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"reservation",
+								"cancel"
+							],
+							"query": [
+								{
+									"key": "confirmationNumber",
+									"value": "5575087210"
+								},
+								{
+									"key": "firstName",
+									"value": "Brenda"
+								},
+								{
+									"key": "lastName",
+									"value": "Brizola"
+								}
+							]
+						}
 					},
 					"response": []
 				}
@@ -428,12 +464,41 @@
 			"name": "Enroll",
 			"item": [
 				{
+					"name": "Submit Information",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"johndoe@example.com\",\n  \"phone\": \"+11 98765 9812\",\n  \"dateOfBirth\": \"1995-05-10\",\n  \"address\": {\n    \"city\": \"Anytown\",\n    \"country\": \"USA\",\n    \"countrySubdivisionCode\": \"CA\",\n    \"postal\": \"12345\",\n    \"streetAddresses\": \"123 Main St\"\n  },\n  \"driversLicense\": {\n    \"countryCode\": \"USA\",\n    \"countrySubdivision\": \"CA\",\n    \"licenseExpirationDate\": \"2025-08-10\",\n    \"licenseNumber\": \"D123456789\"\n  },\n  \"login\": {\n    \"username\": \"john.doe\",\n    \"password\": \"password123\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/enroll/createProfile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"enroll",
+								"createProfile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Profile Search",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8090/enroll/profileSearch?driversLicenseNumber=ABC123&lastName=Doe&issuingCountry=USA&issuingAuthority=California\n",
+							"raw": "http://localhost:8090/enroll/profileSearch?driversLicenseNumber=D123456789&lastName=Doe&issuingCountry=USA&issuingAuthority=CA",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -446,7 +511,7 @@
 							"query": [
 								{
 									"key": "driversLicenseNumber",
-									"value": "ABC123"
+									"value": "D123456789"
 								},
 								{
 									"key": "lastName",
@@ -458,18 +523,10 @@
 								},
 								{
 									"key": "issuingAuthority",
-									"value": "California\n"
+									"value": "CA"
 								}
 							]
 						}
-					},
-					"response": []
-				},
-				{
-					"name": "Submit Information",
-					"request": {
-						"method": "POST",
-						"header": []
 					},
 					"response": []
 				},
@@ -479,7 +536,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8090/enroll/f63a7d32-f590-40e5-94ef-0e18bb1a1420",
+							"raw": "http://localhost:8090/enroll/b90f0e75-3d27-44f6-8b02-ff22b46ee8a5",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -487,7 +544,7 @@
 							"port": "8090",
 							"path": [
 								"enroll",
-								"f63a7d32-f590-40e5-94ef-0e18bb1a1420"
+								"b90f0e75-3d27-44f6-8b02-ff22b46ee8a5"
 							]
 						}
 					},
@@ -500,7 +557,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"testesttest@example.com\",\n  \"phone\": \"+11 98765 9812\",\n  \"address\": {\n    \"city\": \"Anytown\",\n    \"country\": \"USA\",\n    \"countrySubdivisionCode\": \"AL\",\n    \"postal\": \"12345\",\n    \"streetAddresses\": \"123 Main St\"\n  },\n  \"driversLicense\": {\n    \"countryCode\": \"USA\",\n    \"countrySubdivision\": \"CA\",\n    \"licenseExpirationDate\": \"2025-05-10\",\n    \"licenseNumber\": \"D123456789\"\n  },\n  \"login\": {\n    \"username\": \"john.doe\",\n    \"password\": \"password123\"\n  }\n}",
+							"raw": "{\n  \"phone\": \"+11 98765 9812\",\n  \"address\": {\n    \"city\": \"Anytown\",\n    \"country\": \"USA\",\n    \"countrySubdivisionCode\": \"AL\",\n    \"postal\": \"12345\",\n    \"streetAddresses\": \"123 Main St\"\n  },\n  \"driversLicense\": {\n    \"licenseExpirationDate\": \"2030-07-24\"\n  }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -508,7 +565,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8090/enroll/editProfile?loyaltyNumber=ae4928c6-7463-4a78-8fef-b5743ba9dff6",
+							"raw": "http://localhost:8090/enroll/editProfile?loyaltyNumber=b90f0e75-3d27-44f6-8b02-ff22b46ee8a5",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -521,7 +578,7 @@
 							"query": [
 								{
 									"key": "loyaltyNumber",
-									"value": "ae4928c6-7463-4a78-8fef-b5743ba9dff6"
+									"value": "b90f0e75-3d27-44f6-8b02-ff22b46ee8a5"
 								}
 							]
 						}
@@ -532,7 +589,20 @@
 					"name": "Get states and provinces",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/enroll/StatesAndProvinces/USA",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"enroll",
+								"StatesAndProvinces",
+								"USA"
+							]
+						}
 					},
 					"response": []
 				}
@@ -573,9 +643,39 @@
 				},
 				{
 					"name": "get terms vehicle",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/terms/vehicle?id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"terms",
+								"vehicle"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
 					},
 					"response": []
 				},
@@ -594,7 +694,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8090/terms/1/add_location_terms",
+							"raw": "http://localhost:8090/terms/2/add_location_terms",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -602,7 +702,7 @@
 							"port": "8090",
 							"path": [
 								"terms",
-								"1",
+								"2",
 								"add_location_terms"
 							]
 						}
@@ -611,9 +711,39 @@
 				},
 				{
 					"name": "get location terms",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/terms/location?id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"terms",
+								"location"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
 					},
 					"response": []
 				}
@@ -626,7 +756,18 @@
 					"name": "Docs",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/api-docs",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api-docs"
+							]
+						}
 					},
 					"response": []
 				}
